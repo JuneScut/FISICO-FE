@@ -1,3 +1,9 @@
+## npm install
+安装所有依赖，或者使用yarn install
+
+## npm run start
+启动项目，或者使用yarn start
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
