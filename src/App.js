@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import Loadable from 'react-loadable'; //实现按需加载
+import Loading from './components/Loading';
+import {BrowserRouter, Route} from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const Login = Loadable({
+  loader: () => import('./views/login/login'),
+  loading: Loading
+});
+
+const Home = Loadable({
+  loader: () => import('./views/home/home'),
+  loading: Loading
+})
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+          <Route exact path="/login" component={Login}/>
+          <Route exact path="/home" component={Home}/>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
