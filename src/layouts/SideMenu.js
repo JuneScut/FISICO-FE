@@ -1,5 +1,12 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
-import { Redirect } from 'react-router';
+import './style.scss'
+import {
+    Route,
+    NavLink,
+    Link,
+    HashRouter
+  } from "react-router-dom";
 import { Menu, Icon } from 'antd';
 const { SubMenu } = Menu;
 
@@ -8,7 +15,7 @@ const IconFont = Icon.createFromIconfontCN({
 });
 const menuData = [
     {
-        path: '/',
+        path: '/home',
         title: '首页',
         icon: 'iconhome'
     },{
@@ -69,9 +76,6 @@ const menuData = [
 
 
 class SideMenu extends React.Component{
-    jumpToRoute = (path) => {
-        return (<Redirect to="/chat" />);
-    }
     menuList(menuInfo) {
         let menu = [];
         for(let item of menuInfo){
@@ -79,10 +83,16 @@ class SideMenu extends React.Component{
                 menu.push(
                     item.icon ?
                     <Menu.Item key={item.path}>
-                        <IconFont type={item.icon} style={{fontSize: '16px', color: '#08c'}}/>
-                        <span>{item.title}</span>
+                        <NavLink to={item.path} replace={true}>
+                            <IconFont type={item.icon} style={{fontSize: '16px', color: '#08c'}}/>
+                            <span>{item.title}</span>
+                        </NavLink>
                     </Menu.Item> :
-                    <Menu.Item key={item.path}><span>{item.title}</span></Menu.Item>
+                    <Menu.Item key={item.path}>
+                        <NavLink to={item.path} replace={true}>
+                            <span>{item.title}</span>
+                        </NavLink>
+                    </Menu.Item>
                 )
             }else{
                 menu.push(
@@ -112,7 +122,7 @@ class SideMenu extends React.Component{
     
     render(){
         return(
-            <Menu theme="dark" defaultSelectedKeys={['/']} mode="inline">
+            <Menu theme="dark"  mode="inline"  defaultSelectedKeys={['/home']}>
                 {this.menuList(menuData)}
             </Menu>
         )
