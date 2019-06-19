@@ -4,7 +4,7 @@ class Token extends React.Component{
     render(){
         return(
             <div>
-                <span>token管理</span>
+                <span>token兑换</span>
             </div>
         )
     }
