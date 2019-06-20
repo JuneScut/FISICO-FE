@@ -3,14 +3,11 @@ import React from 'react'
 import './style.scss'
 import {
     Route,
-    NavLink,
-    // BrowserRouter
+    NavLink
 } from "react-router-dom";
-// import { browserHistory } from 'react-router';
 import RouteGuard from '../utils/RouteGuard';
 import { Menu, Icon } from 'antd';
 import { getAuth,hasAuth } from '../utils/authority'
-console.log(getAuth())
 const { SubMenu } = Menu;
 
 const IconFont = Icon.createFromIconfontCN({
@@ -124,7 +121,7 @@ const renderRoutesMap = (routes) => {
     })
     return list;
 }
-// console.log(BrowserRouter.getCurrentLocation())
+
 
 class SideMenu extends React.Component{
     menuList(menuInfo) {

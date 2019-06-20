@@ -29,6 +29,12 @@ class BasicLayout extends React.Component {
         this.setState({collapsed: val})
     }
 
+    componentDidMount(){
+        console.log(this.props)
+        let { history:{replace} } = this.props;
+        replace('/#/home')
+    }
+
     render(){
         return (
             <HashRouter>
