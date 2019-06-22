@@ -7,7 +7,8 @@ import {
 } from "react-router-dom";
 import RouteGuard from '../utils/RouteGuard';
 import { Menu, Icon } from 'antd';
-import { getAuth,hasAuth } from '../utils/authority'
+import { getAuth,hasAuth } from '../utils/authority';
+import { withRouter } from 'react-router';
 const { SubMenu } = Menu;
 
 const IconFont = Icon.createFromIconfontCN({
@@ -172,12 +173,15 @@ class SideMenu extends React.Component{
         return menu;
     }
     render(){
+        // console.log('111', this.props)
         return(
-            <Menu theme="dark"  mode="inline" defaultSelectedKeys={['/home']} selectedKeys={[`${window.location.hash.substr(1)}`]}>
+            <Menu theme="dark"  mode="inline" defaultSelectedKeys={['/home']} selectedKeys={[`${this.props.location.pathname}`]}>
                 {this.menuList(menuData)}
             </Menu>
         )
     }
 }
+const SideMenuWithRouter = withRouter(SideMenu);
+
 export { menuData, renderRoutesMap };
-export default SideMenu;
+export default SideMenuWithRouter;

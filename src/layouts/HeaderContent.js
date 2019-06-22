@@ -15,7 +15,7 @@ class HeaderContent extends React.Component{
     };
 
     render(){
-        console.log('header', this.props.location)
+        // console.log('header', this.props.location)
         return(
             <Row>
                 <Col span={12}>

@@ -24,6 +24,31 @@ class CreateContract extends React.Component{
                     dataIndex: 'beginTime',
                     key: 'beginTime',
                   },
+                  {
+                    title: '货物名称',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
+                  },
+                  {
+                    title: '供货量(件)',
+                    dataIndex: 'supply',
+                    key: 'supply',
+                  },
+                  {
+                    title: '签署人',
+                    dataIndex: 'signtory',
+                    key: 'signtory',
+                  },
+                  {
+                    title: '签署时间',
+                    dataIndex: 'signTime',
+                    key: 'signTime',
+                  },
+                  {
+                    title: '合同状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                  },
             ]
         }
     }
@@ -31,12 +56,27 @@ class CreateContract extends React.Component{
         const formItemLayout = {
             labelCol: {
               xs: { span: 24 },
-              sm: { span: 3 },
+              sm: { 
+                    span: 2,
+                    offset: 1
+                },
             },
             wrapperCol: {
               xs: { span: 24 },
               sm: { span: 6 },
-            },
+            }
+        };
+        const buttonItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0
+                },
+                sm: {
+                    span: 6,
+                    offset: 1
+                }
+            }
         };
         return(
             <Card>
@@ -69,14 +109,14 @@ class CreateContract extends React.Component{
                         <Form.Item label="金额">
                             <Input />
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item {...buttonItemLayout}>
                             <Button type="primary" >发起合同</Button>
                         </Form.Item>
                     </Form>
                 </header>
 
                 <main>
-                    <Table dataSource={this.state.list} columns={this.state.columns} />;
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
             </Card>
         )

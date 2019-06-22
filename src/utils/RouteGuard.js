@@ -20,7 +20,6 @@ class RouteGuard extends React.Component {
             loader: () => import(`../views/${component}`),
             loading: Loading
         })
-        
         return (
             <LoadableComponent {...this.props} />
         )
