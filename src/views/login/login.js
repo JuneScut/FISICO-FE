@@ -1,8 +1,8 @@
 import React from 'react';
 import UserLayout from '../../layouts/UserLayout';
 import {Form, Icon, Input,Button,} from 'antd';
-import "./style.scss"
-// import createHistory from 'history/createHashHistory'
+import styles from "./style.module.scss"
+
 
 
 class NormalLoginForm extends React.Component {
@@ -15,10 +15,10 @@ class NormalLoginForm extends React.Component {
         const { getFieldDecorator } = this.props.form;
         return (
             <UserLayout>
-                <div className="loginpagewrap">
-                    <div className="box">
-                <header className="header">区块链供应链金融平台</header>
-                    <div className="loginWrap">
+                <div className={styles.loginpagewrap}>
+                    <div className={styles.box}>
+                <header className={styles.header}>区块链供应链金融平台</header>
+                    <div className={styles.loginWrap}>
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <Form.Item>
                         {getFieldDecorator('username', {
@@ -41,7 +41,7 @@ class NormalLoginForm extends React.Component {
                             />,
                         )}
                         </Form.Item>
-                        <Button type="primary" htmlType="submit" className="loginBtn">
+                        <Button type="primary" htmlType="submit" className={styles.loginBtn}>
                             Login
                         </Button>
                     </Form>

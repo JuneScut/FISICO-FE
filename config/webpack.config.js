@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const isWsl = require('is-wsl');
@@ -440,6 +440,10 @@ module.exports = function(webpackEnv) {
             },
             // Adds support for CSS Modules, but using SASS
             // using the extension .module.scss or .module.sass
+            {
+              test: /\.css$/,
+              loader: 'style-loader!css-loader?modules&importLoaders=1&localIdentName=[name]_[local]__[hash:base64:5]'
+            },
             {
               test: sassModuleRegex,
               use: getStyleLoaders(
