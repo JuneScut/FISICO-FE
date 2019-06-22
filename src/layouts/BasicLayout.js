@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 import SideMenu from './SideMenu';
 import { menuData, renderRoutesMap } from './SideMenu';
-import HeaderContent from './HeaderContent';
+import HeaderContentWithRoute from './HeaderContent';
 import { HashRouter } from "react-router-dom";
 // import Home from '../views/home/home'
 // import CreateContract from '../views/contracts/create';
@@ -45,9 +45,9 @@ class BasicLayout extends React.Component {
                     </Sider>
                     <Layout>
                     <Header style={{ background: '#fff', padding: '10px' , width: '100%'}}>
-                        <HeaderContent collapsed={this.state.collapsed} toggle={this.toggle}></HeaderContent>
+                        <HeaderContentWithRoute collapsed={this.state.collapsed} toggle={this.toggle}></HeaderContentWithRoute>
                     </Header>
-                    <Content style={{ margin: '0 16px' }}>
+                    <Content style={{ margin: '10px', minHeight:'100vh' }}>
                         {/* {this.props.children} */}
                         {/* <Route path="/home" component={Home}/>
                         <Route path="/contract/create" component={CreateContract}/>

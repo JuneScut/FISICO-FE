@@ -1,11 +1,9 @@
 import React from 'react';
 import UserLayout from '../../layouts/UserLayout';
-import {Form, Icon, Input, Card,Button,notification,} from 'antd';
+import {Form, Icon, Input,Button,} from 'antd';
 import "./style.scss"
-import createHistory from 'history/createHashHistory'
+// import createHistory from 'history/createHashHistory'
 
-const FormItem = Form.Item
-const history = createHistory()
 
 class NormalLoginForm extends React.Component {
     handleSubmit(){
