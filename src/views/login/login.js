@@ -2,7 +2,7 @@ import React from 'react';
 import UserLayout from '../../layouts/UserLayout';
 import {Form, Icon, Input,Button,} from 'antd';
 import styles from "./style.module.scss"
-
+console.log(styles)
 
 
 class NormalLoginForm extends React.Component {

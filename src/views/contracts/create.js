@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon } from 'antd';
 import './style.scss';
+import $enterprise from '../../console/enterprise';
+import $contract from '../../console/contract';
 const { Option } = Select;
 
 class CreateContract extends React.Component{
@@ -52,6 +55,19 @@ class CreateContract extends React.Component{
             ]
         }
     }
+    async getData() {
+        const res = await $enterprise.getData();
+        // console.log(res);
+    }
+    async loadList() {
+        const res = await $contract.list();
+         
+    }
+    componentWillMount(){
+        // console.log($enterprise.getData())
+        this.getData();
+        this.loadList();
+    }
     render(){
         const formItemLayout = {
             labelCol: {
@@ -81,8 +97,8 @@ class CreateContract extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout}>
-                        <Form.Item label="文本合同">
+                    <Form {...formItemLayout} labelAlign="left">
+                        <Form.Item label="文本合同" >
                             <Upload>
                                 <Button>
                                     <Icon type="upload" /> Upload
