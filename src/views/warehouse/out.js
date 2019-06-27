@@ -21,58 +21,58 @@ const columns=[
     },
     {
         title: '收货公司',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'getCompany',
+        key: 'getCompany',
     },
     {
         title: '签署时间',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'signTime',
+        key: 'signTime',
     },
     {
         title: '合同状态',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'status',
+        key: 'status',
     },
     {
         title: '货物名称',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'goodsName',
+        key: 'goodsName',
     },
     {
         title: '货物数量（件）',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'goodsNum',
+        key: 'goodsNum',
     },
     {
         title: '货物金额（元）',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'goodsValue',
+        key: 'goodsValue',
     },
     {
         title: '保险公司',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'Insurance',
+        key: 'Insurance',
     },
     {
         title: '出库状态',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'outStatus',
+        key: 'outStatus',
     },
     {
         title: '物流公司',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'logisticsStatus',
+        key: 'logisticsStatus',
     },
     {
         title: '出库时间',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'inTime',
+        key: 'inTime',
     },
     {
         title: '操作',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        dataIndex: 'operate',
+        key: 'operate',
     },
 ];
 
@@ -91,84 +91,84 @@ const data = [
     },
 ];
 class OutWarehouse extends React.Component{
-  /*  constructor(props){
-        super(props);
-        this.state = {
-            list: [],
-            columns: [
-                {
-                    title: '序号',
-                    dataIndex: 'order',
-                    key: 'order',
-                },
-                {
-                    title: '合同编号',
-                    dataIndex: 'id',
-                    key: 'id',
-                },
-                {
-                    title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '收货公司',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '签署时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '合同状态',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '货物名称',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '货物数量（件）',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '货物金额（元）',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '保险公司',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '出库状态',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '物流公司',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '出库时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-                {
-                    title: '操作',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
-                },
-            ]
-        }
-    }*/
+    /*  constructor(props){
+          super(props);
+          this.state = {
+              list: [],
+              columns: [
+                  {
+                      title: '序号',
+                      dataIndex: 'order',
+                      key: 'order',
+                  },
+                  {
+                      title: '合同编号',
+                      dataIndex: 'id',
+                      key: 'id',
+                  },
+                  {
+                      title: '发起时间',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '收货公司',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '签署时间',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '合同状态',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '货物名称',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '货物数量（件）',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '货物金额（元）',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '保险公司',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '出库状态',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '物流公司',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '出库时间',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+                  {
+                      title: '操作',
+                      dataIndex: 'beginTime',
+                      key: 'beginTime',
+                  },
+              ]
+          }
+      }*/
     render(){
         const formItemLayout = {
             labelCol: {
@@ -251,7 +251,7 @@ class OutWarehouse extends React.Component{
                     })}
                 />
 
-                
+
             </Card>
         )
     }

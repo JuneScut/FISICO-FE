@@ -20,35 +20,35 @@ const columns=[
     },
     {
         title: '签署时间',
-        dataIndex: 'beginTime',
+        dataIndex: 'signTime',
     },
     {
         title: '货物名称',
-        dataIndex: 'beginTime',
+        dataIndex: 'goodsName',
     },
     {
         title: '货物数量（件）',
-        dataIndex: 'beginTime',
+        dataIndex: 'goodsNum',
     },
     {
         title: '货物金额（元）',
-        dataIndex: 'beginTime',
+        dataIndex: 'goodsValue',
     },
     {
         title: '物流状态',
-        dataIndex: 'beginTime',
+        dataIndex: 'logisticsStatus',
     },
     {
         title: '物流公司',
-        dataIndex: 'beginTime',
+        dataIndex: 'logistics',
     },
     {
         title: '入库时间',
-        dataIndex: 'beginTime',
+        dataIndex: 'inTime',
     },
     {
         title: '操作',
-        dataIndex: 'beginTime',
+        dataIndex: 'operate',
     }
 ];
 const data = [
