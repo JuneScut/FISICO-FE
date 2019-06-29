@@ -70,6 +70,9 @@ class CreateContract extends React.Component{
         }));
         console.log(this.state.list)
     }
+    handleCreate(){
+        console.log('create')
+    }
     componentWillMount(){
         this.loadList();
     }
@@ -122,7 +125,7 @@ class CreateContract extends React.Component{
                             <InputNumber style={{'width': '230px'}}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
-                            <Button type="primary" >发起合同</Button>
+                            <Button type="primary" onClick={this.handleCreate}>发起合同</Button>
                         </Form.Item>
                     </Form>
                 </header>
