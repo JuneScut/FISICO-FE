@@ -141,5 +141,5 @@
       "react-app"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "http://rest.apizza.net/mock/c13edf073da9f394b65bc1c3d9ac1390/"
 }

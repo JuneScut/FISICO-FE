@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
@@ -55,27 +55,29 @@ class CreateContract extends React.Component{
             ]
         }
     }
-    async getData() {
-        const res = await $enterprise.getData();
-        // console.log(res);
-    }
     async loadList() {
-        const res = await $contract.list();
-         
+        let params = {
+            supplyId: 1
+        }
+        const res = await $contract.list(params);
+        let list = res.data.result;
+        list.forEach((item, idx) => {
+            item.order = idx+1;
+            item.key = item.id;
+        });
+        this.setState(() => ({
+            list: list
+        }));
+        console.log(this.state.list)
     }
     componentWillMount(){
-        // console.log($enterprise.getData())
-        this.getData();
         this.loadList();
     }
     render(){
         const formItemLayout = {
             labelCol: {
               xs: { span: 24 },
-              sm: { 
-                    span: 2,
-                    offset: 1
-                },
+              sm: { span: 2},
             },
             wrapperCol: {
               xs: { span: 24 },
@@ -84,14 +86,8 @@ class CreateContract extends React.Component{
         };
         const buttonItemLayout = {
             wrapperCol: {
-                xs: {
-                    span: 24,
-                    offset: 0
-                },
-                sm: {
-                    span: 6,
-                    offset: 1
-                }
+                xs: {span: 24},
+                sm: {span: 6}
             }
         };
         return(
@@ -120,10 +116,10 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="供货量">
-                            <Input />
+                            <InputNumber style={{'width': '230px'}}/>
                         </Form.Item>
                         <Form.Item label="金额">
-                            <Input />
+                            <InputNumber style={{'width': '230px'}}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
                             <Button type="primary" >发起合同</Button>

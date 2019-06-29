@@ -1,7 +1,7 @@
 import React from 'react'
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Card, Form, Select, Input, Button, Table, Upload, Icon ,Row, Col} from 'antd';
+import { Card, Form, Select, Button, Table, Row, Col} from 'antd';
 import './style.scss';
 const { Option } = Select;
 
@@ -101,10 +101,10 @@ class InWarehouse extends React.Component{
             },
         };
         /*const { selectedRowKeys } = this.state;*/
-        const rowSelection = {
-            /*selectedRowKeys,*/
-            onChange: this.onSelectedRowKeysChange,
-        };
+        // const rowSelection = {
+        //     /*selectedRowKeys,*/
+        //     onChange: this.onSelectedRowKeysChange,
+        // };
         return(
             <Card>
                 <header className="header">
