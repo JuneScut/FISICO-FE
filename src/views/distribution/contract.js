@@ -122,7 +122,7 @@ class DistributionContract extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout}>
+                    <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>

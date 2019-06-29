@@ -78,7 +78,7 @@ class ReceiveContract extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout}>
+                    <Form {...formItemLayout}labelAlign="left">
                         <Form.Item label="合同编号">
                             <Select>
                                 <Option value="test1">测试1</Option>

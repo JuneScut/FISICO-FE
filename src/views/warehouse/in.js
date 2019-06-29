@@ -93,11 +93,11 @@ class InWarehouse extends React.Component{
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 3 },
+                sm: { span: 1 },
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 6 },
+                sm: { span: 5 },
             },
         };
         /*const { selectedRowKeys } = this.state;*/
@@ -108,7 +108,7 @@ class InWarehouse extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout}>
+                    <Form {...formItemLayout}  labelAlign="left">
                         <Form.Item label="合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
