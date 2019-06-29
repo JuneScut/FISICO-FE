@@ -4,10 +4,9 @@ import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col,DatePic
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
-const {MonthPicker,RangePicker,WeekPicker}=DatePicker;
 const { Option } = Select;
 
-function onChange(date,dateString){
+function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
@@ -18,34 +17,54 @@ const columns=[
         key: 'order',
     },
     {
-        title: '交易类型',
-        dataIndex: 'type',
-        key: 'type',
+        title: '合同编号',
+        dataIndex: 'id',
+        key: 'id',
     },
     {
-        title: '公司名称',
-        dataIndex: 'company',
-        key: 'company',
+        title: '货物保险合同编号',
+        dataIndex: 'insuranceId',
+        key: 'insuranceId',
     },
     {
-        title: '交易金额',
-        dataIndex: 'amount',
-        key: 'amount',
+        title: '物流公司',
+        dataIndex: 'wcompany',
+        key: 'wcompany',
     },
     {
-        title: '提交时间',
-        dataIndex: 'submitTime',
-        key: 'submitTime',
+        title: '发起时间',
+        dataIndex: 'beginTime',
+        key: 'beginTime',
     },
     {
-        title: '审核结果',
-        dataIndex: 'result',
-        key: 'result',
+        title: '签署时间',
+        dataIndex: 'signTime',
+        key: 'signTime',
     },
     {
-        title: '审核时间',
-        dataIndex: 'checkTime',
-        key: 'checkTime',
+        title: '货物名称',
+        dataIndex: 'goodsName',
+        key: 'goodsName',
+    },
+    {
+        title: '货物数量（件）',
+        dataIndex: 'goodsNum',
+        key: 'goodsNum',
+    },
+    {
+        title: '保险费用（元）',
+        dataIndex: 'InsuranceCost',
+        key: 'InsuranceCost',
+    },
+    {
+        title: '保险合同状态',
+        dataIndex: 'Insurancestatus',
+        key: 'Insurancestatus',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operate',
+        key: 'operate',
     },
 ];
 
@@ -64,7 +83,7 @@ const data = [
     },
 ];
 
-class DistributionContract extends React.Component{
+class InsuranceContract extends React.Component{
     async getData() {
         const res = await $enterprise.getData();
         // console.log(res);
@@ -78,9 +97,6 @@ class DistributionContract extends React.Component{
         this.getData();
         this.loadList();
     }
-
-
-
     render(){
         const formItemLayout = {
             labelCol: {
@@ -109,9 +125,36 @@ class DistributionContract extends React.Component{
         };
         return(
             <Card>
-                <header className="header2">
-                    <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="公司名称">
+                <header className="header">
+                    <Form {...formItemLayout}>
+                        <Form.Item label="是否购买货物保险">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">已购买</Option>
+                                            <Option value="test2">未购买</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
+                        <Form.Item label="保险情况">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">未生效</Option>
+                                            <Option value="test2">生效中</Option>
+                                            <Option value="test2">已过期</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
+                        <Form.Item label="保险合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
@@ -125,26 +168,26 @@ class DistributionContract extends React.Component{
                                 </Row>
                             </div>
                         </Form.Item>
-                        <Form.Item label="交易类型">
+                        <Form.Item label="保险合同签署时间">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <DatePicker onChange={onChange} />
+                                        <br />
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
+                        <Form.Item label="合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
                                         <Select>
                                             <Option value="test1">不限</Option>
-                                            <Option value="test1">兑付</Option>
-                                            <Option value="test2">赎回</Option>
+                                            <Option value="test1">1</Option>
+                                            <Option value="test2">2</Option>
+                                            <Option value="test3">3</Option>
                                         </Select>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </Form.Item>
-                        <Form.Item label="审核日期">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <br />
-                                        <RangePicker onChange={onChange} />
-                                        <br />
                                     </Col>
                                 </Row>
                             </div>
@@ -169,4 +212,5 @@ class DistributionContract extends React.Component{
     }
 }
 
-export default DistributionContract;
+
+export default InsuranceContract;

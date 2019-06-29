@@ -1,4 +1,4 @@
-const authority = "supplier";
+const authority = "enterprise";
 // enterprise 核心企业
 // supplier 上游供应商
 

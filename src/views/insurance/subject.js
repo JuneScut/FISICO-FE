@@ -13,54 +13,44 @@ const columns=[
         key: 'order',
     },
     {
+        title: '保险合同编号',
+        dataIndex: 'insuranceId',
+        key: 'insuranceId',
+    },
+    {
         title: '合同编号',
         dataIndex: 'id',
         key: 'id',
     },
     {
-        title: '货物保险合同编号',
-        dataIndex: 'insuranceId',
-        key: 'insuranceId',
+        title: '保险类型',
+        dataIndex: 'type',
+        key: 'type',
     },
     {
-        title: '物流公司',
-        dataIndex: 'wcompany',
-        key: 'wcompany',
+        title: '保险金额',
+        dataIndex: 'amount',
+        key: 'amount',
     },
     {
-        title: '发起时间',
-        dataIndex: 'beginTime',
-        key: 'beginTime',
+        title: '货物消息',
+        dataIndex: 'cargoInfo',
+        key: 'cargoInfo',
     },
     {
-        title: '签署时间',
-        dataIndex: 'signTime',
-        key: 'signTime',
+        title: '签署人',
+        dataIndex: 'signtory',
+        key: 'signtory',
     },
     {
-        title: '货物名称',
-        dataIndex: 'goodsName',
-        key: 'goodsName',
+        title: '物流状态',
+        dataIndex: 'Distributionstatus',
+        key: 'Distributionstatus',
     },
     {
-        title: '货物数量（件）',
-        dataIndex: 'goodsNum',
-        key: 'goodsNum',
-    },
-    {
-        title: '保险费用（元）',
-        dataIndex: 'InsuranceCost',
-        key: 'InsuranceCost',
-    },
-    {
-        title: '保险合同状态',
+        title: '保险状态',
         dataIndex: 'Insurancestatus',
         key: 'Insurancestatus',
-    },
-    {
-        title: '操作',
-        dataIndex: 'operate',
-        key: 'operate',
     },
 ];
 
@@ -122,18 +112,13 @@ class InsuranceContract extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout} labelAlign={"left"}>
+                    <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="保险合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -146,13 +131,8 @@ class InsuranceContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -165,13 +145,8 @@ class InsuranceContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -180,17 +155,15 @@ class InsuranceContract extends React.Component{
                                 </Row>
                             </div>
                         </Form.Item>
-                        <Form.Item label="合约签署方">
+                        <Form.Item label="保险类型">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">货物保险</Option>
+                                            <Option value="test2">运输保险</Option>
+                                        </Select>
                                     </Col>
                                 </Row>
                             </div>
