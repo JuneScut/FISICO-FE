@@ -18,9 +18,9 @@ class CreateContract extends React.Component{
                     key: 'order',
                 },
                 {
-                    title: '发起企业',
-                    dataIndex: 'creator',
-                    key: 'creator',
+                    title: '保险合同编号',
+                    dataIndex: 'insuranceId',
+                    key: 'insuranceId',
                 },
                 {
                     title: '合同编号',
@@ -33,14 +33,9 @@ class CreateContract extends React.Component{
                     key: 'beginTime',
                 },
                 {
-                    title: '供货量(件)',
-                    dataIndex: 'supply',
-                    key: 'supply',
-                },
-                {
-                    title: '货物金额（元）',
-                    dataIndex: 'amount',
-                    key: 'amount',
+                    title: '物流费用（元）',
+                    dataIndex: 'cost',
+                    key: 'cost',
                 },
                 {
                     title: '签署人',
@@ -99,7 +94,7 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="合同编号">
+                        <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
@@ -115,7 +110,7 @@ class CreateContract extends React.Component{
                                 <Option value="test3">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="合约发起企业">
+                        <Form.Item label="合约签署方">
                             <Select>
                             <Option value="test1">不限</Option>
                             <Option value="test1">测试1</Option>

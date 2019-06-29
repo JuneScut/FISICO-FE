@@ -99,7 +99,7 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="合约编号">
+                        <Form.Item label="合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>

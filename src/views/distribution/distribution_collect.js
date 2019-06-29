@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
+const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
+
+function onChange (date,dateString) {
+    console.log(date,dateString)
+}
 
 class CreateContract extends React.Component{
     constructor(props){
@@ -18,9 +23,9 @@ class CreateContract extends React.Component{
                     key: 'order',
                 },
                 {
-                    title: '发起企业',
-                    dataIndex: 'creator',
-                    key: 'creator',
+                    title: '物流合同编号',
+                    dataIndex: 'distributionId',
+                    key: 'distributionId',
                 },
                 {
                     title: '合同编号',
@@ -28,35 +33,40 @@ class CreateContract extends React.Component{
                     key: 'id',
                 },
                 {
-                    title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    title: '物流费用（元）',
+                    dataIndex: 'cost',
+                    key: 'cost',
                 },
                 {
-                    title: '供货量(件)',
-                    dataIndex: 'supply',
-                    key: 'supply',
+                    title: '货物名称',
+                    dataIndex: 'name',
+                    key: 'name',
                 },
                 {
-                    title: '货物金额（元）',
-                    dataIndex: 'amount',
-                    key: 'amount',
+                    title: '货物数量（件）',
+                    dataIndex: 'number',
+                    key: 'number',
                 },
                 {
                     title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
+                    dataIndex: 'signatory',
+                    key: 'signatory',
                 },
                 {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
+                    title: '是否购买物流保险',
+                    dataIndex: 'ifInsurance',
+                    key: 'ifInsurance',
                 },
                 {
-                    title: '合同状态',
-                    dataIndex: 'status',
-                    key: 'status',
+                    title: '物流状态',
+                    dataIndex: 'distributionStatus',
+                    key: 'distributionStatus',
                 },
+                {
+                    title: '物流状态变更时间',
+                    dataIndex: 'changeTime',
+                    key: 'rchangeTime',
+                }
             ]
         }
     }
@@ -99,7 +109,7 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="合同编号">
+                        <Form.Item label="物流合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
@@ -107,7 +117,7 @@ class CreateContract extends React.Component{
                                 <Option value="test3">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="链上签署时间">
+                        <Form.Item label="合约签署方">
                             <Select>
                                 <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
@@ -115,13 +125,14 @@ class CreateContract extends React.Component{
                                 <Option value="test3">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="合约发起企业">
+                        <Form.Item label="物流状态">
                             <Select>
-                            <Option value="test1">不限</Option>
-                            <Option value="test1">测试1</Option>
-                            <Option value="test2">测试2</Option>
-                            <Option value="test3">测试3</Option>
-                        </Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test1">待发货</Option>
+                                <Option value="test2">等待揽收</Option>
+                                <Option value="test2">运输中</Option>
+                                <Option value="test3">已送达</Option>
+                            </Select>
                         </Form.Item>
                     </Form>
                 </header>

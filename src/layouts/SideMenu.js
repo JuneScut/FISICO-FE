@@ -19,13 +19,13 @@ const menuData = [
         path: '/home',
         title: '首页',
         icon: 'iconhome',
-        authority: ['supplier', 'enterprise', 'bank'],
+        authority: ['supplier', 'enterprise', 'bank','insuranceCompany', 'transportation'],
         component: 'home/home'
     },{
         path: '/contract',
         title: '合同管理',
         icon: 'iconorder',
-        authority: ['supplier', 'enterprise'],
+        authority: ['supplier', 'enterprise','insuranceCompany', 'transportation'],
         children: [
             {
                 path: '/contract/contract_supplier',
@@ -50,6 +50,30 @@ const menuData = [
                 title: '接收合同',
                 authority: ['enterprise'],
                 component: 'contracts/receive'
+            },
+            {
+                path: '/contract/contract_insurance',
+                title: '合同管理',
+                authority: ['insuranceCompany'],
+                component: 'contracts/contract_insurance'
+            },
+            {
+                path: '/contract/create_insurance',
+                title: '发起合同',
+                authority: ['insuranceCompany'],
+                component: 'contracts/create_insurance'
+            },
+            {
+                path: '/contract/contract_distribution',
+                title: '合同管理',
+                authority: ['transportation'],
+                component: 'contracts/contract_distribution'
+            },
+            {
+                path: '/contract/creat_distribution',
+                title: '发起合同',
+                authority: ['transportation'],
+                component: 'contracts/create_distribution'
             }
         ]
     },{
@@ -87,7 +111,7 @@ const menuData = [
         path: '/distribution',
         title: '物流管理',
         icon: 'iconcar',
-        authority: ['supplier', 'enterprise'],
+        authority: ['supplier', 'enterprise','transportation'],
         children: [
             {
                 path: '/distribution/distribution_supplier',
@@ -106,6 +130,18 @@ const menuData = [
                 title: '物流管理',
                 authority: ['enterprise'],
                 component: 'distribution/distribution_enterprise'
+            },
+            {
+                path: '/distribution/distribution_transporation',
+                title: '物流管理',
+                authority: ['transportation'],
+                component: 'distribution/distribution_transporation'
+            },
+            {
+                path: '/distribution/distribution_transporation',
+                title: '揽收货物',
+                authority: ['transportation'],
+                component: 'distribution/distribution_transporation'
             }
         ]
     },{
@@ -129,10 +165,24 @@ const menuData = [
         ]
     },
     {
+        path: '/insurance',
+        title: '保险标管理',
+        icon: 'iconcheck',  //要改图标
+        authority: ['insuranceCompany'],
+        children: [
+            {
+                path: '/insurance/subject',
+                title: '保险标管理',
+                authority: ['insuranceCompany'],
+                component: 'insurance/subject'
+            },
+        ]
+    },
+    {
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['supplier','enterprise', 'bank'],
+        authority: ['supplier','enterprise', 'bank','insuranceCompany', 'transportation'],
         children: [
             {
                 path: '/token/token_supplier',
@@ -141,9 +191,15 @@ const menuData = [
                 component: 'token/token_supplier'
             },
             {
+                path: '/token/token_insurance',
+                title: 'token管理',
+                authority: ['insuranceCompany'],
+                component: 'token/token_insurance'
+            },
+            {
                 path: '/token/exchange',
                 title: 'token兑换',
-                authority: ['supplier'],
+                authority: ['supplier','insuranceCompany', 'transportation'],
                 component: 'token/exchange'
             },
             {
@@ -163,7 +219,8 @@ const menuData = [
                 title: '管理页',
                 authority: ['bank'],
                 component: 'token/log'
-            }
+            },
+
         ]
     },
     {

@@ -16,31 +16,31 @@ class CreateContract extends React.Component{
                     title: '序号',
                     dataIndex: 'order',
                     key: 'order',
-                },
+                  },
                 {
-                    title: '发起企业',
-                    dataIndex: 'creator',
-                    key: 'creator',
+                    title: '保险合同编号',
+                    dataIndex: 'insuranceId',
+                    key: 'insuranceId',
                 },
-                {
+                  {
                     title: '合同编号',
                     dataIndex: 'id',
                     key: 'id',
-                },
-                {
+                  },
+                  {
                     title: '发起时间',
                     dataIndex: 'beginTime',
                     key: 'beginTime',
+                  },
+                {
+                    title: '保险类型',
+                    dataIndex: 'type',
+                    key: 'type',
                 },
                 {
-                    title: '供货量(件)',
-                    dataIndex: 'supply',
-                    key: 'supply',
-                },
-                {
-                    title: '货物金额（元）',
-                    dataIndex: 'amount',
-                    key: 'amount',
+                    title: '保险金额（元）',
+                    dataIndex: 'insuranceAmount',
+                    key: 'insuranceAmount',
                 },
                 {
                     title: '签署人',
@@ -75,18 +75,21 @@ class CreateContract extends React.Component{
         }));
         console.log(this.state.list)
     }
+    handleCreate(){
+        console.log('create')
+    }
     componentWillMount(){
         this.loadList();
     }
     render(){
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 2},
+              xs: { span: 24 },
+              sm: { span: 2},
             },
             wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 6 },
+              xs: { span: 24 },
+              sm: { span: 6 },
             }
         };
         const buttonItemLayout = {
@@ -99,29 +102,43 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
+                        <Form.Item label="文本合同" >
+                                <Select>
+                                    <Option value="test1">测试1</Option>
+                                    <Option value="test2">测试2</Option>
+                                    <Option value="test3">测试3</Option>
+                                </Select>
+                        </Form.Item>
+                        <Form.Item label="合约签署方">
+                            <Select>
+                                <Option value="test1">测试1</Option>
+                                <Option value="test2">测试2</Option>
+                                <Option value="test3">测试3</Option>
+                            </Select>
+                        </Form.Item>
                         <Form.Item label="合同编号">
                             <Select>
-                                <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
                                 <Option value="test2">测试2</Option>
                                 <Option value="test3">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="链上签署时间">
+                        <Form.Item label="保险类型">
                             <Select>
-                                <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
                                 <Option value="test2">测试2</Option>
                                 <Option value="test3">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="合约发起企业">
+                        <Form.Item label="保险金额">
                             <Select>
-                            <Option value="test1">不限</Option>
-                            <Option value="test1">测试1</Option>
-                            <Option value="test2">测试2</Option>
-                            <Option value="test3">测试3</Option>
-                        </Select>
+                                <Option value="test1">测试1</Option>
+                                <Option value="test2">测试2</Option>
+                                <Option value="test3">测试3</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item {...buttonItemLayout}>
+                            <Button type="primary" onClick={this.handleCreate}>发起合同</Button>
                         </Form.Item>
                     </Form>
                 </header>

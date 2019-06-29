@@ -18,45 +18,35 @@ class CreateContract extends React.Component{
                     key: 'order',
                 },
                 {
-                    title: '发起企业',
-                    dataIndex: 'creator',
-                    key: 'creator',
+                    title: '保险合同编号',
+                    dataIndex: 'insuranceId',
+                    key: 'insuranceId',
                 },
                 {
-                    title: '合同编号',
-                    dataIndex: 'id',
-                    key: 'id',
+                    title: '交易类型',
+                    dataIndex: 'type',
+                    key: 'type',
                 },
                 {
-                    title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    title: '公司名称',
+                    dataIndex: 'company',
+                    key: 'company',
                 },
                 {
-                    title: '供货量(件)',
-                    dataIndex: 'supply',
-                    key: 'supply',
+                    title: '支出/收入',
+                    dataIndex: 'flow',
+                    key: 'flow',
                 },
                 {
-                    title: '货物金额（元）',
+                    title: '交易金额(Token)',
                     dataIndex: 'amount',
                     key: 'amount',
                 },
                 {
-                    title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
-                },
-                {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                },
-                {
-                    title: '合同状态',
-                    dataIndex: 'status',
-                    key: 'status',
-                },
+                    title: '交易时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                }
             ]
         }
     }
@@ -99,31 +89,26 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="合同编号">
+                        <Form.Item label="交易类型">
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test1">物流保险</Option>
+                                <Option value="test3">货物保险</Option>
+                                <Option value="test3">银行兑付</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
                                 <Option value="test1">测试1</Option>
                                 <Option value="test2">测试2</Option>
                                 <Option value="test3">测试3</Option>
                             </Select>
-                        </Form.Item>
-                        <Form.Item label="链上签署时间">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="合约发起企业">
-                            <Select>
-                            <Option value="test1">不限</Option>
-                            <Option value="test1">测试1</Option>
-                            <Option value="test2">测试2</Option>
-                            <Option value="test3">测试3</Option>
-                        </Select>
                         </Form.Item>
                     </Form>
+                    <div className="header3" >
+                        <p>公司Token余额：</p>
+                    </div>
                 </header>
 
                 <main>
