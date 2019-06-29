@@ -1,6 +1,7 @@
-const authority = "supplier";
+const authority = "bank";
 // enterprise 核心企业
 // supplier 上游供应商
+// bank 银行
 
 const roles = [
     { value: 'enterprise', title: '核心企业'},

@@ -19,7 +19,7 @@ const menuData = [
         path: '/home',
         title: '首页',
         icon: 'iconhome',
-        authority: ['supplier', 'enterprise'],
+        authority: ['supplier', 'enterprise', 'bank'],
         component: 'home/home'
     },{
         path: '/contract',
@@ -90,7 +90,7 @@ const menuData = [
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['supplier','enterprise'],
+        authority: ['supplier','enterprise', 'bank'],
         children: [
             {
                 path: '/token/exchange',
@@ -103,8 +103,21 @@ const menuData = [
                 title: 'token赎回',
                 authority: ['enterprise'],
                 component: 'token/redeem'
+            },
+            {
+                path: '/token/index',
+                title: '管理页',
+                authority: ['bank'],
+                component: 'token/log'
             }
         ]
+    },
+    {
+        path: '/credit',
+        title: '授信管理',
+        icon: 'icontoken',
+        authority: ['bank'],
+        component: 'credit/extension'
     }
 ]
 const renderRoutesMap = (routes) => {
