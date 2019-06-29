@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs'
 
-axios.defaults.baseURL = '/api/v1';
+axios.defaults.baseURL = '';
 
 let http = {
     post: "",
