@@ -52,29 +52,23 @@ const menuData = [
                 component: 'contracts/receive'
             },
             {
-                path: '/contract/insurance/create',
-                title: '发起合同',
+                path: '/contract/contract_insurance',
+                title: '合同管理',
                 authority: ['insuranceCompany'],
-                component: 'insurance/contract'
-            },
-            // {
-            //     path: '/contract/contract_insurance',
-            //     title: '合同管理',
-            //     authority: ['insuranceCompany'],
-            //     component: 'contracts/contract_insurance'
-            // },
+                component: 'contracts/contract_insurance'
+             },
             {
                 path: '/contract/create_insurance',
                 title: '发起合同',
                 authority: ['insuranceCompany'],
                 component: 'contracts/create_insurance'
             },
-            // {
-            //     path: '/contract/contract_distribution',
-            //     title: '合同管理',
-            //     authority: ['transportation'],
-            //     component: 'contracts/contract_distribution'
-            // },
+            {
+               path: '/contract/contract_distribution',
+               title: '合同管理',
+                authority: ['transportation'],
+                component: 'contracts/contract_distribution'
+             },
             {
                 path: '/contract/creat_distribution',
                 title: '发起合同',
@@ -137,12 +131,12 @@ const menuData = [
                 authority: ['enterprise'],
                 component: 'distribution/distribution_enterprise'
             },
-            // {
-            //     path: '/distribution/distribution_transporation',
-            //     title: '物流管理',
-            //     authority: ['transportation'],
-            //     component: 'distribution/distribution_transporation'
-            // },
+            {
+                 path: '/distribution/distribution_transporation',
+                 title: '物流管理',
+                 authority: ['transportation'],
+                 component: 'distribution/distribution_transporation'
+             },
             {
                 path: '/distribution/distribution_collect',
                 title: '揽收货物',
@@ -183,18 +177,11 @@ const menuData = [
         ]
     },
     {
-        path: '/insurance',
+        path: '/insuranceMrk',
         title: '保险标管理',
-        icon: 'iconcheck',  //要改图标
+        icon: 'icontoken',
         authority: ['insuranceCompany'],
-        children: [
-            {
-                path: '/insurance/subject',
-                title: '保险标管理',
-                authority: ['insuranceCompany'],
-                component: 'insurance/subject'
-            },
-        ]
+        component: 'insurance/subject'
     },
     {
         path: '/token',
@@ -253,13 +240,6 @@ const menuData = [
         authority: ['bank'],
         component: 'credit/extension'
     },
-    {
-        path: '/insuranceMrk',
-        title: '保险标管理',
-        icon: 'icontoken',
-        authority: ['insuranceCompany'],
-        component: 'insurance/subject'
-    }
 ]
 const renderRoutesMap = (routes) => {
     let list = [];

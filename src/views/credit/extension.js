@@ -6,50 +6,41 @@ import $enterprise from '../../console/enterprise';
 import $supply from '../../console/supply';
 const { Option } = Select;
 
-const columns=[
-    {
-        title: '序号',
-        dataIndex: 'order',
-        key: 'order',
-    },
-    {
-        title: '公司名称',
-        dataIndex: 'company',
-        key: 'company',
-    },
-    {
-        title: '授信额度',
-        dataIndex: 'quota',
-        key: 'quota',
-    },
-    {
-        title: '修改时间',
-        dataIndex: 'changeTime',
-        key: 'changeTime',
-    },
-    {
-        title: '修改历史',
-        dataIndex: 'changeLog',
-        key: 'changeLog',
+
+class Exensions extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            list: [],
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                },
+                {
+                    title: '公司名称',
+                    dataIndex: 'company',
+                    key: 'company',
+                },
+                {
+                    title: '授信额度',
+                    dataIndex: 'quota',
+                    key: 'quota',
+                },
+                {
+                    title: '修改时间',
+                    dataIndex: 'changeTime',
+                    key: 'changeTime',
+                },
+                {
+                    title: '修改历史',
+                    dataIndex: 'changeLog',
+                    key: 'changeLog',
+                }
+            ]
+        }
     }
-];
-
-const data = [
-    {
-        key: '1',
-        order: '1',
-    },
-    {
-        key: '1',
-        order: '2',
-    },
-    {
-        key: '1',
-        order: '3',
-    },
-];
-
-class DistributionContract extends React.Component{
     async getData() {
         const res = await $enterprise.getData();
         // console.log(res);
@@ -94,37 +85,24 @@ class DistributionContract extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="公司名称">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                          <Select>
+                              <Option value="test1">不限</Option>
+                              <Option value="test2">1</Option>
+                              <Option value="test3">2</Option>
+                              <Option value="test4">3</Option>
+                          </Select>
                         </Form.Item>
                     </Form>
                 </header>
 
 
-                <Table
-                    /* rowSelection={rowSelection}*/
-                    columns={columns}
-                    dataSource={data}
-                    onRow={(record) => ({
-                        onClick: () => {
-                            this.selectRow(record);
-                        },
-                    })}
-                />
+                <main>
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                </main>
 
             </Card>
         )
     }
 }
 
-export default DistributionContract;
+export default Exensions;

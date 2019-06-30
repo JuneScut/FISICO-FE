@@ -3,7 +3,7 @@ import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
-import $contract from '../../console/contract';
+import $contract from '../../console/supply';
 const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
 
@@ -11,7 +11,7 @@ function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
-class CreateContract extends React.Component{
+class InsTransContract extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -149,4 +149,4 @@ class CreateContract extends React.Component{
     }
 }
 
-export default CreateContract;
+export default InsTransContract;

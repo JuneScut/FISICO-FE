@@ -1,4 +1,4 @@
-const authority = "supplier";
+const authority = "transportation";
 // enterprise 核心企业
 // supplier 上游供应商
 // bank 银行
@@ -11,7 +11,6 @@ const roles = [
     { value: 'bank', title:'银行'},
     { value: 'insuranceCompany', title: '保险公司'},
     { value: 'transportation', title:'运输企业'},
-    { value: 'bank', title:'银行'}
 ]
 function enums(list, value){
     let item = list.find(item => item.value===value);

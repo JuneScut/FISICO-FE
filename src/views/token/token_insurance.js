@@ -6,7 +6,7 @@ import $enterprise from '../../console/enterprise';
 import $supply from '../../console/supply';
 const { Option } = Select;
 
-class CreateContract extends React.Component{
+class TokenIns extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -119,4 +119,4 @@ class CreateContract extends React.Component{
     }
 }
 
-export default CreateContract;
+export default TokenIns;

@@ -11,7 +11,7 @@ function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
-class CreateContract extends React.Component{
+class DisSupplier extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -176,4 +176,4 @@ class CreateContract extends React.Component{
     }
 }
 
-export default CreateContract;
+export default DisSupplier;

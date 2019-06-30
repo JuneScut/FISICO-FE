@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col} from 'antd';
+import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col,DatePicker} from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $supply from '../../console/supply';
 const { Option } = Select;
 
+function onChange (date,dateString) {
+    console.log(date,dateString)
+}
 
-
-class DistributionContract extends React.Component{
+class DisContract extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -72,28 +74,29 @@ class DistributionContract extends React.Component{
             ]
         }
     }
-
-    async getData() {
-        const res = await $enterprise.getData();
-        // console.log(res);
-    }
     async loadList() {
-        const res = await $supply.contractList();
-
+        let params = {
+            supplyId: 1
+        }
+        const res = await $supply.list(params);
+        let list = res.data.result;
+        list.forEach((item, idx) => {
+            item.order = idx+1;
+            item.key = item.id;
+        });
+        this.setState(() => ({
+            list: list
+        }));
+        console.log(this.state.list)
     }
     componentWillMount(){
-        // console.log($enterprise.getData())
-        this.getData();
         this.loadList();
     }
     render(){
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: {
-                    span: 2,
-                    offset: 1
-                },
+                sm: { span: 2},
             },
             wrapperCol: {
                 xs: { span: 24 },
@@ -102,14 +105,8 @@ class DistributionContract extends React.Component{
         };
         const buttonItemLayout = {
             wrapperCol: {
-                xs: {
-                    span: 24,
-                    offset: 0
-                },
-                sm: {
-                    span: 6,
-                    offset: 1
-                }
+                xs: {span: 24},
+                sm: {span: 6}
             }
         };
         return(
@@ -117,58 +114,38 @@ class DistributionContract extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流合同编号">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
+                            </Select>
                         </Form.Item>
                         <Form.Item label="物流公司">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
+                            </Select>
                         </Form.Item>
                         <Form.Item label="合同编号">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
+                            </Select>
                         </Form.Item>
                     </Form>
                 </header>
 
-
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
-
             </Card>
         )
     }
 }
 
-export default DistributionContract;
+export default DisContract;

@@ -11,60 +11,51 @@ function onChange(date,dateString){
     console.log(date,dateString)
 }
 
-const columns=[
-    {
-        title: '序号',
-        dataIndex: 'order',
-        key: 'order',
-    },
-    {
-        title: '交易类型',
-        dataIndex: 'type',
-        key: 'type',
-    },
-    {
-        title: '公司名称',
-        dataIndex: 'company',
-        key: 'company',
-    },
-    {
-        title: '交易金额',
-        dataIndex: 'amount',
-        key: 'amount',
-    },
-    {
-        title: '提交时间',
-        dataIndex: 'submitTime',
-        key: 'submitTime',
-    },
-    {
-        title: '审核结果',
-        dataIndex: 'result',
-        key: 'result',
-    },
-    {
-        title: '审核时间',
-        dataIndex: 'checkTime',
-        key: 'checkTime',
-    },
-];
 
-const data = [
-    {
-        key: '1',
-        order: '1',
-    },
-    {
-        key: '1',
-        order: '2',
-    },
-    {
-        key: '1',
-        order: '3',
-    },
-];
-
-class DistributionContract extends React.Component{
+class TokenLog extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            list: [],
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                },
+                {
+                    title: '交易类型',
+                    dataIndex: 'type',
+                    key: 'type',
+                },
+                {
+                    title: '公司名称',
+                    dataIndex: 'company',
+                    key: 'company',
+                },
+                {
+                    title: '交易金额',
+                    dataIndex: 'amount',
+                    key: 'amount',
+                },
+                {
+                    title: '提交时间',
+                    dataIndex: 'submitTime',
+                    key: 'submitTime',
+                },
+                {
+                    title: '审核结果',
+                    dataIndex: 'result',
+                    key: 'result',
+                },
+                {
+                    title: '审核时间',
+                    dataIndex: 'checkTime',
+                    key: 'checkTime',
+                },
+            ]
+        }
+    }
     async getData() {
         const res = await $enterprise.getData();
         // console.log(res);
@@ -78,8 +69,6 @@ class DistributionContract extends React.Component{
         this.getData();
         this.loadList();
     }
-
-
 
     render(){
         const formItemLayout = {
@@ -112,61 +101,35 @@ class DistributionContract extends React.Component{
                 <header className="header2">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="公司名称">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">1</Option>
+                                <Option value="test3">2</Option>
+                                <Option value="test4">3</Option>
+                            </Select>
                         </Form.Item>
                         <Form.Item label="交易类型">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">兑付</Option>
-                                            <Option value="test2">赎回</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">兑付</Option>
+                                <Option value="test3">赎回</Option>
+                            </Select>
                         </Form.Item>
                         <Form.Item label="审核日期">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <br />
-                                        <RangePicker onChange={onChange} />
-                                        <br />
-                                    </Col>
-                                </Row>
-                            </div>
+                            <RangePicker onChange={onChange} />
+                            <br />
                         </Form.Item>
                     </Form>
                 </header>
 
 
-                <Table
-                    /* rowSelection={rowSelection}*/
-                    columns={columns}
-                    dataSource={data}
-                    onRow={(record) => ({
-                        onClick: () => {
-                            this.selectRow(record);
-                        },
-                    })}
-                />
+                <main>
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                </main>
 
             </Card>
         )
     }
 }
 
-export default DistributionContract;
+export default TokenLog;
