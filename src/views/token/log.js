@@ -115,13 +115,8 @@ class DistributionContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -134,13 +129,11 @@ class DistributionContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>兑付</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>赎回</Button>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">兑付</Option>
+                                            <Option value="test2">赎回</Option>
+                                        </Select>
                                     </Col>
                                 </Row>
                             </div>
@@ -148,12 +141,6 @@ class DistributionContract extends React.Component{
                         <Form.Item label="审核日期">
                             <div className="gutter-example">
                                 <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
                                     <Col className="gutter-row" span={6}>
                                         <br />
                                         <RangePicker onChange={onChange} />

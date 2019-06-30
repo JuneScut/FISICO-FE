@@ -1,10 +1,16 @@
 import React from 'react'
-import { Card, Form, Select, Button, Table ,Row, Col} from 'antd';
+import { Card, Form, Select, Table ,Row, Col} from 'antd';
 import './style.scss';
 const { Option } = Select;
 
-const columns=[
-    {
+
+class OutWarehouse extends React.Component{
+    constructor(props){
+          super(props);
+          this.state = {
+              list: [],
+              columns: [
+                  {
         title: '序号',
         dataIndex: 'order',
         key: 'order',
@@ -74,106 +80,14 @@ const columns=[
         dataIndex: 'operate',
         key: 'operate',
     },
-];
-
-const data = [
-    {
-        key: '1',
-        order: '1',
-    },
-    {
-        key: '1',
-        order: '2',
-    },
-    {
-        key: '1',
-        order: '3',
-    },
-];
-class OutWarehouse extends React.Component{
-    /*  constructor(props){
-          super(props);
-          this.state = {
-              list: [],
-              columns: [
-                  {
-                      title: '序号',
-                      dataIndex: 'order',
-                      key: 'order',
-                  },
-                  {
-                      title: '合同编号',
-                      dataIndex: 'id',
-                      key: 'id',
-                  },
-                  {
-                      title: '发起时间',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '收货公司',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '签署时间',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '合同状态',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '货物名称',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '货物数量（件）',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '货物金额（元）',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '保险公司',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '出库状态',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '物流公司',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '出库时间',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-                  {
-                      title: '操作',
-                      dataIndex: 'beginTime',
-                      key: 'beginTime',
-                  },
-              ]
+    ]
           }
-      }*/
+      }
     render(){
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 3 },
+                sm: { span: 1 },
             },
             wrapperCol: {
                 xs: { span: 24 },
@@ -183,18 +97,16 @@ class OutWarehouse extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout}>
+                    <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="出库状态">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>未出库</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>已出库</Button>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">未出库</Option>
+                                            <Option value="test2">已出库</Option>
+                                        </Select>
                                     </Col>
                                 </Row>
                             </div>
@@ -203,13 +115,8 @@ class OutWarehouse extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -222,13 +129,8 @@ class OutWarehouse extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -240,16 +142,9 @@ class OutWarehouse extends React.Component{
                     </Form>
                 </header>
 
-                <Table
-                    /* rowSelection={rowSelection}*/
-                    columns={columns}
-                    dataSource={data}
-                    onRow={(record) => ({
-                        onClick: () => {
-                            this.selectRow(record);
-                        },
-                    })}
-                />
+                <main>
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                </main>
 
 
             </Card>

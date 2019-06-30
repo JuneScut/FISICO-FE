@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col} from 'antd';
+import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col,DatePicker} from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $supply from '../../console/supply';
 const { Option } = Select;
+
+function onChange (date,dateString) {
+    console.log(date,dateString)
+}
 
 const columns=[
     {
@@ -13,44 +17,54 @@ const columns=[
         key: 'order',
     },
     {
-        title: '保险合同编号',
-        dataIndex: 'insuranceId',
-        key: 'insuranceId',
-    },
-    {
         title: '合同编号',
         dataIndex: 'id',
         key: 'id',
     },
     {
-        title: '保险类型',
-        dataIndex: 'type',
-        key: 'type',
+        title: '货物保险合同编号',
+        dataIndex: 'insuranceId',
+        key: 'insuranceId',
     },
     {
-        title: '保险金额',
-        dataIndex: 'amount',
-        key: 'amount',
+        title: '物流公司',
+        dataIndex: 'wcompany',
+        key: 'wcompany',
     },
     {
-        title: '货物消息',
-        dataIndex: 'cargoInfo',
-        key: 'cargoInfo',
+        title: '发起时间',
+        dataIndex: 'beginTime',
+        key: 'beginTime',
     },
     {
-        title: '签署人',
-        dataIndex: 'signtory',
-        key: 'signtory',
+        title: '签署时间',
+        dataIndex: 'signTime',
+        key: 'signTime',
     },
     {
-        title: '物流状态',
-        dataIndex: 'Distributionstatus',
-        key: 'Distributionstatus',
+        title: '货物名称',
+        dataIndex: 'goodsName',
+        key: 'goodsName',
     },
     {
-        title: '保险状态',
+        title: '货物数量（件）',
+        dataIndex: 'goodsNum',
+        key: 'goodsNum',
+    },
+    {
+        title: '保险费用（元）',
+        dataIndex: 'InsuranceCost',
+        key: 'InsuranceCost',
+    },
+    {
+        title: '保险合同状态',
         dataIndex: 'Insurancestatus',
         key: 'Insurancestatus',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operate',
+        key: 'operate',
     },
 ];
 
@@ -75,7 +89,7 @@ class InsuranceContract extends React.Component{
         // console.log(res);
     }
     async loadList() {
-        const res = await $supply.contractList();
+        const res = await $supply.list();
 
     }
     componentWillMount(){
@@ -112,7 +126,34 @@ class InsuranceContract extends React.Component{
         return(
             <Card>
                 <header className="header">
-                    <Form {...formItemLayout} labelAlign="left">
+                    <Form {...formItemLayout}>
+                        <Form.Item label="是否购买货物保险">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">已购买</Option>
+                                            <Option value="test2">未购买</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
+                        <Form.Item label="保险情况">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">未生效</Option>
+                                            <Option value="test2">生效中</Option>
+                                            <Option value="test2">已过期</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
                         <Form.Item label="保险合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
@@ -127,7 +168,17 @@ class InsuranceContract extends React.Component{
                                 </Row>
                             </div>
                         </Form.Item>
-                        <Form.Item label="链上签署时间">
+                        <Form.Item label="保险合同签署时间">
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <DatePicker onChange={onChange} />
+                                        <br />
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Form.Item>
+                        <Form.Item label="合同编号">
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
@@ -136,33 +187,6 @@ class InsuranceContract extends React.Component{
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </Form.Item>
-                        <Form.Item label="合约签署方">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">1</Option>
-                                            <Option value="test2">2</Option>
-                                            <Option value="test3">3</Option>
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </Form.Item>
-                        <Form.Item label="保险类型">
-                            <div className="gutter-example">
-                                <Row gutter={16}>
-                                    <Col className="gutter-row" span={6}>
-                                        <Select>
-                                            <Option value="test1">不限</Option>
-                                            <Option value="test1">货物保险</Option>
-                                            <Option value="test2">运输保险</Option>
                                         </Select>
                                     </Col>
                                 </Row>

@@ -8,6 +8,7 @@ const authority = "supplier";
 const roles = [
     { value: 'enterprise', title: '核心企业'},
     { value: 'supplier', title:'上游供应商'},
+    { value: 'bank', title:'银行'},
     { value: 'insuranceCompany', title: '保险公司'},
     { value: 'transportation', title:'运输企业'},
     { value: 'bank', title:'银行'}

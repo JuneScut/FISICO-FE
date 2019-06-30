@@ -127,13 +127,8 @@ class InsuranceContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -146,13 +141,8 @@ class InsuranceContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>
@@ -165,13 +155,8 @@ class InsuranceContract extends React.Component{
                             <div className="gutter-example">
                                 <Row gutter={16}>
                                     <Col className="gutter-row" span={6}>
-                                        <Button type="primary">不限</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
-                                        <Button>选择+</Button>
-                                    </Col>
-                                    <Col className="gutter-row" span={6}>
                                         <Select>
+                                            <Option value="test1">不限</Option>
                                             <Option value="test1">1</Option>
                                             <Option value="test2">2</Option>
                                             <Option value="test3">3</Option>

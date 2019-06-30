@@ -25,13 +25,25 @@ const menuData = [
         path: '/contract',
         title: '合同管理',
         icon: 'iconorder',
-        authority: ['supplier', 'enterprise', 'insuranceCompany'],
+        authority: ['supplier', 'enterprise','insuranceCompany', 'transportation'],
         children: [
+            {
+                path: '/contract/contract_supplier',
+                title: '合同管理',
+                authority: ['supplier'],
+                component: 'contracts/contract_supplier'
+            },
             {
                 path: '/contract/create',
                 title: '发起合同',
                 authority: ['supplier'],
                 component: 'contracts/create'
+            },
+            {
+                path: '/contract/contract_enterprise',
+                title: '合同管理',
+                authority: ['enterprise'],
+                component: 'contracts/contract_enterprise'
             },
             {
                 path: '/contract/receive',
@@ -44,6 +56,30 @@ const menuData = [
                 title: '发起合同',
                 authority: ['insuranceCompany'],
                 component: 'insurance/contract'
+            },
+            {
+                path: '/contract/contract_insurance',
+                title: '合同管理',
+                authority: ['insuranceCompany'],
+                component: 'contracts/contract_insurance'
+            },
+            {
+                path: '/contract/create_insurance',
+                title: '发起合同',
+                authority: ['insuranceCompany'],
+                component: 'contracts/create_insurance'
+            },
+            {
+                path: '/contract/contract_distribution',
+                title: '合同管理',
+                authority: ['transportation'],
+                component: 'contracts/contract_distribution'
+            },
+            {
+                path: '/contract/creat_distribution',
+                title: '发起合同',
+                authority: ['transportation'],
+                component: 'contracts/create_distribution'
             }
         ]
     },{
@@ -53,10 +89,22 @@ const menuData = [
         authority: ['supplier', 'enterprise'],
         children: [
             {
+                path: '/inventory/warehouse_supplier',
+                title: '库存管理',
+                authority: ['supplier'],
+                component: 'warehouse/warehouse_supplier'
+            },
+            {
                 path: '/inventory/out',
                 title: '出库管理',
                 authority: ['supplier'],
                 component: 'warehouse/out'
+            },
+            {
+                path: '/inventory/warehouse_enterprise',
+                title: '库存管理',
+                authority: ['enterprise'],
+                component: 'warehouse/warehouse_enterprise'
             },
             {
                 path: '/inventory/in',
@@ -69,13 +117,37 @@ const menuData = [
         path: '/distribution',
         title: '物流管理',
         icon: 'iconcar',
-        authority: ['supplier', 'enterprise'],
+        authority: ['supplier', 'enterprise','transportation'],
         children: [
+            {
+                path: '/distribution/distribution_supplier',
+                title: '物流管理',
+                authority: ['supplier'],
+                component: 'distribution/distribution_supplier'
+            },
             {
                 path: '/distribution/contract',
                 title: '签署物流合同',
-                authority: ['supplier', 'enterprise'],
+                authority: ['supplier'],
                 component: 'distribution/contract'
+            },
+            {
+                path: '/distribution/distribution_enterprise',
+                title: '物流管理',
+                authority: ['enterprise'],
+                component: 'distribution/distribution_enterprise'
+            },
+            {
+                path: '/distribution/distribution_transporation',
+                title: '物流管理',
+                authority: ['transportation'],
+                component: 'distribution/distribution_transporation'
+            },
+            {
+                path: '/distribution/distribution_transporation',
+                title: '揽收货物',
+                authority: ['transportation'],
+                component: 'distribution/distribution_transporation'
             }
         ]
     },{
@@ -85,6 +157,12 @@ const menuData = [
         authority: ['supplier'],
         children: [
             {
+                path: '/insurance/insurance_supplier',
+                title: '保单管理',
+                authority: ['supplier'],
+                component: 'insurance/insurance_supplier'
+            },
+            {
                 path: '/insurance/contract',
                 title: '签署货物保险',
                 authority: ['supplier'],
@@ -93,16 +171,48 @@ const menuData = [
         ]
     },
     {
+        path: '/insurance',
+        title: '保险标管理',
+        icon: 'iconcheck',  //要改图标
+        authority: ['insuranceCompany'],
+        children: [
+            {
+                path: '/insurance/subject',
+                title: '保险标管理',
+                authority: ['insuranceCompany'],
+                component: 'insurance/subject'
+            },
+        ]
+    },
+    {
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['supplier','enterprise', 'bank', 'insuranceCompany'],
+        authority: ['supplier','enterprise', 'bank','insuranceCompany', 'transportation'],
         children: [
+            {
+                path: '/token/token_supplier',
+                title: 'token管理',
+                authority: ['supplier'],
+                component: 'token/token_supplier'
+            },
+            {
+                path: '/token/token_insurance',
+                title: 'token管理',
+                authority: ['insuranceCompany'],
+                component: 'token/token_insurance'
+            },
             {
                 path: '/token/exchange',
                 title: 'token兑换',
-                authority: ['supplier', 'insuranceCompany'],
+                authority: ['supplier','insuranceCompany', 'transportation'],
                 component: 'token/exchange'
+            },
+            {
+                path: '/token/token_enterprise',
+                title: 'token管理',
+                authority: ['enterprise'],
+                component: 'token/token_enterprise'
             },
             {
                 path: '/token/redeem',
@@ -115,7 +225,8 @@ const menuData = [
                 title: '管理页',
                 authority: ['bank'],
                 component: 'token/log'
-            }
+            },
+
         ]
     },
     {
