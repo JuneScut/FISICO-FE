@@ -138,17 +138,17 @@ const menuData = [
                 component: 'distribution/distribution_transporation'
             },
             {
-                path: '/distribution/distribution_transporation',
+                path: '/distribution/distribution_collect',
                 title: '揽收货物',
                 authority: ['transportation'],
-                component: 'distribution/distribution_transporation'
+                component: 'distribution/distribution_collect'
             }
         ]
     },{
         path: '/insurance',
         title: '保单管理',
         icon: 'iconcheck',
-        authority: ['supplier'],
+        authority: ['supplier','transportation'],
         children: [
             {
                 path: '/insurance/insurance_supplier',
@@ -157,10 +157,22 @@ const menuData = [
                 component: 'insurance/insurance_supplier'
             },
             {
-                path: '/insurance/contract',
+                path: '/insurance/insurance_transporation',
+                title: '保单管理',
+                authority: ['transportation'],
+                component: 'insurance/insurance_transporation'
+            },
+            {
+                path: '/insurance/contract_transporation',
+                title: '签署物流保险',
+                authority: ['transportation'],
+                component: 'insurance/contract_transporation'
+            },
+            {
+                path: '/insurance/contract_supplier',
                 title: '签署货物保险',
                 authority: ['supplier'],
-                component: 'insurance/contract'
+                component: 'insurance/contract_supplier'
             }
         ]
     },
@@ -197,10 +209,10 @@ const menuData = [
                 component: 'token/token_insurance'
             },
             {
-                path: '/token/exchange',
-                title: 'token兑换',
-                authority: ['supplier','insuranceCompany', 'transportation'],
-                component: 'token/exchange'
+                path: '/token/token_transporation',
+                title: 'token管理',
+                authority: [ 'transportation'],
+                component: 'token/token_transporation'
             },
             {
                 path: '/token/token_enterprise',
@@ -209,18 +221,23 @@ const menuData = [
                 component: 'token/token_enterprise'
             },
             {
-                path: '/token/redeem',
-                title: 'token赎回',
-                authority: ['enterprise'],
-                component: 'token/redeem'
-            },
-            {
                 path: '/token/index',
                 title: '管理页',
                 authority: ['bank'],
                 component: 'token/log'
             },
-
+            {
+                path: '/token/exchange',
+                title: 'token兑换',
+                authority: ['supplier','insuranceCompany', 'transportation'],
+                component: 'token/exchange'
+            },
+            {
+                path: '/token/redeem',
+                title: 'token赎回',
+                authority: ['enterprise'],
+                component: 'token/redeem'
+            }
         ]
     },
     {

@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
+import {Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, DatePicker, Row, Col} from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
+const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
+
+function onChange (date,dateString) {
+    console.log(date,dateString)
+}
 
 class CreateContract extends React.Component{
     constructor(props){
@@ -23,30 +28,50 @@ class CreateContract extends React.Component{
                     key: 'id',
                 },
                 {
-                    title: '交易类型',
-                    dataIndex: 'type',
-                    key: 'type',
+                    title: '货物保险合同编号',
+                    dataIndex: 'insuranceId',
+                    key: 'insuranceId',
                 },
                 {
-                    title: '公司名称',
-                    dataIndex: 'company',
-                    key: 'company',
+                    title: '物流公司',
+                    dataIndex: 'wcompany',
+                    key: 'wcompany',
                 },
                 {
-                    title: '支出/收入',
-                    dataIndex: 'flow',
-                    key: 'flow',
+                    title: '发起时间',
+                    dataIndex: 'beginTime',
+                    key: 'beginTime',
                 },
                 {
-                    title: '交易金额(Token)',
-                    dataIndex: 'amount',
-                    key: 'amount',
+                    title: '签署时间',
+                    dataIndex: 'signTime',
+                    key: 'signTime',
                 },
                 {
-                    title: '交易时间',
-                    dataIndex: 'time',
-                    key: 'time',
-                }
+                    title: '货物名称',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
+                },
+                {
+                    title: '货物数量（件）',
+                    dataIndex: 'goodsNum',
+                    key: 'goodsNum',
+                },
+                {
+                    title: '保险费用（元）',
+                    dataIndex: 'InsuranceCost',
+                    key: 'InsuranceCost',
+                },
+                {
+                    title: '保险合同状态',
+                    dataIndex: 'Insurancestatus',
+                    key: 'Insurancestatus',
+                },
+                {
+                    title: '操作',
+                    dataIndex: 'operate',
+                    key: 'operate',
+                },
             ]
         }
     }
@@ -89,13 +114,20 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="交易类型">
+                        <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test2">订单</Option>
-                                <Option value="test3">物流</Option>
-                                <Option value="test4">保险</Option>
-                                <Option value="test5">银行兑付</Option>
+                                <Option value="test2">1</Option>
+                                <Option value="test3">2</Option>
+                                <Option value="test4">3</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="保险公司">
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="合同编号">
@@ -107,9 +139,6 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                     </Form>
-                    <div className="header3" >
-                        <p>公司Token余额：</p>
-                    </div>
                 </header>
 
                 <main>

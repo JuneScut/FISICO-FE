@@ -92,17 +92,17 @@ class CreateContract extends React.Component{
                         <Form.Item label="交易类型">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">物流保险</Option>
+                                <Option value="test2">物流保险</Option>
                                 <Option value="test3">货物保险</Option>
-                                <Option value="test3">银行兑付</Option>
+                                <Option value="test4">银行兑付</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                     </Form>

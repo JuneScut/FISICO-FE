@@ -4,6 +4,7 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,Dat
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
+const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
 
 function onChange (date,dateString) {
@@ -22,40 +23,65 @@ class CreateContract extends React.Component{
                     key: 'order',
                 },
                 {
-                    title: '保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
-                },
-                {
                     title: '合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
-                    title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    title: '保险合同编号',
+                    dataIndex: 'insuranceId',
+                    key: 'insuranceId',
                 },
                 {
-                    title: '物流费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    title: '保险公司',
+                    dataIndex: 'insuranceCompany',
+                    key: 'insuranceCompany',
                 },
                 {
-                    title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
+                    title: '保险合同签署时间',
+                    dataIndex: 'insuranceSTime',
+                    key: 'insuranceSTime',
                 },
                 {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
+                    title: '货物名称',
+                    dataIndex: 'name',
+                    key: 'name',
                 },
                 {
-                    title: '合同状态',
-                    dataIndex: 'status',
-                    key: 'status',
+                    title: '货物数量（件）',
+                    dataIndex: 'number',
+                    key: 'number',
                 },
+                {
+                    title: '保险金额（元）',
+                    dataIndex: 'insuranceCost',
+                    key: 'insuranceCost',
+                },
+                {
+                    title: '发货时间',
+                    dataIndex: 'transTime',
+                    key: 'transTime',
+                },
+                {
+                    title: '物流状态',
+                    dataIndex: 'distributionStatus',
+                    key: 'distributionStatus',
+                },
+                {
+                    title: '物流保险',
+                    dataIndex: 'ifInsurance',
+                    key: 'ifInsurance',
+                },
+                {
+                    title: '保险情况',
+                    dataIndex: 'InsuranceStatus',
+                    key: 'InsuranceStatus',
+                },
+                {
+                    title: '货物签收时间',
+                    dataIndex: 'receiveTime',
+                    key: 'receiveTime',
+                }
             ]
         }
     }
@@ -98,6 +124,21 @@ class CreateContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
+                        <Form.Item label="是否购买物流保险">
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">已购买</Option>
+                                <Option value="test3">未购买</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="保险情况">
+                            <Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">未生效</Option>
+                                <Option value="test3">生效中</Option>
+                                <Option value="test4">已过期</Option>
+                            </Select>
+                        </Form.Item>
                         <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
@@ -106,17 +147,17 @@ class CreateContract extends React.Component{
                                 <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="链上签署时间">
+                        <Form.Item label="保险合同签署时间">
                             <DatePicker onChange={onChange} />
                             <br />
                         </Form.Item>
-                        <Form.Item label="合约签署方">
+                        <Form.Item label="合同编号">
                             <Select>
-                            <Option value="test1">不限</Option>
-                            <Option value="test2">测试1</Option>
-                            <Option value="test3">测试2</Option>
-                            <Option value="test4">测试3</Option>
-                        </Select>
+                                <Option value="test1">不限</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
+                            </Select>
                         </Form.Item>
                     </Form>
                 </header>

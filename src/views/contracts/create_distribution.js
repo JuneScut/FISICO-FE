@@ -98,11 +98,11 @@ class CreateContract extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="文本合同" >
-                                <Select>
-                                    <Option value="test1">测试1</Option>
-                                    <Option value="test2">测试2</Option>
-                                    <Option value="test3">测试3</Option>
-                                </Select>
+                            <Upload>
+                                <Button>
+                                    <Icon type="upload" /> Upload
+                                </Button>
+                            </Upload>
                         </Form.Item>
                         <Form.Item label="合约签署方">
                             <Select>
@@ -119,11 +119,7 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="保险金额">
-                            <Select>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
-                            </Select>
+                            <InputNumber style={{'width': '230px'}}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
                             <Button type="primary" onClick={this.handleCreate}>发起合同</Button>

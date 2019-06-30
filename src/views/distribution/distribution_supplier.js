@@ -132,17 +132,17 @@ class CreateContract extends React.Component{
                         <Form.Item label="物流状态">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">已送达</Option>
-                                <Option value="test2">运输中</Option>
-                                <Option value="test3">未发货</Option>
+                                <Option value="test2">已送达</Option>
+                                <Option value="test3">运输中</Option>
+                                <Option value="test4">未发货</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="物流合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="链上签署时间">
@@ -152,17 +152,17 @@ class CreateContract extends React.Component{
                         <Form.Item label="货物名称">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                     </Form>

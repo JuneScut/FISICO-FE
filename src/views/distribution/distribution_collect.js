@@ -38,6 +38,16 @@ class CreateContract extends React.Component{
                     key: 'cost',
                 },
                 {
+                    title: '签署人',
+                    dataIndex: 'signatory',
+                    key: 'signatory',
+                },
+                {
+                    title: '签署时间',
+                    dataIndex: 'TranSTime',
+                    key: 'TranSTime',
+                },
+                {
                     title: '货物名称',
                     dataIndex: 'name',
                     key: 'name',
@@ -48,9 +58,9 @@ class CreateContract extends React.Component{
                     key: 'number',
                 },
                 {
-                    title: '签署人',
-                    dataIndex: 'signatory',
-                    key: 'signatory',
+                    title: '出库时间',
+                    dataIndex: 'sendTime',
+                    key: 'sendTime',
                 },
                 {
                     title: '是否购买物流保险',
@@ -58,15 +68,10 @@ class CreateContract extends React.Component{
                     key: 'ifInsurance',
                 },
                 {
-                    title: '物流状态',
-                    dataIndex: 'distributionStatus',
-                    key: 'distributionStatus',
+                    title:'操作',
+                    dataIndex:'operate',
+                    key: 'operate',
                 },
-                {
-                    title: '物流状态变更时间',
-                    dataIndex: 'changeTime',
-                    key: 'rchangeTime',
-                }
             ]
         }
     }
@@ -112,26 +117,21 @@ class CreateContract extends React.Component{
                         <Form.Item label="物流合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
+                        </Form.Item>
+                        <Form.Item label="链上签署时间">
+                            <DatePicker onChange={onChange} />
+                            <br />
                         </Form.Item>
                         <Form.Item label="合约签署方">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="物流状态">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test1">待发货</Option>
-                                <Option value="test2">等待揽收</Option>
-                                <Option value="test2">运输中</Option>
-                                <Option value="test3">已送达</Option>
+                                <Option value="test2">1</Option>
+                                <Option value="test3">2</Option>
+                                <Option value="test4">3</Option>
                             </Select>
                         </Form.Item>
                     </Form>

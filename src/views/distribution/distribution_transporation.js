@@ -112,26 +112,26 @@ class CreateContract extends React.Component{
                         <Form.Item label="物流合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="合约签署方">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="物流状态">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">待发货</Option>
-                                <Option value="test2">等待揽收</Option>
-                                <Option value="test2">运输中</Option>
-                                <Option value="test3">已送达</Option>
+                                <Option value="test2">待发货</Option>
+                                <Option value="test3">等待揽收</Option>
+                                <Option value="test4">运输中</Option>
+                                <Option value="test5">已送达</Option>
                             </Select>
                         </Form.Item>
                     </Form>

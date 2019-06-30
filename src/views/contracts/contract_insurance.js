@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
 import $contract from '../../console/contract';
 const { Option } = Select;
+
+function onChange (date,dateString) {
+    console.log(date,dateString)
+}
 
 class CreateContract extends React.Component{
     constructor(props){
@@ -102,32 +106,28 @@ class CreateContract extends React.Component{
                         <Form.Item label="保险合同编号">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                                <Option value="test2">测试1</Option>
+                                <Option value="test3">测试2</Option>
+                                <Option value="test4">测试3</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="链上签署时间">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
-                            </Select>
+                            <DatePicker onChange={onChange} />
+                            <br />
                         </Form.Item>
                         <Form.Item label="合约签署方">
                             <Select>
                             <Option value="test1">不限</Option>
-                            <Option value="test1">测试1</Option>
-                            <Option value="test2">测试2</Option>
-                            <Option value="test3">测试3</Option>
+                            <Option value="test2">测试1</Option>
+                            <Option value="test3">测试2</Option>
+                            <Option value="test4">测试3</Option>
                         </Select>
                         </Form.Item>
                         <Form.Item label="保险类型">
                             <Select>
                                 <Option value="test1">不限</Option>
-                                <Option value="test1">货物保险</Option>
-                                <Option value="test2">运输保险</Option>
+                                <Option value="test2">货物保险</Option>
+                                <Option value="test3">运输保险</Option>
                             </Select>
                         </Form.Item>
                     </Form>
