@@ -64,7 +64,7 @@ class CreateContract extends React.Component{
         let params = {
             supplyId: 1
         }
-        const res = await $supply.list(params);
+        const res = await $supply.contractList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;

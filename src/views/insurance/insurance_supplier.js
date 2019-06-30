@@ -89,7 +89,7 @@ class InsuranceContract extends React.Component{
         // console.log(res);
     }
     async loadList() {
-        const res = await $supply.list();
+        const res = await $supply.contractList();
 
     }
     componentWillMount(){

@@ -57,24 +57,24 @@ const menuData = [
                 authority: ['insuranceCompany'],
                 component: 'insurance/contract'
             },
-            {
-                path: '/contract/contract_insurance',
-                title: '合同管理',
-                authority: ['insuranceCompany'],
-                component: 'contracts/contract_insurance'
-            },
+            // {
+            //     path: '/contract/contract_insurance',
+            //     title: '合同管理',
+            //     authority: ['insuranceCompany'],
+            //     component: 'contracts/contract_insurance'
+            // },
             {
                 path: '/contract/create_insurance',
                 title: '发起合同',
                 authority: ['insuranceCompany'],
                 component: 'contracts/create_insurance'
             },
-            {
-                path: '/contract/contract_distribution',
-                title: '合同管理',
-                authority: ['transportation'],
-                component: 'contracts/contract_distribution'
-            },
+            // {
+            //     path: '/contract/contract_distribution',
+            //     title: '合同管理',
+            //     authority: ['transportation'],
+            //     component: 'contracts/contract_distribution'
+            // },
             {
                 path: '/contract/creat_distribution',
                 title: '发起合同',
@@ -137,12 +137,12 @@ const menuData = [
                 authority: ['enterprise'],
                 component: 'distribution/distribution_enterprise'
             },
-            {
-                path: '/distribution/distribution_transporation',
-                title: '物流管理',
-                authority: ['transportation'],
-                component: 'distribution/distribution_transporation'
-            },
+            // {
+            //     path: '/distribution/distribution_transporation',
+            //     title: '物流管理',
+            //     authority: ['transportation'],
+            //     component: 'distribution/distribution_transporation'
+            // },
             {
                 path: '/distribution/distribution_transporation',
                 title: '揽收货物',
