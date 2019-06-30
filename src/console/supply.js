@@ -1,8 +1,12 @@
 import http from './api';
 
-let contract = {};
+let supply = {};
 
-contract.list = function(params){
+supply.status = [
+    { key: 'CREATED', value:'已发起'}
+]
+
+supply.contractList = function(params){
     // let data = [
     //     {
     //         order: 123,
@@ -18,4 +22,13 @@ contract.list = function(params){
     return http.get('/contract/list', params);
 }
 
-export default contract;
+supply.enterpriseList = function(){
+    return http.get('/enterprise/list');
+}
+
+supply.goodsList = function(){
+    return http.get('/goods/list');
+}
+
+
+export default supply;

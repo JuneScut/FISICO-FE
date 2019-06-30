@@ -1,17 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
+import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col} from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
-import $contract from '../../console/contract';
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+import $supply from '../../console/supply';
 const { Option } = Select;
 
-function onChange (date,dateString) {
-    console.log(date,dateString)
-}
 
-class CreateContract extends React.Component{
+
+class DistributionContract extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -75,29 +72,28 @@ class CreateContract extends React.Component{
             ]
         }
     }
+
+    async getData() {
+        const res = await $enterprise.getData();
+        // console.log(res);
+    }
     async loadList() {
-        let params = {
-            supplyId: 1
-        }
-        const res = await $contract.list(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        console.log(this.state.list)
+        const res = await $supply.contractList();
+
     }
     componentWillMount(){
+        // console.log($enterprise.getData())
+        this.getData();
         this.loadList();
     }
     render(){
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 2},
+                sm: {
+                    span: 2,
+                    offset: 1
+                },
             },
             wrapperCol: {
                 xs: { span: 24 },
@@ -106,8 +102,14 @@ class CreateContract extends React.Component{
         };
         const buttonItemLayout = {
             wrapperCol: {
-                xs: {span: 24},
-                sm: {span: 6}
+                xs: {
+                    span: 24,
+                    offset: 0
+                },
+                sm: {
+                    span: 6,
+                    offset: 1
+                }
             }
         };
         return(
@@ -115,38 +117,58 @@ class CreateContract extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">1</Option>
+                                            <Option value="test2">2</Option>
+                                            <Option value="test3">3</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
                         </Form.Item>
                         <Form.Item label="物流公司">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">1</Option>
+                                            <Option value="test2">2</Option>
+                                            <Option value="test3">3</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
                         </Form.Item>
                         <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <div className="gutter-example">
+                                <Row gutter={16}>
+                                    <Col className="gutter-row" span={6}>
+                                        <Select>
+                                            <Option value="test1">不限</Option>
+                                            <Option value="test1">1</Option>
+                                            <Option value="test2">2</Option>
+                                            <Option value="test3">3</Option>
+                                        </Select>
+                                    </Col>
+                                </Row>
+                            </div>
                         </Form.Item>
                     </Form>
                 </header>
 
+
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
+
             </Card>
         )
     }
 }
 
-export default CreateContract;
+export default DistributionContract;

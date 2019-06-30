@@ -3,8 +3,7 @@ import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
-import $contract from '../../console/contract';
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+import $supply from '../../console/supply';
 const { Option } = Select;
 
 function onChange (date,dateString) {
@@ -86,19 +85,8 @@ class CreateContract extends React.Component{
         }
     }
     async loadList() {
-        let params = {
-            supplyId: 1
-        }
-        const res = await $contract.list(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        console.log(this.state.list)
+        const res = await $supply.contractList();
+
     }
     componentWillMount(){
         this.loadList();

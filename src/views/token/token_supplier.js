@@ -3,7 +3,7 @@ import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
-import $contract from '../../console/contract';
+import $supply from '../../console/supply';
 const { Option } = Select;
 
 class CreateContract extends React.Component{
@@ -54,7 +54,7 @@ class CreateContract extends React.Component{
         let params = {
             supplyId: 1
         }
-        const res = await $contract.list(params);
+        const res = await $supply.contractList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
