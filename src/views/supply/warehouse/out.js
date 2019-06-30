@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card, Form, Select, Table} from 'antd';
-import '../../common/style.scss';
-// import $enterprise from '../../console/enterprise';
-import $supply from '../../console/supply';
+import { Card, Form, Select, Table } from 'antd';
+import './style.scss';
+// import $enterprise from '../../../console/enterprise';
+import $supply from '../../../console/supply';
 const { Option } = Select;
 
 class OutWarehouse extends React.Component{
