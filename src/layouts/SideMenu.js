@@ -19,13 +19,13 @@ const menuData = [
         path: '/home',
         title: '首页',
         icon: 'iconhome',
-        authority: ['supplier', 'enterprise', 'bank'],
+        authority: ['supplier', 'enterprise', 'bank', 'insuranceCompany', 'transportation'],
         component: 'home/home'
     },{
         path: '/contract',
         title: '合同管理',
         icon: 'iconorder',
-        authority: ['supplier', 'enterprise'],
+        authority: ['supplier', 'enterprise', 'insuranceCompany'],
         children: [
             {
                 path: '/contract/create',
@@ -38,6 +38,12 @@ const menuData = [
                 title: '接收合同',
                 authority: ['enterprise'],
                 component: 'contracts/receive'
+            },
+            {
+                path: '/contract/insurance/create',
+                title: '发起合同',
+                authority: ['insuranceCompany'],
+                component: 'insurance/contract'
             }
         ]
     },{
@@ -90,12 +96,12 @@ const menuData = [
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['supplier','enterprise', 'bank'],
+        authority: ['supplier','enterprise', 'bank', 'insuranceCompany'],
         children: [
             {
                 path: '/token/exchange',
                 title: 'token兑换',
-                authority: ['supplier'],
+                authority: ['supplier', 'insuranceCompany'],
                 component: 'token/exchange'
             },
             {
@@ -118,6 +124,13 @@ const menuData = [
         icon: 'icontoken',
         authority: ['bank'],
         component: 'credit/extension'
+    },
+    {
+        path: '/insuranceMrk',
+        title: '保险标管理',
+        icon: 'icontoken',
+        authority: ['insuranceCompany'],
+        component: 'insurance/subject'
     }
 ]
 const renderRoutesMap = (routes) => {

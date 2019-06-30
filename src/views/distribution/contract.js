@@ -3,7 +3,7 @@ import React from 'react'
 import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col} from 'antd';
 import './style.scss';
 import $enterprise from '../../console/enterprise';
-import $contract from '../../console/contract';
+import $supply from '../../console/supply';
 const { Option } = Select;
 
 const columns=[
@@ -85,7 +85,7 @@ class DistributionContract extends React.Component{
         // console.log(res);
     }
     async loadList() {
-        const res = await $contract.list();
+        const res = await $supply.contractList();
 
     }
     componentWillMount(){

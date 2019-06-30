@@ -65,10 +65,7 @@ class ReceiveContract extends React.Component{
         const formItemLayout = {
             labelCol: {
               xs: { span: 24 },
-              sm: { 
-                    span: 3,
-                    offset: 1
-                },
+              sm: { span: 3,},
             },
             wrapperCol: {
               xs: { span: 24 },
