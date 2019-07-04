@@ -1,8 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, Upload, Icon, Row, Col,DatePicker} from 'antd';
-import "../../../common/style.scss"
+import {Card, Form, Select, Button, Table, Row, Col, InputNumber, message} from 'antd';
+import { formatTime, findValue } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
+import "../../../common/style.scss"
+import { getId } from '../../../utils/authority'
+
 const { Option } = Select;
 
 
@@ -11,6 +13,14 @@ class Token extends React.Component{
         super(props);
         this.state = {
             list: [],
+            balance: 0,
+            assets: 0,
+            createInfo: {
+                supplyId: getId(),
+                bankId: 0,
+                token: 0
+            },
+            bankList: [],
             columns: [
                 {
                     title: '序号',
@@ -19,91 +29,159 @@ class Token extends React.Component{
                 },
                 {
                     title: '兑付Token',
-                    dataIndex: 'token',
-                    key: 'token',
+                    dataIndex: 'amount',
+                    key: 'amount',
                 },
                 {
                     title: '兑付银行',
-                    dataIndex: 'bank',
-                    key: 'bank',
+                    dataIndex: 'bankName',
+                    key: 'bankName',
                 },
                 {
                     title: '发起兑付时间',
-                    dataIndex: 'turnBegin',
-                    key: 'turnBegin',
-                },
+                    dataIndex: 'createTime',
+                    key: 'createTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
+                }, 
                 {
                     title: '兑付状态',
-                    dataIndex: 'turnstatus',
-                    key: 'turnstatus',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: (status) => (
+                        <span>{ findValue($supply.tokenRecordStatus, status) }</span>
+                    )
                 },
                 {
                     title: '银行操作时间',
-                    dataIndex: 'BankOperateTime',
-                    key: 'BankOperateTime',
+                    dataIndex: 'bankTime',
+                    key: 'bankTime',
+                    render: (time) => {
+                        if(time) return <span>{ formatTime(time) }</span>
+                        else return <span>----</span>
+                    }
                 },
             ]
         }
     }
-    async getData() {
-        // const res = await $enterprise.getData();
-        // console.log(res);
+    async getBalance() {
+        let params = {
+            role: 'supplier'
+        }
+        const res = await $supply.getBalance(params);
+        if(res.data.success){
+            this.setState({balance: res.data.result});
+        }
+    }
+    async getAssets() {
+        let params = {
+            role: 'supplier'
+        }
+        const res = await $supply.getAssets(params);
+        if(res.data.success){
+            this.setState({assets: res.data.result});
+        }
     }
     async loadList() {
-        const res = await $supply.contractList();
-
+        let params = {
+            supplyId: getId()
+        }
+        const res = await $supply.tokenExchangeRecord(params);
+        let list = res.data.result;
+        list.forEach((item, idx) => {
+            item.order = idx+1;
+            item.key = idx;
+        })
+        if(res.data.success){
+            this.setState({list: res.data.result})
+        }
+        // console.log(res)
+    }
+    loadBankList = async () => {
+        let res = await $supply.bankList();
+        if(res.data.success){
+            this.setState({bankList: res.data.result})
+            if(res.data.result.length){
+                let createInfo = Object.assign({}, this.state.createInfo, {bankId: res.data.result[0].id})
+                this.setState({createInfo})
+            }
+        }
+    }
+    handleToken = (value) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {token: value});
+        this.setState({createInfo})
+    }
+    handleBankChange = (value) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {bankId: value});
+        this.setState({createInfo})
+    }
+    createExchange = async() => {
+        if(this.validate()){
+            let res = await $supply.createExchange(this.state.createInfo);
+            if(res.data.success){
+                message.success("您已成功发起token兑换,请等待银行审批");
+                this.loadList()
+            }
+        }
+    }
+    validate = () => {
+        if(!this.state.createInfo.bankId){
+            message.error('必须选择兑换公司');
+            return false;
+        }
+        if(!this.state.createInfo.token){
+            message.error('必须填写兑换额度');
+            return false;
+        }
+        return true;
     }
     componentWillMount(){
         // console.log($enterprise.getData())
-        this.getData();
+        this.getBalance();
+        this.getAssets();
+        this.loadBankList();
         this.loadList();
     }
     render(){
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: {
-                    span: 2,
-                    offset: 1
-                },
+                sm: {span: 2},
             },
             wrapperCol: {
                 xs: { span: 24 },
                 sm: { span: 6 },
             }
-        };
+        }
         const buttonItemLayout = {
             wrapperCol: {
-                xs: {
-                    span: 24,
-                    offset: 0
-                },
-                sm: {
-                    span: 6,
-                    offset: 1
-                }
+                xs: {span: 24},
+                sm: {span: 6}
             }
         };
         return(
             <Card>
-                <div className="header1">
-                    <p>公司Token余额：</p>
-                    <p>公司资产（元）：</p>
-                </div>
-                <header className="header2">
+                <header className="header">
+                    <Row style={{'marginBottom': '20px', 'fontSize': '18px'}}>
+                        <Col span={6}>公司Token余额：{this.state.balance}</Col>
+                        <Col span={6}>公司资产（元）：{this.state.assets}</Col>
+                    </Row>
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="兑付银行">
-                            <Select>
-                                <Option value="test1">测试1</Option>
-                                <Option value="test2">测试2</Option>
-                                <Option value="test3">测试3</Option>
+                        <Form.Item label="兑付银行" required={true}>
+                            <Select value={this.state.createInfo.bankId} onSelect={this.handleBankChange} style={{'width': '200px'}}>
+                                {
+                                    this.state.bankList.map(bank => (
+                                        <Option value={bank.id} key={bank.id}>{bank.name}</Option>
+                                    ))
+                                }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="兑付Token额度">
-                            <Input />
+                        <Form.Item label="兑付Token额度" required={true}>
+                            <InputNumber min={0} onChange={this.handleToken} style={{'width': '200px'}}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
-                            <Button type="primary" >发起兑付</Button>
+                            <Button type="primary" onClick={this.createExchange}>发起兑付</Button>
                         </Form.Item>
                     </Form>
                 </header>

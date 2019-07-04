@@ -29,7 +29,7 @@ const menuData = [
         children: [
             {
                 path: '/supply/contract/index',
-                title: '合同管理',
+                title: '合同查询',
                 authority: ['supplier'],
                 component: 'supply/contract/index'
             },
@@ -90,7 +90,7 @@ const menuData = [
             },
             {
                 path: '/supply/inventory/out',
-                title: '出库管理',
+                title: '出库记录',
                 authority: ['supplier'],
                 component: 'supply/warehouse/out'
             },

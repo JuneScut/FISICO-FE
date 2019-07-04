@@ -15,8 +15,8 @@ http.post = function(api, data) {
     })
 }
 http.get = function(api, data) {
-    let params = qs.stringify(data);
-    return axios.get(api, params).then((res) => {
+    let query = {params: data}
+    return axios.get(api, query).then((res) => {
         return res;
     })
 }

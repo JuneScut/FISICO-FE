@@ -16,8 +16,10 @@ class CreateContract extends React.Component{
             goodsList: [],
             createInfo: {
                 fileList: [],
-                signtoryId: 1,
-                goodsId: 1
+                signtoryId: -1,
+                goodsId: -1,
+                goodsQuantity: null,
+                price: null
             },
             columns: [
                 {
@@ -114,8 +116,24 @@ class CreateContract extends React.Component{
             this.setState({createInfo})
         }
     }
-    handleCreate(){
+    async createContract(params) {
+        let res =  await $supply.createContract(params);
+        return res;
+    }
+    handleCreate = () => {
         // console.log('create')
+        let {signtoryId, goodsId, goodsQuantity, price} = this.state.createInfo;
+        let textContract = this.state.createInfo.fileList[0];
+        let params = {
+            textContract, signtoryId, goodsQuantity, goodsId, price
+        }
+        console.log(params)
+        if(this.validate()){
+            // console.log(this.state.createInfo)
+            const res = this.createContract(params)
+            console.log(res);
+        }
+        
     }
     componentWillMount(){
         this.loadList();
@@ -131,11 +149,40 @@ class CreateContract extends React.Component{
         fileList = fileList.slice(-1);
         let createInfo = Object.assign({}, this.state.createInfo, {fileList:fileList})
         this.setState({createInfo})
-
-      
         if(status === 'done'){
             message.success('上传成功')
         }
+    }
+    quantityChange = quantity => {
+        let createInfo = Object.assign({}, this.state.createInfo, {goodsQuantity:quantity})
+        this.setState({createInfo})
+    }
+    priceChange = price => {
+        let createInfo = Object.assign({}, this.state.createInfo, {price:price})
+        this.setState({createInfo})
+    }
+    validate() {
+        if(this.state.createInfo.fileList.length===0){
+            message.warn('请上传文本合同')
+            return false;
+        }
+        if(!this.state.createInfo.signtoryId){
+            message.warn('请选择签署方')
+            return false;
+        }
+        if(!this.state.createInfo.goodsId){
+            message.warn('请选择商品')
+            return false;
+        }
+        if(!this.state.createInfo.goodsQuantity){
+            message.warn('请填写供货量')
+            return false;
+        }
+        if(!this.state.createInfo.price){
+            message.warn('请填写金额')
+            return false;
+        }
+        return true;
     }
     render(){
         const formItemLayout = {
@@ -188,10 +235,10 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="供货量">
-                            <InputNumber style={{'width': '230px'}} min={1}/>
+                            <InputNumber style={{'width': '230px'}} min={1} onChange={this.quantityChange}/>
                         </Form.Item>
                         <Form.Item label="金额">
-                            <InputNumber style={{'width': '230px'}} min={1}/>
+                            <InputNumber style={{'width': '230px'}} min={1} onChange={this.priceChange}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
                             <Button type="primary" onClick={this.handleCreate}>发起合同</Button>
