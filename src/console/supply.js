@@ -26,6 +26,12 @@ supply.tokenRecordStatus = [
     { key: 'AUDIT', value: '审核中'},
     { key: 'FAIL', value:'失败'}
 ]
+supply.logisticStatus = [
+    { key: 'INTRANSIT', value:'运输中'},
+    { key: 'ARRIVED', value: '已送达'},
+    { key: 'WAITDELIVERY', value:'代发货'},
+    { key: 'WAITCOLLECT', value:'待揽件'},    
+]
 supply.contractList = function(params){
     // let data = [
     //     {
@@ -82,7 +88,9 @@ supply.bankList = function(){
 }
 
 supply.createExchange = function(params){
-    return http.post('/token/exchange/create', params)
+    return http.post('/token/exchange/create', params);
 }
-
+supply.logisticContractList = function(params){
+    return http.get('/supply/logistics/list', params);
+}
 export default supply;

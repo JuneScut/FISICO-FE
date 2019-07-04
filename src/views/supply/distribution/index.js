@@ -1,12 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
-// import './style.scss';
 import "../../../common/style.scss"
-// import $enterprise from '../../../console/enterprise';
 import $supply from '../../../console/supply';
+import { formatTime, findValue } from '../../../utils/tool.js';
+import { getId } from '../../../utils/authority'
+
 const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
+const { Search } = Input;
+
 
 function onChange (date,dateString) {
     console.log(date,dateString)
@@ -35,8 +38,8 @@ class DisSupplier extends React.Component{
                 },
                 {
                     title: '物流合同编号',
-                    dataIndex: 'contractNumber',
-                    key: 'contractNumber',
+                    dataIndex: 'transContractId',
+                    key: 'transContractId',
                 },
                 {
                     title: '物流公司',
@@ -52,59 +55,85 @@ class DisSupplier extends React.Component{
                     title: '物流合同状态',
                     dataIndex: 'contractStatus',
                     key: 'contractStatus',
+                    render: (status) => (
+                        <span>{findValue($supply.status, status)}</span>
+                    )
                 },
                 {
                     title: '货物名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
                 },
                 {
                     title: '货物数量（件）',
-                    dataIndex: 'number',
-                    key: 'number',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
                 },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'transCost',
+                    key: 'transCost',
                 },
                 {
                     title: '出库时间',
                     dataIndex: 'outTime',
                     key: 'outTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '是否购买货物保险',
                     dataIndex: 'ifInsurance',
                     key: 'ifInsurance',
+                    render: (val) => {
+                        if(val) {
+                            return (
+                                <span>是</span>
+                            ) 
+                        } else {
+                            return(
+                                <span>否</span>
+                            )
+                        }
+                    }
                 },
                 {
                     title: '物流状态',
-                    dataIndex: 'distributionStatus',
-                    key: 'distributionStatus',
+                    dataIndex: 'transStatus',
+                    key: 'transStatus',
+                    render: (status) => (
+                        <span>{ findValue($supply.logisticStatus, status) }</span>
+                    )
                 },
                 {
                     title: '签收时间',
                     dataIndex: 'receiveTime',
                     key: 'receiveTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 }
             ]
         }
     }
     async loadList() {
         let params = {
-            supplyId: 1
+            supplyId: getId()
         }
-        const res = await $supply.contractList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        console.log(this.state.list)
+        const res = await $supply.logisticContractList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item, idx) => {
+                item.order = idx+1;
+                item.key = item.id;
+            });
+            this.setState(() => ({
+                list: list
+            }));
+        }
+        
+        // console.log(this.state.list)
     }
     componentWillMount(){
         this.loadList();
@@ -139,12 +168,11 @@ class DisSupplier extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="物流合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Search
+                                placeholder="请输入物流合同编号"
+                                // onSearch={this.handleNameChange}
+                                style={{ width: 200 }}
+                            />
                         </Form.Item>
                         <Form.Item label="链上签署时间">
                             <DatePicker onChange={onChange} />
@@ -159,12 +187,14 @@ class DisSupplier extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Search
+                                placeholder="请输入合同编号"
+                                // onSearch={this.handleNameChange}
+                                style={{ width: 200 }}
+                            />
+                        </Form.Item>
+                        <Form.Item {...buttonItemLayout}>
+                            <Button type="primary" onClick={this.createExchange}>查询</Button>
                         </Form.Item>
                     </Form>
                 </header>
