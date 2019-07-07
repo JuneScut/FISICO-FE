@@ -39,12 +39,12 @@ const menuData = [
                 authority: ['supplier'],
                 component: 'supply/contract/create'
             },
-            {
-                path: '/enterprise/contract/index',
-                title: '合同管理',
-                authority: ['enterprise'],
-                component: 'enterprise/contract/index'
-            },
+            // {
+            //     path: '/enterprise/contract/index',
+            //     title: '合同管理',
+            //     authority: ['enterprise'],
+            //     component: 'enterprise/contract/index'
+            // },
             {
                 path: '/enterprise/contract/receive',
                 title: '接收合同',
@@ -215,6 +215,12 @@ const menuData = [
             },
             {
                 path: '/bank/token/index',
+                title: 'token管理',
+                authority: ['bank'],
+                component: 'bank/token/operate'
+            },
+            {
+                path: '/bank/token/log',
                 title: '历史记录',
                 authority: ['bank'],
                 component: 'bank/token/log'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Form, Select, Table, Input, Button, Modal, message } from 'antd';
-import './style.scss';
+import '../../../common/style.scss';
 // import $enterprise from '../../../console/enterprise';
 import $supply from '../../../console/supply';
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';

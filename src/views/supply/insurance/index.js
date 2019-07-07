@@ -1,20 +1,26 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
-// import './style.scss';
+import { Card, Form, Select, Input, Button, Table,DatePicker } from 'antd';
 import "../../../common/style.scss"
-// import $enterprise from '../../console/enterprise';
 import $supply from '../../../console/supply';
+import { getId } from '../../../utils/authority';
+import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 const { Option } = Select;
+const { Search } = Input;
+const { RangePicker } = DatePicker;
 
-function onChange (date,dateString) {
-    console.log(date,dateString)
-}
 
 class InsSupplier extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            searchParams: {
+                id: '',
+                insuranceContractId: '',
+                insuranceStatus: "ALL",
+                beginTime: 0,
+                endTime: 0
+            },
             list: [],
             columns: [
                 {
@@ -29,18 +35,21 @@ class InsSupplier extends React.Component{
                 },
                 {
                     title: '保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
+                    dataIndex: 'insuranceContractId',
+                    key: 'insuranceContractId',
                 },
                 {
                     title: '保险公司',
-                    dataIndex: 'insurancecompany',
-                    key: 'insurancecompany',
+                    dataIndex: 'insuranceCompany',
+                    key: 'insuranceCompany',
                 },
                 {
                     title: '保险合同签署时间',
-                    dataIndex: 'insuranceSTime',
-                    key: 'insuranceSTime',
+                    dataIndex: 'signTime',
+                    key: 'signTime',
+                    render: (time) => (
+                        <span>{formatTime(time)}</span>
+                    )
                 },
                 {
                     title: '货物名称',
@@ -49,45 +58,90 @@ class InsSupplier extends React.Component{
                 },
                 {
                     title: '货物数量（件）',
-                    dataIndex: 'goodsNum',
-                    key: 'goodsNum',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
                 },
                 {
                     title: '保险金额（元）',
-                    dataIndex: 'InsuranceCost',
-                    key: 'InsuranceCost',
+                    dataIndex: 'value',
+                    key: 'value',
                 },
                 {
                     title: '发货时间',
-                    dataIndex: 'sendTime',
-                    key: 'sendTime',
+                    dataIndex: 'deliveryTime',
+                    key: 'deliveryTime',
+                    render: (time) => (
+                        <span>{formatTime(time)}</span>
+                    )
                 },
                 {
                     title: '物流状态',
-                    dataIndex: 'distributionstatus',
-                    key: 'distributionstatus',
-                },
-                {
-                    title: '货物保险',
-                    dataIndex: 'cargoInsurance',
-                    key: 'cargoInsurance',
+                    dataIndex: 'transStatus',
+                    key: 'transStatus',
+                    render: (status) => (
+                        <span>{findValue($supply.logisticStatus, status)}</span>
+                    )
                 },
                 {
                     title: '保险情况',
-                    dataIndex: 'Insurancestatus',
-                    key: 'Insurancestatus',
+                    dataIndex: 'insuranceStatus',
+                    key: 'insuranceStatus',
+                    render: (status) => (
+                        findValue($supply.insuranceStatus, status) ? <span>{findValue($supply.insuranceStatus, status)}</span> : <span>-----</span>
+                    )
                 },
                 {
                     title: '货物签收时间',
                     dataIndex: 'receiveTime',
                     key: 'receiveTime',
+                    render: (time) => (
+                        <span>{formatTime(time)}</span>
+                    )
                 },
             ]
         }
     }
     async loadList() {
-        const res = await $supply.contractList();
+        let params = {
+            supplyId: getId()
+        }
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item];
+            }
+        }
+        const res = await $supply.insuranceContractList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item,idx) =>{
+                item.order = idx+1;
+                item.key = idx;
+            })
+            this.setState({list: list})
+        }
 
+    }
+    handleIdChange = async(value) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {id: value})
+        await setStateAsync(this, {searchParams})
+        this.loadList();
+    }
+    handleInsIdChange = async(value) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId: value})
+        await setStateAsync(this, {searchParams})
+        this.loadList();
+    }
+    handleStatusChange = async(status) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {status: status})
+        await setStateAsync(this, {searchParams})
+        this.loadList();
+
+    }
+    handleTimeChange = async(time) => {
+        console.log(time)
+        let searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime: time[1].valueOf()})
+        await setStateAsync(this, {searchParams})        
+        this.loadList();
     }
     componentWillMount(){
         this.loadList();
@@ -100,53 +154,30 @@ class InsSupplier extends React.Component{
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 6 },
-            }
-        };
-        const buttonItemLayout = {
-            wrapperCol: {
-                xs: {span: 24},
-                sm: {span: 6}
+                sm: { span: 8 },
             }
         };
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="是否购买物流保险">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">已购买</Option>
-                                <Option value="test3">未购买</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="保险情况">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">未生效</Option>
-                                <Option value="test3">生效中</Option>
-                                <Option value="test4">已过期</Option>
-                            </Select>
+                        <Form.Item label="合同编号">
+                            <Search onSearch={value => this.handleIdChange(value)} allowClear onChange={e => {if(!e.currentTarget.value) this.loadList()}}></Search>                            
                         </Form.Item>
                         <Form.Item label="保险合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
+                            <Search onSearch={value => this.handleInsIdChange(value)} allowClear onChange={e => {if(!e.currentTarget.value) this.loadList()}}></Search>
+                        </Form.Item>
+                        <Form.Item label="保险情况">
+                            <Select allowClear={true} defaultValue="ALL" onSelect={this.handleStatusChange}>
+                                <Option value="ALL">不限</Option>
+                                <Option value="NOACTIVE">未生效</Option>
+                                <Option value="ACTIVE">生效中</Option>
+                                <Option value="EXPIRED">已过期</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="保险合同签署时间">
-                            <DatePicker onChange={onChange} />
+                        <Form.Item label="保险签署时间">
+                            <RangePicker placeholder={["请选择开始时间","请选择结束时间"]} onChange={this.handleTimeChange}/>
                             <br />
-                        </Form.Item>
-                        <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
                         </Form.Item>
                     </Form>
                 </header>

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Card, Form, Select, Button, Table, Row, Col, InputNumber, message} from 'antd';
+import {Card, Form, Select, Button, Table, Row, Col, InputNumber, message, Modal} from 'antd';
 import { formatTime, findValue } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
 import "../../../common/style.scss"
@@ -15,6 +15,7 @@ class Token extends React.Component{
             list: [],
             balance: 0,
             assets: 0,
+            visible: false,
             createInfo: {
                 supplyId: getId(),
                 bankId: 0,
@@ -120,10 +121,19 @@ class Token extends React.Component{
         if(this.validate()){
             let res = await $supply.createExchange(this.state.createInfo);
             if(res.data.success){
+                this.handleCancel();
                 message.success("您已成功发起token兑换,请等待银行审批");
-                this.loadList()
+                this.getAssets();
+                this.getBalance();
+                this.loadList();
             }
         }
+    }
+    openModal = ()=> {
+        this.setState({visible: true})
+    }
+    handleCancel = () => {
+        this.setState({visible: false})
     }
     validate = () => {
         if(!this.state.createInfo.bankId){
@@ -143,6 +153,10 @@ class Token extends React.Component{
         this.loadBankList();
         this.loadList();
     }
+    findBankName = (id) => {
+        let item = this.state.bankList.find((item) => item.id===id);
+        if(item) return item.name;
+    }
     render(){
         const formItemLayout = {
             labelCol: {
@@ -160,6 +174,16 @@ class Token extends React.Component{
                 sm: {span: 6}
             }
         };
+        const modalFormItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 6},
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 18 },
+            }
+        }; 
         return(
             <Card>
                 <header className="header">
@@ -181,13 +205,27 @@ class Token extends React.Component{
                             <InputNumber min={0} onChange={this.handleToken} style={{'width': '200px'}}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
-                            <Button type="primary" onClick={this.createExchange}>发起兑付</Button>
+                            <Button type="primary" onClick={this.openModal}>发起兑付</Button>
                         </Form.Item>
                     </Form>
                 </header>
 
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Modal
+                        title="发起兑换"
+                        visible={this.state.visible}
+                        onOk={this.createExchange}
+                        onCancel={this.handleCancel}
+                        okText="确认兑换"
+                        cancelText="取消" 
+                        >
+                         <Form {...modalFormItemLayout} labelAlign="left">
+                            <Form.Item label="兑付银行">{this.findBankName(this.state.createInfo.bankId)}</Form.Item>
+                            <Form.Item label="兑付Token额度">{this.state.createInfo.token}</Form.Item>
+                        </Form>
+                        <p style={{'fontWeight': 'bold'}}>当前正在发起Token兑换，请注意，发起兑换后不能撤回。请核对清楚信息后，再点击兑换</p>
+                    </Modal>
                 </main>
             </Card>
         )

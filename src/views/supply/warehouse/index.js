@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Form, Input,Table } from 'antd';
-import './style.scss';
+import '../../../common/style.scss';
 import { formatTime, setStateAsync } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
 // const { Option } = Select;
@@ -90,14 +90,6 @@ class SupplierWarehouse extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="货物名称">
-                            {/* <Select onChange={this.handleNameChange}>
-                                <Option value="0">不限</Option>
-                                {
-                                    this.state.list.map((item) => (
-                                        <Option value={item.id} key={item.id}>{item.name}</Option>
-                                    ))
-                                }
-                            </Select> */}
                             <Search
                                 placeholder="请输入货物名称"
                                 onSearch={this.handleNameChange}

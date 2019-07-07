@@ -10,4 +10,26 @@ enterprise.getData = function(data) {
     // })
     return http.get('/category/list',data);
 }
+
+enterprise.contractList = function(params){
+    return http.get("/contract/list", params);
+}
+enterprise.supplyList = function(params){
+    return http.get("/supply/list", params);
+}
+enterprise.checkContract = function(params){
+    return http.post("/enterprise/contract/check", params);
+}
+enterprise.signContract = function(params){
+    return http.post("/enterprise/contract/sign", params);
+}
+enterprise.goodsList = function(params){
+    return http.get("/goods/list", params);
+}
+enterprise.goodsInList = function(params){
+    return http.get("/enterprise/goods/inList", params)
+}
+enterprise.confirmIn = function(params){
+    return http.post("/enterprise/goods/in", params)
+}
 export default enterprise

@@ -1,4 +1,4 @@
-const authority = "supplier";
+const authority = "enterprise";
 // enterprise 核心企业
 // supplier 上游供应商
 // bank 银行
@@ -28,10 +28,22 @@ function hasAuth(authList){
 function getId(){
     return 1;
 }
+function getEnterId(){
+    return 2;
+}
+function getTransId(){
+    return 3;
+}
+function getInsuranceId(){
+    return 4;
+}
 export {
     getAuth,
     hasAuth,
     roles,
     enums,
-    getId
+    getId,
+    getEnterId,
+    getTransId,
+    getInsuranceId
 }

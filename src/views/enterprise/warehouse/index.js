@@ -1,16 +1,20 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
-import './style.scss';
-// import $enterprise from '../../../console/enterprise';
-import $supply from '../../../console/supply';
+import '../../../common/style.scss';
+import $enterprise from '../../../console/enterprise';
+import { getEnterId } from '../../../utils/authority';
+import { formatTime, setStateAsync } from '../../../utils/tool.js';
 const { Option } = Select;
+const { Search } = Input;
+
 
 class EnterWarehouse extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             list: [],
+            searchName: '',
             columns: [
                 {
                     title: '序号',
@@ -19,8 +23,8 @@ class EnterWarehouse extends React.Component{
                 },
                 {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'name',
+                    key: 'name',
                 },
                 {
                     title: '当前库存量(件)',
@@ -29,17 +33,24 @@ class EnterWarehouse extends React.Component{
                 },
                 {
                     title: '最新变动时间',
-                    dataIndex: 'changeTime',
-                    key: 'changeTime',
+                    dataIndex: 'lastModified',
+                    render: time => (
+                        <span>
+                            { formatTime(time) }
+                        </span>
+                    )
                 }
             ]
         }
     }
     async loadList() {
         let params = {
-            supplyId: 1
+            enterpriseId: getEnterId()
         }
-        const res = await $supply.contractList(params);
+        if(this.state.searchName){
+            params['goodsName'] = this.state.searchName;
+        }
+        const res = await $enterprise.goodsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -48,7 +59,10 @@ class EnterWarehouse extends React.Component{
         this.setState(() => ({
             list: list
         }));
-        console.log(this.state.list)
+    }
+    handleNameChange = async (name) => {
+        await setStateAsync(this, {searchName:name})
+        this.loadList();
     }
     componentWillMount(){
         this.loadList();
@@ -75,12 +89,11 @@ class EnterWarehouse extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="货物名称">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Search
+                                placeholder="请输入货物名称"
+                                onSearch={this.handleNameChange}
+                                style={{ width: 200 }}
+                            />
                         </Form.Item>
                     </Form>
                 </header>

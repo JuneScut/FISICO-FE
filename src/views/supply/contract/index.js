@@ -1,10 +1,9 @@
 import React from 'react'
 import { Card, Form, Select, Table,  DatePicker } from 'antd';
 import "../../../common/style.scss"
-import { findValue, formatTime } from '../../../utils/tool.js';
+import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
 import moment from 'moment';
-// import moment from 'moment';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
@@ -114,22 +113,25 @@ class SupplyContract extends React.Component{
         }));
         // console.log(this.state.list)
     }
-    rangeChange = (range) => {
+    rangeChange = async(range) => {
         let beginTime = range[0].valueOf();
         let endTime = range[1].valueOf();
-        console.log(beginTime, endTime)
         let searchParms = Object.assign({}, this.state.searchParm);
         searchParms.beginTime = beginTime;
         searchParms.endTime = endTime;
-        console.log(searchParms)
-        this.setState({searchParms})
-        console.log(this.state.searchParms.beginTime, this.state.searchParms.endTime)
+        await setStateAsync(this, {searchParms: searchParms});
+        this.loadList();
     }
-    handleContractIdChange = (id) => {
-        console.log('contract id', id)
+    handleContractIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {id:id})
+        await setStateAsync(this, {searchParms: searchParams})
+        this.loadList();
+
     }
-    handleSignatoryChange = (sign) => {
-        console.log('sign', sign)
+    handleSignatoryChange = async (sign) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {enterpriseId:sign})
+        await setStateAsync(this, {searchParms: searchParams})        
+        this.loadList();
     } 
     componentWillMount(){
         this.loadList();
@@ -158,7 +160,6 @@ class SupplyContract extends React.Component{
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                              }
                              onChange={this.handleContractIdChange}
-                             value={this.state.searchParms.id}
                             >
                                 {
                                     this.state.contractIds.map((contract) => (
@@ -172,7 +173,7 @@ class SupplyContract extends React.Component{
                             <br />
                         </Form.Item>
                         <Form.Item label="合约签署方">
-                            <Select onChange={this.handleSignatoryChange} value={this.state.searchParms.enterpriseId}>
+                            <Select onChange={this.handleSignatoryChange} >
                                 {
                                     this.state.enterpriseList.map((enter) => (
                                         <Option value={enter.id} key={enter.id}>{enter.name}</Option>

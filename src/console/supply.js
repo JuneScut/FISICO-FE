@@ -29,8 +29,13 @@ supply.tokenRecordStatus = [
 supply.logisticStatus = [
     { key: 'INTRANSIT', value:'运输中'},
     { key: 'ARRIVED', value: '已送达'},
-    { key: 'WAITDELIVERY', value:'代发货'},
+    { key: 'WAITDELIVERY', value:'待发货'},
     { key: 'WAITCOLLECT', value:'待揽件'},    
+]
+supply.insuranceStatus = [
+    { key: 'ACTIVE', value:'已生效'},
+    { key: 'EXPIRED', value:'已过期'},
+    { key: 'NOACTIVE', value:'未生效'}
 ]
 supply.contractList = function(params){
     // let data = [
@@ -53,7 +58,7 @@ supply.enterpriseList = function(){
 }
 
 supply.goodsList = function(){
-    return http.get('/supply/goods/list');
+    return http.get('/goods/list');
 }
 supply.createContract = function(data){
     return http.post('/supply/contract/create', data);
@@ -80,11 +85,17 @@ supply.getAssets = function(params){
 }
 
 supply.tokenExchangeRecord = function(params){
-    return http.get('/supply/token/bankrecord', params);
+    return http.get('/token/record', params);
 }
 
 supply.bankList = function(){
     return http.get('/bank/list')
+}
+supply.insureCompanyList = function(){
+    return http.get('/insuranceCompany/list')
+}
+supply.transportationList = function(){
+    return http.get('/transportation/list')
 }
 
 supply.createExchange = function(params){
@@ -92,5 +103,14 @@ supply.createExchange = function(params){
 }
 supply.logisticContractList = function(params){
     return http.get('/supply/logistics/list', params);
+}
+supply.allLogisticConsList = function(params){
+    return http.get('/supply/Logistics/contracts', params);
+}
+supply.insuranceContractList = function(params){
+    return http.get('/supply/insurance/list', params);
+}
+supply.allInsueConsList = function(params){
+    return http.get('/supply/insurance/contracts', params);
 }
 export default supply;

@@ -247,7 +247,7 @@ class CreateContract extends React.Component{
                 </header>
 
                 <main>
-                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
                 </main>
             </Card>
         )

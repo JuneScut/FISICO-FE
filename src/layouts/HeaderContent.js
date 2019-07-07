@@ -14,8 +14,13 @@ class HeaderContent extends React.Component{
         this.props.toggle(!this.props.collapsed)
     };
 
+    logout = () => {
+        // console.log(this.props.history.push("/login"))
+        console.log(window.location)
+        window.location = window.location.origin+'/login'
+    }
     render(){
-        // console.log('header', this.props.location)
+        // console.log('header', this.props.location)   
         return(
             <Row>
                 <Col span={12}>
@@ -29,7 +34,7 @@ class HeaderContent extends React.Component{
                 <Col span={12} align="right">
                     <Icon type="user" />
                     <span>{ enums(roles, getAuth()) }</span>
-                    <Icon type="logout" style={{ marginLeft: '10px', cursor: 'pointer'}} />
+                    <Icon type="logout" style={{ marginLeft: '10px', cursor: 'pointer'}} onClick={this.logout}/>
                 </Col>
             </Row>
         )
