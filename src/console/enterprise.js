@@ -32,4 +32,7 @@ enterprise.goodsInList = function(params){
 enterprise.confirmIn = function(params){
     return http.post("/enterprise/goods/in", params)
 }
+enterprise.redeemToken = function(params){
+    return http.post("/enterprise/token/redeem", params)
+}
 export default enterprise

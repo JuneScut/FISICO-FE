@@ -19,7 +19,8 @@ supply.tradeType = [
     { key: 'ORDER', value: '订单'},
     { key: 'TRANS', value:'物流'},
     { key: 'INSURE', value: '保险'},
-    { key: 'BANK', value: '银行兑付'}
+    { key: 'EXCHANGE', value: '银行兑付'},
+    { key: "REDEEM", value: "银行赎回"}
 ]
 supply.tokenRecordStatus = [
     { key: 'SUCCESS', value:'成功'},
@@ -73,7 +74,7 @@ supply.outGoods = function(params){
 }
 
 supply.tokenList = function(params){
-    return http.get('/supply/token/list', params);
+    return http.get('/token/list', params);
 }
 
 supply.getBalance = function(params){
