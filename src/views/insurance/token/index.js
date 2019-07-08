@@ -1,16 +1,25 @@
-/* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber } from 'antd';
-import '../style.scss';
+import { Card, Form, Select, Input, Table } from 'antd';
+// import './style.scss';
 // import $enterprise from '../../console/enterprise';
-import $supply from '../../../console/supply';
+import "../../../common/style.scss"
+// import $supply from '../../../console/supply';
+import $common from '../../../console/common';
+import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
+import { getInsuranceId } from '../../../utils/authority'
 const { Option } = Select;
+const { Search } = Input;
 
-class TokenIns extends React.Component{
+
+class TokenInsurance extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             list: [],
+            searchParams: {
+                contractId: '',
+                type: ''
+            },
             columns: [
                 {
                     title: '序号',
@@ -18,14 +27,17 @@ class TokenIns extends React.Component{
                     key: 'order',
                 },
                 {
-                    title: '保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
+                    title: '合同编号',
+                    dataIndex: 'id',
+                    key: 'id',
                 },
                 {
                     title: '交易类型',
                     dataIndex: 'type',
                     key: 'type',
+                    render: type => (
+                        <span>{ findValue($common.tradeType, type) }</span>
+                    )
                 },
                 {
                     title: '公司名称',
@@ -36,6 +48,9 @@ class TokenIns extends React.Component{
                     title: '支出/收入',
                     dataIndex: 'flow',
                     key: 'flow',
+                    render: flow => (
+                        <span>{ findValue($common.tokenType, flow) }</span>
+                    )
                 },
                 {
                     title: '交易金额(Token)',
@@ -46,15 +61,24 @@ class TokenIns extends React.Component{
                     title: '交易时间',
                     dataIndex: 'time',
                     key: 'time',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 }
             ]
         }
     }
     async loadList() {
         let params = {
-            supplyId: 1
+            role: 'I',
+            id: getInsuranceId()
         }
-        const res = await $supply.contractList(params);
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item]
+            }
+        }
+        const res = await $common.tokenList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -64,6 +88,16 @@ class TokenIns extends React.Component{
             list: list
         }));
         console.log(this.state.list)
+    }
+    handleIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {contractId: id })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleTypeChange = async(type) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {type: type })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
     }
     componentWillMount(){
         this.loadList();
@@ -79,36 +113,25 @@ class TokenIns extends React.Component{
                 sm: { span: 6 },
             }
         };
-        const buttonItemLayout = {
-            wrapperCol: {
-                xs: {span: 24},
-                sm: {span: 6}
-            }
-        };
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="交易类型">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">物流保险</Option>
-                                <Option value="test3">货物保险</Option>
-                                <Option value="test4">银行兑付</Option>
+                            <Select onChange={this.handleTypeChange}>
+                                <Option value="ALL">不限</Option>
+                                <Option value="TRANSINS">物流保险</Option>
+                                <Option value="GOODSINS">货物保险</Option>
+                                <Option value="BANK">银行兑付</Option>
                             </Select>
                         </Form.Item>
-                        <Form.Item label="保险合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                        <Form.Item label="合同编号">
+                            <Search
+                                placeholder="请输入合同编号"
+                                onSearch={this.handleIdChange}
+                            />
                         </Form.Item>
                     </Form>
-                    <div className="header3" >
-                        <p>公司Token余额：</p>
-                    </div>
                 </header>
 
                 <main>
@@ -119,4 +142,4 @@ class TokenIns extends React.Component{
     }
 }
 
-export default TokenIns;
+export default TokenInsurance;

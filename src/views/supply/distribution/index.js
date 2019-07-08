@@ -3,10 +3,11 @@ import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
 import "../../../common/style.scss"
 import $supply from '../../../console/supply';
-import { formatTime, findValue } from '../../../utils/tool.js';
+import $common from '../../../console/common';
+import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 import { getId } from '../../../utils/authority'
 
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+const {MonthPicker,RangePicker,WeekPicker}=DatePicker;
 const { Option } = Select;
 const { Search } = Input;
 
@@ -20,6 +21,14 @@ class DisSupplier extends React.Component{
         super(props);
         this.state = {
             list: [],
+            searchParams: {
+                transStatus: '',
+                transContractId: 0,
+                beginTime: 0,
+                endTime: 0,
+                goodsName: '',
+                contractId: 0
+            },
             columns: [
                 {
                     title: '序号',
@@ -50,6 +59,9 @@ class DisSupplier extends React.Component{
                     title: '物流合同签署时间',
                     dataIndex: 'signTime',
                     key: 'signTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '物流合同状态',
@@ -121,7 +133,12 @@ class DisSupplier extends React.Component{
         let params = {
             supplyId: getId()
         }
-        const res = await $supply.logisticContractList(params);
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item]
+            }
+        }
+        const res = await $common.logisticConsList(params);
         if(res.data.success){
             let list = res.data.result;
             list.forEach((item, idx) => {
@@ -134,6 +151,31 @@ class DisSupplier extends React.Component{
         }
         
         // console.log(this.state.list)
+    }
+    handleIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {contractId: id })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleTransIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {transContractId: id })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleTimeChange = async(time) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleNameChange = async(name) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {goodsName: name })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleStatusChange = async(status) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {transStatus: status })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
     }
     componentWillMount(){
         this.loadList();
@@ -160,42 +202,38 @@ class DisSupplier extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流状态">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">已送达</Option>
-                                <Option value="test3">运输中</Option>
-                                <Option value="test4">未发货</Option>
+                            <Select defaultValue="ALL" onChange={this.handleStatusChange}>
+                                <Option value="ALL">不限</Option>
+                                <Option value="ARRIVED">已送达</Option>
+                                <Option value="INTRANSIT">运输中</Option>
+                                <Option value="WAITDELIVERY">未发货</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="物流合同编号">
                             <Search
                                 placeholder="请输入物流合同编号"
-                                // onSearch={this.handleNameChange}
-                                style={{ width: 200 }}
+                                onSearch={this.handleTransIdChange}
                             />
                         </Form.Item>
                         <Form.Item label="链上签署时间">
-                            <DatePicker onChange={onChange} />
+                            <RangePicker onChange={this.handleTimeChange}/>
                             <br />
                         </Form.Item>
                         <Form.Item label="货物名称">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Search
+                                placeholder="请输入合同编号"
+                                onSearch={this.handleNameChange}
+                            />
                         </Form.Item>
                         <Form.Item label="合同编号">
                             <Search
                                 placeholder="请输入合同编号"
-                                // onSearch={this.handleNameChange}
-                                style={{ width: 200 }}
+                                onSearch={this.handleIdChange}
                             />
                         </Form.Item>
-                        <Form.Item {...buttonItemLayout}>
+                        {/* <Form.Item {...buttonItemLayout}>
                             <Button type="primary" onClick={this.createExchange}>查询</Button>
-                        </Form.Item>
+                        </Form.Item> */}
                     </Form>
                 </header>
 

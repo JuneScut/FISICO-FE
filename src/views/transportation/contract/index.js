@@ -53,8 +53,8 @@ class TransContract extends React.Component{
                 },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'transCost',
+                    key: 'transCost',
                 },
                 {
                     title: '签署人',
@@ -86,7 +86,7 @@ class TransContract extends React.Component{
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $transportation.contractList(params);
+        const res = await $common.logisticConsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;

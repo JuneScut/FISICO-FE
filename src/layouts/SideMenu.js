@@ -198,8 +198,20 @@ const menuData = [
             {
                 path: '/token/exchange',
                 title: 'token兑换',
-                authority: ['supplier','insuranceCompany', 'transportation'],
+                authority: ['supplier'],
                 component: 'supply/token/exchange'
+            },
+            {
+                path: '/insurance/token/exchange',
+                title: 'token兑换',
+                authority: ['insuranceCompany'],
+                component: 'insurance/token/exchange'
+            },
+            {
+                path: '/transportation/token/exchange',
+                title: 'token兑换',
+                authority: ['transportation'],
+                component: 'transportation/token/exchange'
             },
             {
                 path: '/enterprise/token/index',

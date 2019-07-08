@@ -102,16 +102,22 @@ supply.transportationList = function(){
 supply.createExchange = function(params){
     return http.post('/token/exchange/create', params);
 }
-supply.logisticContractList = function(params){
-    return http.get('/supply/logistics/list', params);
-}
+// supply.logisticContractList = function(params){
+//     return http.get('/logistics/list', params);
+// }
 supply.allLogisticConsList = function(params){
-    return http.get('/supply/Logistics/contracts', params);
+    return http.get('/logistics/contracts', params);
 }
 supply.insuranceContractList = function(params){
     return http.get('/supply/insurance/list', params);
 }
 supply.allInsueConsList = function(params){
     return http.get('/supply/insurance/contracts', params);
+}
+supply.signTransContract = function(params){
+    return http.post('/supply/trans_contract/sign', params);
+}
+supply.signInsureContract = function(params){
+    return http.post('/supply/insurance/sign', params);
 }
 export default supply;

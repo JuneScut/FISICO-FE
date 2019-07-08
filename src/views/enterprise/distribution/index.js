@@ -1,21 +1,34 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
-import '../../../common/style.scss';
-// import $enterprise from '../../console/enterprise';
+import "../../../common/style.scss"
 import $supply from '../../../console/supply';
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+import $common from '../../../console/common';
+import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
+import { getEnterId } from '../../../utils/authority'
+
+const {MonthPicker,RangePicker,WeekPicker}=DatePicker;
 const { Option } = Select;
+const { Search } = Input;
+
 
 function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
-class DisEnterprise extends React.Component{
+class DisSupplier extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             list: [],
+            searchParams: {
+                transStatus: '',
+                transContractId: 0,
+                beginTime: 0,
+                endTime: 0,
+                goodsName: '',
+                contractId: 0
+            },
             columns: [
                 {
                     title: '序号',
@@ -41,59 +54,123 @@ class DisEnterprise extends React.Component{
                     title: '物流合同签署时间',
                     dataIndex: 'signTime',
                     key: 'signTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
+                },
+                {
+                    title: '物流合同状态',
+                    dataIndex: 'contractStatus',
+                    key: 'contractStatus',
+                    render: (status) => (
+                        <span>{findValue($supply.status, status)}</span>
+                    )
                 },
                 {
                     title: '货物名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
                 },
                 {
                     title: '货物数量（件）',
-                    dataIndex: 'number',
-                    key: 'number',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
                 },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'transCost',
+                    key: 'transCost',
                 },
                 {
                     title: '出库时间',
                     dataIndex: 'outTime',
                     key: 'outTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '是否购买货物保险',
                     dataIndex: 'ifInsurance',
                     key: 'ifInsurance',
+                    render: (val) => {
+                        if(val) {
+                            return (
+                                <span>是</span>
+                            ) 
+                        } else {
+                            return(
+                                <span>否</span>
+                            )
+                        }
+                    }
                 },
                 {
                     title: '物流状态',
-                    dataIndex: 'distributionStatus',
-                    key: 'distributionStatus',
+                    dataIndex: 'transStatus',
+                    key: 'transStatus',
+                    render: (status) => (
+                        <span>{ findValue($supply.logisticStatus, status) }</span>
+                    )
                 },
                 {
                     title: '签收时间',
                     dataIndex: 'receiveTime',
                     key: 'receiveTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 }
             ]
         }
     }
     async loadList() {
         let params = {
-            supplyId: 1
+            enterpriseId: getEnterId()
         }
-        const res = await $supply.contractList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        console.log(this.state.list)
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item]
+            }
+        }
+        const res = await $common.logisticConsList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item, idx) => {
+                item.order = idx+1;
+                item.key = item.id;
+            });
+            this.setState(() => ({
+                list: list
+            }));
+        }
+        
+        // console.log(this.state.list)
+    }
+    handleIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {contractId: id })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleTransIdChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {transContractId: id })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleTimeChange = async(time) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleNameChange = async(name) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {goodsName: name })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
+    }
+    handleStatusChange = async(status) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {transStatus: status })
+        await setStateAsync(this, {searchParams})
+        this.loadList()
     }
     componentWillMount(){
         this.loadList();
@@ -120,29 +197,28 @@ class DisEnterprise extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流状态">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">已送达</Option>
-                                <Option value="test3">运输中</Option>
-                                <Option value="test4">未发货</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
+                            <Select defaultValue="ALL" onChange={this.handleStatusChange}>
+                                <Option value="ALL">不限</Option>
+                                <Option value="ARRIVED">已送达</Option>
+                                <Option value="INTRANSIT">运输中</Option>
+                                <Option value="WAITDELIVERY">未发货</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="货物名称">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Search
+                                placeholder="请输入合同编号"
+                                onSearch={this.handleNameChange}
+                            />
                         </Form.Item>
+                        <Form.Item label="合同编号">
+                            <Search
+                                placeholder="请输入合同编号"
+                                onSearch={this.handleIdChange}
+                            />
+                        </Form.Item>
+                        {/* <Form.Item {...buttonItemLayout}>
+                            <Button type="primary" onClick={this.createExchange}>查询</Button>
+                        </Form.Item> */}
                     </Form>
                 </header>
 
@@ -154,4 +230,4 @@ class DisEnterprise extends React.Component{
     }
 }
 
-export default DisEnterprise;
+export default DisSupplier;

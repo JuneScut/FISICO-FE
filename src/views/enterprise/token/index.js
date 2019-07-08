@@ -133,7 +133,7 @@ class TokenEnter extends React.Component{
         };
         return(
             <Card>
-                <header className="header">
+                <header className="header" style={{'paddingLeft': '20px'}}>
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="交易类型">
                             <Select onChange={this.handleTypeChange} defaultValue="ALL"> 

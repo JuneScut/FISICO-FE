@@ -1,22 +1,33 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
-// import './style.scss';
-// import $enterprise from '../../console/enterprise';
-import "../../../common/style.scss"
-import $supply from '../../../console/supply';
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker,Modal, Row, Col, message } from 'antd';
+import '../../../common/style.scss';
+import $transportation from '../../../console/transportation';
+import $common from '../../../console/common';
+import { getTransId } from '../../../utils/authority';
+import { formatTime, findValue } from '../../../utils/tool.js';
 const { Option } = Select;
+const { confirm } = Modal;
+
 
 function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
-class InsTransContract extends React.Component{
+class InsuranceContract extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             list: [],
+            companyList: [],
+            searchParams: {
+                supplyId: 0,
+                insuranceContractId: 0,
+                beginTime: 0,
+                endTime: 0,
+                type: "ALL"
+            },
+            visible: false,
             columns: [
                 {
                     title: '序号',
@@ -30,57 +41,74 @@ class InsTransContract extends React.Component{
                 },
                 {
                     title: '物流保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
+                    dataIndex: 'insuranceContractId',
+                    key: 'insuranceContractId',
                 },
                 {
                     title: '物流公司',
-                    dataIndex: 'insuranceCompany',
-                    key: 'insuranceCompany',
+                    dataIndex: 'transCompany',
+                    key: 'transCompany',
                 },
                 {
                     title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    dataIndex: 'createTime',
+                    key: 'createTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '签署时间',
                     dataIndex: 'signTime',
                     key: 'signTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '货物名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
                 },
                 {
-                    title: '货物数量（件）',
-                    dataIndex: 'number',
-                    key: 'number',
+                    title: '货物数量',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
                 },
                 {
-                    title: '保险费用（元）',
-                    dataIndex: 'insuranceCost',
-                    key: 'insuranceCost',
+                    title: '保险金额（元）',
+                    dataIndex: 'cost',
+                    key: 'cost',
                 },
                 {
                     title: '保险合同状态',
-                    dataIndex: 'InsuranceStatus',
-                    key: 'InsuranceStatus',
+                    dataIndex: 'insuranceContractStatus',
+                    key: 'insuranceContractStatus',
+                    render: (status) => (
+                        <span>{findValue($common.status, status)}</span>
+                    )
                 },
-                {
-                    title: '操作',
-                    dataIndex: 'operate',
-                    key: 'operate',
-                }
+               {
+                   title: '操作',
+                   dataIndex: 'operate',
+                   key: 'operate',
+                   render: (text, record) => (
+                       <Button disabled={record.insuranceContractStatus==='SIGNED'} onClick={()=>this.handleSign(record)}>签署</Button>
+                   )
+               }
             ]
         }
     }
-    async loadList() {
+    loadList = async() => {
         let params = {
-            supplyId: 1
+            transId: getTransId()
         }
-        const res = await $supply.contractList(params);
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item];
+            }
+        }
+        const res = await $common.insureConsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -91,8 +119,72 @@ class InsTransContract extends React.Component{
         }));
         console.log(this.state.list)
     }
+    loadCompanyList = async()=>{
+        const res = await $common.insuranceList();
+        this.setState({companyList: res.data.result})
+    }
+    handleIdChange = (e)=>{
+        let id = e.currentTarget.value;
+        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId:id})
+        this.setState({searchParams})
+    }
+    handleSupplyChange = (id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+        this.setState({searchParams})
+    }
+    handleRangeChange = (time) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {beginTime:time[0].valueOf(),endTime:time[1].valueOf()})
+        this.setState({searchParams})
+    }
+    handleTypeChange = (type) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {type: type})
+        this.setState({searchParams})
+    }
+    handleUploadChange = (info) => {
+        const { status } = info.file;
+        // 限制只上传1个
+        let fileList = [...info.fileList];
+        fileList = fileList.slice(-1);
+        this.setState({fileList})
+        if(status === 'done'){
+            message.success('上传成功')
+        }
+      }
+      handleSign = (record) => {
+        this.setState({visible: true})
+        this.setState({contractId: record.insuranceContractId})
+      }
+      handleOk = async () => {
+        this.setState({visible: false})
+        let params = {
+          insuranceContractId: this.state.contractId,
+          textContract: this.state.fileList[0]
+        }
+        const res = await $common.checkContract(params);
+        if(res.data.success){
+          confirm({
+            title: '确认签署',
+            content: '文本合同校验一致，请您确认是否签署',
+            async onOk() {
+              const resp = await $transportation.signInsContract(params);
+              if(resp.data.success){
+                message.success("签署成功！")
+              }
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
+        }else if(!res.data.success){
+          message.error("文本合同校验失败，请您确认")
+        }
+      }
+      handleCancel = ()=>{
+        this.setState({visible: false})
+      }
     componentWillMount(){
         this.loadList();
+        this.loadCompanyList();
     }
     render(){
         const formItemLayout = {
@@ -111,43 +203,58 @@ class InsTransContract extends React.Component{
                 sm: {span: 6}
             }
         };
+        const uploadProps = {
+            multiple: false,
+            onChange: this.handleUploadChange
+        }
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="保险合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="保险公司">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Input onChange={this.handleInsConsIdChange}/>                                                        
                         </Form.Item>
                         <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
+                            <Input onChange={this.handleIdChange}/>                                                        
+                        </Form.Item>
+                        <Form.Item label="保险公司">
+                            <Select onChnage={this.handleInsChange}>
+                                {
+                                    this.state.companyList.map((company) => (
+                                        <Option value={company.id} key={company.id}>{company.name}</Option>
+                                    ))
+                                }
                             </Select>
                         </Form.Item>
                     </Form>
+                    <Button onClick={this.loadList}>查询</Button>
                 </header>
 
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Modal
+                      title="签署合约"
+                      visible={this.state.visible}
+                      onOk={this.handleOk}
+                      onCancel={this.handleCancel}
+                    >
+                      <Row>
+                        <Col span={4}>
+                          文本合同
+                        </Col>
+                        <Col span={20}>
+                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                              <Button>
+                                  <Icon type="upload" /> Upload
+                              </Button>
+                          </Upload>
+                        </Col>
+                      </Row>
+                    </Modal>
                 </main>
             </Card>
         )
     }
 }
 
-export default InsTransContract;
+export default InsuranceContract;

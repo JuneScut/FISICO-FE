@@ -5,7 +5,6 @@ import '../../../common/style.scss';
 import $supply from '../../../console/supply';
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 import { getId } from '../../../utils/authority'
-const { confirm } = Modal;
 const { Option } = Select;
 const { Search } = Input;
 
@@ -19,6 +18,11 @@ class OutWarehouse extends React.Component{
                 enterpriseName: ''
             },
             list: [],
+            goodsList: [],
+            modal: {
+                visible: false,
+                content: {}
+            },
             columns:
                 [
                     {
@@ -167,20 +171,35 @@ class OutWarehouse extends React.Component{
         await setStateAsync(this, {searchParams: searchParams})
         this.loadList()
     }
-    handleOut = (record) => {
-        let self = this;
-        confirm({
-            title: '确认出库',
-            content: `您确定要将商品【${record.goodsName}】出库吗？请注意该操作不可逆`,
-            onOk() {
-                console.log('OK');
-                self.outGoods();
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-
+    handleOut = async (record) => {
+        let params = {
+            supplyId: getId(),
+            goodsId: record.goodsId
+        }
+        let resp = await $supply.goodsList(params);
+        if(resp.data.success){
+            record.stock = resp.data.result[0].stock;
+        }
+        let modal = Object.assign({},this.state.modal, {visible: true, content: record})
+        this.setState({ modal })
+    }
+    handleOk = async() => {
+        let params = {
+            supplyId: getId(),
+            contractId: this.state.modal.content.id,
+            goodsId: this.state.modal.content.goodsId
+        }
+        const res = await $supply.outGoods(params);
+        if(res.data.success){
+            let modal = Object.assign({},this.state.modal, {visible: false, content: {}})
+            this.setState({ modal })
+            message.success("成功出库！");
+            this.loadList()
+        }
+    }
+    handleCancel = () => {
+        let modal = Object.assign({},this.state.modal, {visible: false, content: {}})
+        this.setState({ modal })
     }
     componentWillMount(){
         this.loadList();
@@ -194,6 +213,16 @@ class OutWarehouse extends React.Component{
             wrapperCol: {
                 xs: { span: 24 },
                 sm: { span: 6 },
+            }
+        }; 
+        const modalFormItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 6},
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 18 },
             }
         };
         return(
@@ -226,6 +255,29 @@ class OutWarehouse extends React.Component{
 
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Modal
+                        title="出库管理"
+                        visible={this.state.modal.visible}
+                        onOk={this.handleOk}
+                        onCancel={this.handleCancel}
+                        okText="确认出库"
+                        cancelText="取消" 
+                        >
+                        <Form {...modalFormItemLayout} labelAlign="left">
+                            <Form.Item label="合同编号">{this.state.modal.content.id}</Form.Item>
+                            <Form.Item label="货物名称">{this.state.modal.content.goodsName}</Form.Item>
+                            <Form.Item label="货物数量">{this.state.modal.content.quantity}</Form.Item>
+                            <Form.Item label="货物金额">{this.state.modal.content.goodsValue}</Form.Item>
+                            <Form.Item label="收货人">{this.state.modal.content.receive}</Form.Item>
+                            <Form.Item label="物流公司">{this.state.modal.content.transportCompany}</Form.Item>
+                            <Form.Item label="保险公司">
+                            {
+                                this.state.modal.content.insuranceCompany ? this.state.modal.content.insuranceCompany : '未购买保险' 
+                            }
+                            </Form.Item>
+                            <Form.Item label="供应货物库存量">{this.state.modal.content.stock}</Form.Item>
+                        </Form>
+                    </Modal>
                 </main>
             </Card>
         )

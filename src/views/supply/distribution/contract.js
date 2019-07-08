@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, Modal} from 'antd';
+import {Card, Form, Select, Input, Button, Table, Modal, Row, Col, message, Upload, Icon} from 'antd';
 import "../../../common/style.scss"
 import $supply from '../../../console/supply';
+import $common from '../../../console/common';
 import { getId } from '../../../utils/authority'
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 const { confirm } = Modal;
@@ -25,6 +26,9 @@ class DisContract extends React.Component{
                 contractId: 0,
                 transContractId: 0
             },
+            visible: false,
+            record: {},
+            fileList: [],
             companyList:[],
             columns: [
                 {
@@ -44,8 +48,8 @@ class DisContract extends React.Component{
                 },
                 {
                     title: '物流公司',
-                    dataIndex: 'transCompany',
-                    key: 'transCompany',
+                    dataIndex: 'company',
+                    key: 'company',
                 },
                 {
                     title: '发起时间',
@@ -75,8 +79,8 @@ class DisContract extends React.Component{
                 },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'transCost',
+                    key: 'transCost',
                 },
                 {
                     title: '合同状态',
@@ -91,7 +95,7 @@ class DisContract extends React.Component{
                     dataIndex: 'operate',
                     key: 'operate',
                     render: (text, record) => (
-                        <Button disabled={record.contractStatus==='SIGNED'} onClick={()=>this.handleSign(record)}>签署</Button>
+                        <Button disabled={record.contractStatus==='SIGNED'} onClick={()=>this.handleOpenModal(record)}>签署</Button>
                     )
                 },
             ]
@@ -104,7 +108,7 @@ class DisContract extends React.Component{
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $supply.allLogisticConsList(params);
+        const res = await $common.logisticConsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -120,19 +124,62 @@ class DisContract extends React.Component{
             this.setState({companyList: res.data.result});
         }
     }
-    handleSign(record){
-        let self = this;
-        confirm({
-            title: '确定签署',
-            content: `您确定真的要签署${record.goodsName}的货物物流合同吗？注意该操作不可撤回`,
-            onOk() {
-              console.log('OK');
+    handleOpenModal = async(record) => {
+        await setStateAsync(this, {record: record})
+        await setStateAsync(this, {visible: true});
+    }
+    handleSign = async () => {
+        this.setState({visible: false})
+        let params = {
+          transContractId: this.state.record.transContractId,
+          textContract: this.state.fileList[0],
+          supplyId: getId()
+        }
+        const res = await $common.checkContract(params);
+        if(res.data.success){
+          confirm({
+            title: '确认签署', 
+            content: '文本合同校验一致，请您确认是否签署',
+            async onOk() {
+              const resp = await $supply.signTransContract(params);
+              if(resp.data.success){
+                message.success("签署成功！")
+              }
             },
             onCancel() {
               console.log('Cancel');
             },
-        });
-    }
+          });
+        }else if(!res.data.success){
+          message.error("文本合同校验失败，请您确认")
+        }
+      }
+      handleCancel = ()=>{
+        this.setState({visible: false})
+      }
+      handleUploadChange = (info) => {
+        const { status } = info.file;
+        // 限制只上传1个
+        let fileList = [...info.fileList];
+        fileList = fileList.slice(-1);
+        this.setState({fileList})
+        if(status === 'done'){
+            message.success('上传成功')
+        }
+      }
+    // handleSign(record){
+    //     let self = this;
+    //     confirm({
+    //         title: '确定签署',
+    //         content: `您确定真的要签署${record.goodsName}的货物物流合同吗？注意该操作不可撤回`,
+    //         onOk() {
+    //           console.log('OK');
+    //         },
+    //         onCancel() {
+    //           console.log('Cancel');
+    //         },
+    //     });
+    // }
     handletransContractIdChange = async(id) => {
         let searchParams = Object.assign({}, this.state.searchParams, {transContractId: id})
         await setStateAsync(this, {searchParams})
@@ -164,6 +211,10 @@ class DisContract extends React.Component{
                 sm: {span: 6}
             }
         };
+        const uploadProps = {
+            multiple: false,
+            onChange: this.handleUploadChange
+        }
         return(
             <Card>
                 <header className="header">
@@ -196,6 +247,25 @@ class DisContract extends React.Component{
 
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Modal
+                      title="签署合约"
+                      visible={this.state.visible}
+                      onOk={this.handleSign}
+                      onCancel={this.handleCancel}
+                    >
+                      <Row>
+                        <Col span={4}>
+                          文本合同
+                        </Col>
+                        <Col span={20}>
+                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                              <Button>
+                                  <Icon type="upload" /> Upload
+                              </Button>
+                          </Upload>
+                        </Col>
+                      </Row>
+                    </Modal>
                 </main>
             </Card>
         )

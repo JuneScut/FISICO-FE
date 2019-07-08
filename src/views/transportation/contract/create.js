@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, message } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, message, Modal } from 'antd';
 import '../../../common/style.scss';
 import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
 import { getTransId } from '../../../utils/authority';
 const { Option } = Select;
+const { confirm } = Modal;
 
 class CreateTransContract extends React.Component{
     constructor(props){
@@ -85,11 +86,22 @@ class CreateTransContract extends React.Component{
         this.setState({companyList: res.data.result})
     }
     handleCreate = async()=>{
-        let params = this.state.createInfo;
-        let res = await $transportation.createContract(params);;
-        if(res.data.success){
-            message.success("创建成功！")
-        }
+        confirm({
+            title: '发起合同',
+            content: '当前正在发起签署新合约，请注意，发起合约后不能撤回。请核对清楚信息后，再点击发起。',
+            okText: '确认发起',
+            cancelText: "取消",
+            onOk : async() => {
+                let params = this.state.createInfo;
+                let res = await $transportation.createContract(params);;
+                if(res.data.success){
+                    message.success("创建成功！")
+                }
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
     }
     handleIdChange = (e) => {
         // console.log(e.currentTarget.value)

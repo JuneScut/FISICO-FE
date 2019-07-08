@@ -223,7 +223,7 @@ class InWarehouse extends React.Component{
                             <Form.Item label="物流公司">{this.state.modal.content.transportCompany}</Form.Item>
                         </Form>
                         <p style={{'fontWeight': 'bold'}}>请确认签收货物与订单相符，确认入库后，订单关闭，将不能再次修改相关信息</p>
-                    </Modal>
+                    </Modal> 
                 </main>
             </Card>
         )

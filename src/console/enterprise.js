@@ -18,7 +18,7 @@ enterprise.supplyList = function(params){
     return http.get("/supply/list", params);
 }
 enterprise.checkContract = function(params){
-    return http.post("/enterprise/contract/check", params);
+    return http.post("/contract/check", params);
 }
 enterprise.signContract = function(params){
     return http.post("/enterprise/contract/sign", params);

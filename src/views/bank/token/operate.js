@@ -192,7 +192,7 @@ class TokenLog extends React.Component{
 
 
                 <main>
-                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>
                     <Modal
                         title="审核管理"
                         visible={this.state.visible}

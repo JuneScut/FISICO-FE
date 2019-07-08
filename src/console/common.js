@@ -19,9 +19,19 @@ common.tradeType = [
     { key: 'EXCHANGE', value: '银行兑付'},
     { key: "REDEEM", value: "银行赎回"}
 ]
+common.tokenRecordStatus = [
+    { key: 'SUCCESS', value:'成功'},
+    { key: 'AUDIT', value: '审核中'},
+    { key: 'FAIL', value:'失败'}
+]
 common.tokenType = [
     { key: 'PAY', value:'支出'},
     { key: 'RECEIVE', value: '收入'}
+]
+common.insuranceStatus = [
+    { key: 'ACTIVE', value:'已生效'},
+    { key: 'EXPIRED', value:'已过期'},
+    { key: 'NOACTIVE', value:'未生效'}
 ]
 common.supplyList = function(params){
     return http.get("/supply/list", params);
@@ -29,7 +39,10 @@ common.supplyList = function(params){
 common.bankList = function(params){
     return http.get('/bank/list', params);
 }
-common.tokenList = function(params){
+common.insuranceList = function(params){
+    return http.get('/insurance_company/list', params);
+}
+common.tokenRecord = function(params){
     return http.get("/token/record", params);
 }
 common.getBalance = function(params){
@@ -44,5 +57,17 @@ common.getCredit = function(params){
 }
 common.tokenList = function(params){
     return http.get('/token/list', params);
+}
+common.createTokenExchange = function(params){
+    return http.post('/token/exchange/create', params);
+}
+common.logisticConsList = function(params){
+    return http.get('/logistics/contracts', params);
+}
+common.insureConsList = function(params){
+    return http.get('/insurance/contracts',params);
+}
+common.checkContract = function(params){
+    return http.post("/contract/check", params);
 }
 export default common;

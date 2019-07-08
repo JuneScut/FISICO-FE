@@ -1,9 +1,11 @@
 import React from 'react'
 import {Card, Form, Select, Button, Table, Row, Col, InputNumber, message, Modal} from 'antd';
 import { formatTime, findValue } from '../../../utils/tool.js';
-import $supply from '../../../console/supply';
+// import $supply from '../../../console/supply';
+import $common from '../../../console/common';
+
 import "../../../common/style.scss"
-import { getId } from '../../../utils/authority'
+import { getTransId } from '../../../utils/authority'
 
 const { Option } = Select;
 
@@ -17,8 +19,8 @@ class Token extends React.Component{
             assets: 0,
             visible: false,
             createInfo: {
-                role: 'S',
-                id: getId(),
+                role: 'T',
+                id: getTransId(),
                 bankId: 0,
                 token: 0
             },
@@ -52,7 +54,7 @@ class Token extends React.Component{
                     dataIndex: 'status',
                     key: 'status',
                     render: (status) => (
-                        <span>{ findValue($supply.tokenRecordStatus, status) }</span>
+                        <span>{ findValue($common.tokenRecordStatus, status) }</span>
                     )
                 },
                 {
@@ -69,28 +71,28 @@ class Token extends React.Component{
     }
     async getBalance() {
         let params = {
-            role: 'supplier'
+            role: 'transportation'
         }
-        const res = await $supply.getBalance(params);
+        const res = await $common.getBalance(params);
         if(res.data.success){
             this.setState({balance: res.data.result});
         }
     }
     async getAssets() {
         let params = {
-            role: 'supplier'
+            role: 'transportation'
         }
-        const res = await $supply.getAssets(params);
+        const res = await $common.getAssets(params);
         if(res.data.success){
             this.setState({assets: res.data.result});
         }
     }
     async loadList() {
         let params = {
-            role: 'S',
-            supplyId: getId()
+            role: 'T',
+            id: getTransId()
         }
-        const res = await $supply.tokenExchangeRecord(params);
+        const res = await $common.tokenRecord(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -102,7 +104,7 @@ class Token extends React.Component{
         // console.log(res)
     }
     loadBankList = async () => {
-        let res = await $supply.bankList();
+        let res = await $common.bankList();
         if(res.data.success){
             this.setState({bankList: res.data.result})
             if(res.data.result.length){
@@ -120,19 +122,19 @@ class Token extends React.Component{
         this.setState({createInfo})
     }
     createExchange = async() => {
-        let res = await $supply.createExchange(this.state.createInfo);
-        if(res.data.success){
-            this.handleCancel();
-            message.success("您已成功发起token兑换,请等待银行审批");
-            this.getAssets();
-            this.getBalance();
-            this.loadList();
+        if(this.validate()){
+            let res = await $common.createTokenExchange(this.state.createInfo);
+            if(res.data.success){
+                this.handleCancel();
+                message.success("您已成功发起token兑换,请等待银行审批");
+                this.getAssets();
+                this.getBalance();
+                this.loadList();
+            }
         }
     }
     openModal = ()=> {
-        if(this.validate()){
-            this.setState({visible: true})
-        }
+        this.setState({visible: true})
     }
     handleCancel = () => {
         this.setState({visible: false})

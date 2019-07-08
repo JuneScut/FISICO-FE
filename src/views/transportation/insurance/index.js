@@ -1,22 +1,32 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
-// import './style.scss';
-// import $enterprise from '../../console/enterprise';
-import "../../../common/style.scss"
-import $supply from '../../../console/supply';
-const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
+import '../../../common/style.scss';
+import $insurance from '../../../console/insurance';
+import $common from '../../../console/common';
+import { getTransId } from '../../../utils/authority';
+import { formatTime, findValue } from '../../../utils/tool.js';
 const { Option } = Select;
+const { RangePicker } = DatePicker;
+
 
 function onChange (date,dateString) {
     console.log(date,dateString)
 }
 
-class InsTrans extends React.Component{
+class InsuranceContract extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             list: [],
+            companyList: [],
+            searchParams: {
+                supplyId: 0,
+                insuranceContractId: 0,
+                beginTime: 0,
+                endTime: 0,
+                type: "ALL"
+            },
             columns: [
                 {
                     title: '序号',
@@ -30,8 +40,8 @@ class InsTrans extends React.Component{
                 },
                 {
                     title: '保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
+                    dataIndex: 'insuranceContractId',
+                    key: 'insuranceContractId',
                 },
                 {
                     title: '保险公司',
@@ -39,58 +49,65 @@ class InsTrans extends React.Component{
                     key: 'insuranceCompany',
                 },
                 {
-                    title: '保险合同签署时间',
-                    dataIndex: 'insuranceSTime',
-                    key: 'insuranceSTime',
-                },
-                {
                     title: '货物名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'goodsName',
+                    key: 'goodsName',
                 },
                 {
-                    title: '货物数量（件）',
-                    dataIndex: 'number',
-                    key: 'number',
+                    title: '货物数量',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
                 },
                 {
                     title: '保险金额（元）',
-                    dataIndex: 'insuranceCost',
-                    key: 'insuranceCost',
+                    dataIndex: 'cost',
+                    key: 'cost',
                 },
                 {
                     title: '发货时间',
-                    dataIndex: 'transTime',
-                    key: 'transTime',
+                    dataIndex: 'deliveryTime',
+                    key: 'deliveryTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
                 },
                 {
                     title: '物流状态',
-                    dataIndex: 'distributionStatus',
-                    key: 'distributionStatus',
-                },
-                {
-                    title: '物流保险',
-                    dataIndex: 'ifInsurance',
-                    key: 'ifInsurance',
+                    dataIndex: 'transStatus',
+                    key: 'transStatus',
+                    render: (status) => (
+                        <span>{findValue($common.logisticStatus, status)}</span>
+                    )
                 },
                 {
                     title: '保险情况',
-                    dataIndex: 'InsuranceStatus',
-                    key: 'InsuranceStatus',
+                    dataIndex: 'insuranceStatus',
+                    key: 'insuranceStatus',
+                    render: (status) => (
+                        <span>{findValue($common.insuranceStatus, status)}</span>
+                    )
                 },
                 {
                     title: '货物签收时间',
-                    dataIndex: 'receiveTime',
-                    key: 'receiveTime',
-                }
+                    dataIndex: 'signTime',
+                    key: 'signTime',
+                    render: (time) => (
+                        <span>{ formatTime(time) }</span>
+                    )
+                },
             ]
         }
     }
-    async loadList() {
+    loadList = async() => {
         let params = {
-            supplyId: 1
+            transId: getTransId()
         }
-        const res = await $supply.contractList(params);
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item];
+            }
+        }
+        const res = await $common.insureConsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
@@ -101,8 +118,30 @@ class InsTrans extends React.Component{
         }));
         console.log(this.state.list)
     }
+    loadCompanyList = async()=>{
+        const res = await $common.supplyList();
+        this.setState({companyList: res.data.result})
+    }
+    handleIdChange = (e)=>{
+        let id = e.currentTarget.value;
+        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId:id})
+        this.setState({searchParams})
+    }
+    handleSupplyChange = (id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+        this.setState({searchParams})
+    }
+    handleRangeChange = (time) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {beginTime:time[0].valueOf(),endTime:time[1].valueOf()})
+        this.setState({searchParams})
+    }
+    handleTypeChange = (type) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {type: type})
+        this.setState({searchParams})
+    }
     componentWillMount(){
         this.loadList();
+        this.loadCompanyList();
     }
     render(){
         const formItemLayout = {
@@ -125,42 +164,31 @@ class InsTrans extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="是否购买物流保险">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">已购买</Option>
-                                <Option value="test3">未购买</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="保险情况">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">未生效</Option>
-                                <Option value="test3">生效中</Option>
-                                <Option value="test4">已过期</Option>
-                            </Select>
-                        </Form.Item>
                         <Form.Item label="保险合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
-                            </Select>
+                            <Input onChange={this.handleIdChange}/>                                                        
                         </Form.Item>
-                        <Form.Item label="保险合同签署时间">
-                            <DatePicker onChange={onChange} />
+                        <Form.Item label="链上签署时间">
+                            <RangePicker onChange={this.handleRangeChange}/>                            
                             <br />
                         </Form.Item>
-                        <Form.Item label="合同编号">
-                            <Select>
-                                <Option value="test1">不限</Option>
-                                <Option value="test2">测试1</Option>
-                                <Option value="test3">测试2</Option>
-                                <Option value="test4">测试3</Option>
+                        <Form.Item label="合约签署方">
+                            <Select onChnage={this.handleSupplyChange}>
+                                {
+                                    this.state.companyList.map((company) => (
+                                        <Option value={company.id} key={company.id}>{company.name}</Option>
+                                    ))
+                                }
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="保险类型">
+                            <Select onChange={this.handleTypeChange} defaultValue="ALL">
+                                <Option value="ALL">不限</Option>
+                                <Option value="GOODS">货物保险</Option>
+                                <Option value="TRANS">运输保险</Option>
                             </Select>
                         </Form.Item>
                     </Form>
+                    <Button onClick={this.loadList}>查询</Button>
                 </header>
 
                 <main>
@@ -171,4 +199,4 @@ class InsTrans extends React.Component{
     }
 }
 
-export default InsTrans;
+export default InsuranceContract;

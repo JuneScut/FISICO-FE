@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, DatePicker, Modal} from 'antd';
+import {Card, Form, Select, Input, Button, Table, DatePicker, Modal, Row, Col, message, Upload, Icon} from 'antd';
 import "../../../common/style.scss"
 import { getId } from '../../../utils/authority';
 import $supply from '../../../console/supply';
+import $common from '../../../console/common';
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 const {MonthPicker,RangrPicker,WeekPicker}=DatePicker;
 const { Option } = Select;
@@ -25,6 +26,9 @@ class InsSupplierContract extends React.Component{
                 contractId: 0,
                 insureContractId: 0
             },
+            visible: false,
+            fileList: [],
+            record: {},
             companyList: [],
             columns: [
                 {
@@ -91,7 +95,7 @@ class InsSupplierContract extends React.Component{
                     dataIndex: 'operate',
                     key: 'operate',
                     render: (text, record) => (
-                        <Button disabled={record.insuranceContractStatus==='SIGNED'} onClick={()=>this.handleSign(record)}>签署</Button>
+                        <Button disabled={record.insuranceContractStatus==='SIGNED'} onClick={()=>this.handleOpenModal(record)}>签署</Button>
                     )
                 },
             ]
@@ -121,20 +125,20 @@ class InsSupplierContract extends React.Component{
         }
         
     }
-    handleSign = (record) => {
-        console.log(record)
-        let self = this;
-        confirm({
-            title: '确定签署',
-            content: `您确定真的要签署${record.goodsName}的货物保险合同吗？注意该操作不可撤回`,
-            onOk() {
-              console.log('OK');
-            },
-            onCancel() {
-              console.log('Cancel');
-            },
-        });
-    }
+    // handleSign = (record) => {
+    //     console.log(record)
+    //     let self = this;
+    //     confirm({
+    //         title: '确定签署',
+    //         content: `您确定真的要签署${record.goodsName}的货物保险合同吗？注意该操作不可撤回`,
+    //         onOk() {
+    //           console.log('OK');
+    //         },
+    //         onCancel() {
+    //           console.log('Cancel');
+    //         },
+    //     });
+    // }
     handleInsureContractIdChange = async(id)=>{
         let searchParams = Object.assign({}, this.state.searchParams, {insureContractId: id})
         await setStateAsync(this, {searchParams})
@@ -149,6 +153,49 @@ class InsSupplierContract extends React.Component{
         this.loadList();
         this.loadCompanyList();
     }
+    handleOpenModal = async(record) => {
+        await setStateAsync(this, {record: record})
+        await setStateAsync(this, {visible: true});
+    }
+    handleSign = async () => {
+        this.setState({visible: false})
+        let params = {
+          insuranceContractId: this.state.record.insuranceContractId,
+          textContract: this.state.fileList[0],
+          supplyId: getId()
+        }
+        const res = await $common.checkContract(params);
+        if(res.data.success){
+          confirm({
+            title: '确认签署', 
+            content: '文本合同校验一致，请您确认是否签署',
+            async onOk() {
+              const resp = await $supply.signInsureContract(params);
+              if(resp.data.success){
+                message.success("签署成功！")
+              }
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
+        }else if(!res.data.success){
+          message.error("文本合同校验失败，请您确认")
+        }
+      }
+      handleCancel = ()=>{
+        this.setState({visible: false})
+      }
+      handleUploadChange = (info) => {
+        const { status } = info.file;
+        // 限制只上传1个
+        let fileList = [...info.fileList];
+        fileList = fileList.slice(-1);
+        this.setState({fileList})
+        if(status === 'done'){
+            message.success('上传成功')
+        }
+      }
     render(){
         const formItemLayout = {
             labelCol: {
@@ -160,6 +207,10 @@ class InsSupplierContract extends React.Component{
                 sm: { span: 6 },
             }
         };
+        const uploadProps = {
+            multiple: false,
+            onChange: this.handleUploadChange
+        }
         return(
             <Card>
                 <header className="header">
@@ -192,6 +243,25 @@ class InsSupplierContract extends React.Component{
 
                 <main>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
+                    <Modal
+                      title="签署合约"
+                      visible={this.state.visible}
+                      onOk={this.handleSign}
+                      onCancel={this.handleCancel}
+                    >
+                      <Row>
+                        <Col span={4}>
+                          文本合同
+                        </Col>
+                        <Col span={20}>
+                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                              <Button>
+                                  <Icon type="upload" /> Upload
+                              </Button>
+                          </Upload>
+                        </Col>
+                      </Row>
+                    </Modal>
                 </main>
             </Card>
         )

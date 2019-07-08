@@ -69,7 +69,8 @@ class TokenSupplier extends React.Component{
     }
     async loadList() {
         let params = {
-            supplyId: getId()
+            role: 'S',
+            id: getId()
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
