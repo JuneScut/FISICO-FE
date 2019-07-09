@@ -37,6 +37,9 @@ function getTransId(){
 function getInsuranceId(){
     return 4;
 }
+function getBankId(){
+    return 5;
+}
 export {
     getAuth,
     hasAuth,
@@ -45,5 +48,6 @@ export {
     getId,
     getEnterId,
     getTransId,
-    getInsuranceId
+    getInsuranceId,
+    getBankId
 }

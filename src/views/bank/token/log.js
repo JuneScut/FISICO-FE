@@ -32,10 +32,10 @@ class TokenLog extends React.Component{
                 },
                 {
                     title: '交易类型',
-                    dataIndex: 'type',
-                    key: 'type',
-                    render: (status) => (
-                        <span>{findValue($bank.status, status)}</span>
+                    dataIndex: 'tradeType',
+                    key: 'tradeType',
+                    render: (type) => (
+                        <span>{findValue($common.tradeType, type)}</span>
                     )
                 },
                 {
@@ -92,7 +92,7 @@ class TokenLog extends React.Component{
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $common.tokenList(params);
+        const res = await $common.tokenRecord(params);
         if(res.data.success){
             let list = res.data.result;
             list.forEach((item,idx) => {

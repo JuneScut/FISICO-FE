@@ -5,6 +5,8 @@ import '../../../common/style.scss'
 import $common from '../../../console/common';
 import $bank from '../../../console/bank';
 import { findValue, formatTime,setStateAsync } from "../../../utils/tool"
+import {getBankId} from '../../../utils/authority'
+
 const {MonthPicker,RangePicker,WeekPicker}=DatePicker;
 const { Option } = Select;
 
@@ -82,7 +84,7 @@ class TokenLog extends React.Component{
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $common.tokenList(params);
+        const res = await $common.tokenRecord(params);
         if(res.data.success){
             let list = res.data.result;
             list.forEach((item,idx) => {
@@ -108,6 +110,7 @@ class TokenLog extends React.Component{
     }
     handleOk = async() => {
         let params = {
+            bankId: getBankId(),
             tokenId: this.state.record.id,
             result: true
         }
@@ -122,7 +125,7 @@ class TokenLog extends React.Component{
             tokenId: this.state.record.id,
             result: false
         }
-        let res = await $bank.auditToken(params);
+        let res = await $common.tokenRecord(params);
         if(res.data.success){
             this.setState({visible: false})
             message.success("审核已经驳回")
