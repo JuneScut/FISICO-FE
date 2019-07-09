@@ -97,7 +97,7 @@ class InsuranceContract extends React.Component{
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $insurance.contractList(params);
+        const res = await $common.insureConsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;

@@ -1,9 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, DatePicker, Row, Col} from 'antd';
+import {Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, DatePicker, Row, Col, Tooltip} from 'antd';
 import './style.scss';
-import $enterprise from '../../console/enterprise';
+import $common from '../../console/common';
 import $supply from '../../console/supply';
+import $insurance from '../../console/insurance';
+import { getInsuranceId } from '../../utils/authority';
+import { findValue } from '../../utils/tool';
+
 const { Option } = Select;
 
 function onChange (date,dateString) {
@@ -23,8 +27,8 @@ class InsSubject extends React.Component{
                 },
                 {
                     title: '保险合同编号',
-                    dataIndex: 'insuranceId',
-                    key: 'insuranceId',
+                    dataIndex: 'insuranceContractId',
+                    key: 'insuranceContractId',
                 },
                 {
                     title: '合同编号',
@@ -35,16 +39,24 @@ class InsSubject extends React.Component{
                     title: '保险类型',
                     dataIndex: 'type',
                     key: 'type',
+                    render: (type) => (
+                        <span>{ findValue($insurance.type, type) }</span>
+                    )
                 },
                 {
                     title: '保险金额',
-                    dataIndex: 'amount',
-                    key: 'amount',
+                    dataIndex: 'cost',
+                    key: 'cost',
                 },
                 {
                     title: '货物消息',
                     dataIndex: 'cargoInfo',
                     key: 'cargoInfo',
+                    render: (text, record) => (
+                        <Tooltip placement="right" title={`商品名称：${record.goodsName}     货物数量：${record.quantity}     货物金额：${record.value}`}>
+                            <Button href="detail">详情</Button>
+                        </Tooltip>
+                    )
                 },
                 {
                     title: '签署人',
@@ -53,20 +65,42 @@ class InsSubject extends React.Component{
                 },
                 {
                     title: '物流状态',
-                    dataIndex: 'Distributionstatus',
-                    key: 'Distributionstatus',
+                    dataIndex: 'transStatus',
+                    key: 'transStatus',
+                    render: (status) => (
+                        <span>{ findValue($common.logisticStatus, status) }</span>
+                    )
                 },
                 {
                     title: '保险状态',
-                    dataIndex: 'Insurancestatus',
-                    key: 'Insurancestatus',
+                    dataIndex: 'insuranceStatus',
+                    key: 'insuranceStatus',
+                    render: (status) => (
+                        <span>{ findValue($common.insuranceStatus, status) }</span>
+                    )
                 },
-                ]
+            ]
         }
     }
-    async loadList() {
-        const res = await $supply.contractList();
-
+    loadList = async() => {
+        let params = {
+            insuranceId: getInsuranceId()
+        }
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item];
+            }
+        }
+        const res = await $common.insureConsList(params);
+        let list = res.data.result;
+        list.forEach((item, idx) => {
+            item.order = idx+1;
+            item.key = item.id;
+        });
+        this.setState(() => ({
+            list: list
+        }));
+        console.log(this.state.list)
     }
     componentWillMount(){
         this.loadList();

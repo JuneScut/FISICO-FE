@@ -228,7 +228,7 @@ class ReceiveContract extends React.Component{
                     </Form>
                 </header>
 
-                <main>
+                <main> 
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                     <Modal
                       title="签署合约"
