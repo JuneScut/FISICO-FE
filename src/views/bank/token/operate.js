@@ -24,6 +24,7 @@ class TokenLog extends React.Component{
                 type: 'ALL',
                 company: "ALL",
             },
+            enterpriseList: [],
             visible: false,
             record: {},
             columns: [
@@ -31,14 +32,6 @@ class TokenLog extends React.Component{
                     title: '序号',
                     dataIndex: 'order',
                     key: 'order',
-                },
-                {
-                    title: '交易类型',
-                    dataIndex: 'type',
-                    key: 'type',
-                    render: (status) => (
-                        <span>{findValue($bank.status, status)}</span>
-                    )
                 },
                 {
                     title: '公司名称',
@@ -94,6 +87,11 @@ class TokenLog extends React.Component{
             this.setState({list: list})
         }
     }
+    loadEnterpriseList = async() => {
+        const res = await $common.enterpriseList();
+        console.log(res)
+        this.setState({enterpriseList: res.data.result});
+    }
     handleCompanyChange = async(company) => {
         let searchParams = Object.assign({}, this.state.searchParams, {company: company})
         await setStateAsync(this, {searchParams:searchParams})
@@ -133,8 +131,9 @@ class TokenLog extends React.Component{
     }
     componentWillMount(){
         // console.log($enterprise.getData())
-        this.getData();
-        this.loadList();
+        // this.getData();
+        // this.loadList();
+        this.loadEnterpriseList();
     }
 
     render(){
@@ -174,22 +173,24 @@ class TokenLog extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                    <Form.Item label="公司名称">
-                            <Select defaultValue="ALL" onChange={this.handleCompanyChange}>
-                                <Option value="ALL">不限</Option>
-                                <Option value="S">上游供应商</Option>
-                                <Option value="E">核心企业</Option>
-                                <Option value="T">物流公司</Option>
-                                <Option value="I">保险公司</Option>
+                    <Form.Item label="企业名称">
+                            <Select onChange={this.handleCompanyChange}>
+                                {
+                                    this.state.enterpriseList.map(item => {
+                                        return (
+                                            <Option value={item.id} key={item.id}>{item.name}</Option>
+                                        )
+                                    })
+                                }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="交易类型">
+                        {/* <Form.Item label="交易类型">
                             <Select onChange={this.handleTypeChange}  defaultValue="ALL">
                                 <Option value="ALL">不限</Option>
                                 <Option value="EXCHANGE">兑付</Option>
                                 <Option value="REDEEM">赎回</Option>
                             </Select>
-                        </Form.Item>
+                        </Form.Item> */}
                     </Form>
                 </header>
 

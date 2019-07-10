@@ -95,8 +95,8 @@ class TokenEnter extends React.Component{
 
     }
     getBalance = async () =>  {
-        const res = await $common.getBalance();
-        this.setState({balance: res.data.result});
+        const res = await $common.enterpriseList();
+        this.setState({balance: res.data.result[0].money});
     }
     handleTypeChange = (type) => {
         let searchParams = Object.assign({}, this.state.searchParams, {type: type})
@@ -153,7 +153,7 @@ class TokenEnter extends React.Component{
 
                 <main>
                     <div style={{'float': 'right'}}>
-                        <p>公司Token余额：{this.state.balance}</p>
+                        <p>公司余额：{this.state.balance}</p>
                     </div>
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>

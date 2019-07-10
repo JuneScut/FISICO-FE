@@ -33,15 +33,50 @@ common.insuranceStatus = [
     { key: 'EXPIRED', value:'已过期'},
     { key: 'NOACTIVE', value:'未生效'}
 ]
-common.supplyList = function(params){
-    return http.get("/supply/list", params);
+common.supplyList = async function(params){
+    let resp = await http.get('/enterprise/list');
+    let result = []
+    if(resp.data.success){
+        result = resp.data.result.find(item=>item.id===2);
+    }
+    let res = {
+        data: {
+            success: true,
+            result: [result]
+        }
+    }
+    return res;
+}
+//获取企业信息
+common.enterpriseList = async function(params){
+    let resp = await http.get('/enterprise/list');
+    let result = []
+    if(resp.data.success){
+        result = resp.data.result.find(item=>item.id===1);
+    }
+    let res = {
+        data: {
+            success: true,
+            result: [result]
+        }
+    }
+    return res;
 }
 common.bankList = function(params){
     return http.get('/bank/list', params);
 }
-common.insuranceList = function(params){
-    return http.get('/insurance_company/list', params);
+common.insenterprise = function(params){
+    return http.get('/insenterprise/list', params);
 }
+common.logenterpriseList = function(params){
+    return http.get('/logenterprise/list', params);
+}
+common.insenterpriseList = function(params){
+    return http.get('/insenterprise/list', params);
+}
+
+
+
 common.tokenRecord = function(params){
     return http.get("/token/record", params);
 }
@@ -61,13 +96,39 @@ common.tokenList = function(params){
 common.createTokenExchange = function(params){
     return http.post('/token/exchange/create', params);
 }
+
+
+// 获取合同列表
+common.getContractsList = function(params){
+    return http.get('/contract/list', params);
+}
 common.logisticConsList = function(params){
-    return http.get('/logistics/contracts', params);
+    return http.get('/logistic/list', params);
 }
 common.insureConsList = function(params){
-    return http.get('/insurance/contracts',params);
+    return http.get('/insurance/list',params);
+}
+
+
+// 检查合同
+common.checkLogisicContract = function(params){
+    return http.form("/logistic/check", params);
+}
+common.checkInsuranceContract = function(params){
+    return http.form("/insurance/check", params);
 }
 common.checkContract = function(params){
-    return http.post("/contract/check", params);
+    return http.form("/contract/check", params);
+}
+
+// 签署合同
+common.signContract = function(params){
+    return http.get("/contract/sign", params);
+}
+common.signLogisticContract = function(params){
+    return http.get("/logistic/sign", params);
+}
+common.signInsuranceContract = function(params){
+    return http.get("/insurance/sign", params);
 }
 export default common;

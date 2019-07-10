@@ -4,7 +4,7 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,Dat
 import '../../../common/style.scss';
 import $insurance from '../../../console/insurance';
 import $common from '../../../console/common';
-import { getInsuranceId } from '../../../utils/authority';
+import { getUser, getAuth, getUserName } from '../../../utils/authority';
 import { formatTime, findValue } from '../../../utils/tool.js';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -35,18 +35,18 @@ class InsuranceContract extends React.Component{
                 },
                 {
                     title: '保险合同编号',
-                    dataIndex: 'insuranceContractId',
-                    key: 'insuranceContractId',
-                },
-                {
-                    title: '合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
+                    title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
+                },
+                {
                     title: '发起时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: (time) => (
                         <span>{ formatTime(time) }</span>
                     )
@@ -55,32 +55,35 @@ class InsuranceContract extends React.Component{
                     title: '保险类型',
                     dataIndex: 'type',
                     key: 'type',
-                    render: (type) => (
-                        <span>{findValue($insurance.type, type)}</span>
+                    render: (type,record) => (
+                        record.to_id===2? <span>货物保险</span> : <span>运输保险</span>
                     )
                 },
                 {
                     title: '保险金额（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
                 {
                     title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
-                },
-                {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: (time) => (
-                        <span>{ formatTime(time) }</span>
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                        <span>{ getUserName(to_id) }</span>
                     )
                 },
+                // {
+                //     title: '签署时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                //     render: (time) => (
+                //         <span>{ formatTime(time) }</span>
+                //     )
+                // },
                 {
                     title: '合同状态',
-                    dataIndex: 'insuranceContractStatus',
-                    key: 'insuranceContractStatus',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (status) => (
                         <span>{findValue($common.status, status)}</span>
                     )
@@ -90,7 +93,7 @@ class InsuranceContract extends React.Component{
     }
     loadList = async() => {
         let params = {
-            insuranceId: getInsuranceId()
+            from_id: getUser(getAuth()).id
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
@@ -98,15 +101,15 @@ class InsuranceContract extends React.Component{
             }
         }
         const res = await $common.insureConsList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        console.log(this.state.list)
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item,idx) =>{
+                item.order = idx+1;
+                item.key = idx;
+                item.gName="goods"
+            })
+            this.setState({list: list})
+        }
     }
     loadCompanyList = async()=>{
         const res = await $common.supplyList();

@@ -59,10 +59,23 @@ supply.enterpriseList = function(){
 }
 
 supply.goodsList = function(){
-    return http.get('/goods/list');
+    let result = [
+        {
+            id: 1,
+            name: '货物1'
+        }
+    ]
+    let res = {
+        data: {
+            success: true,
+            result
+        }
+    }
+    return res;
 }
+
 supply.createContract = function(data){
-    return http.post('/supply/contract/create', data);
+    return http.form('/contract/create', data);
 }
 
 supply.outRecord = function(params){

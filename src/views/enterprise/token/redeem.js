@@ -80,8 +80,8 @@ class TokenRedeem extends React.Component{
 
     }
     getBalance = async () =>  {
-        const res = await $common.getBalance();
-        this.setState({balance: res.data.result});
+        const res = await $common.enterpriseList();
+        this.setState({balance: res.data.result[0].money});
     }
     getAssets = async () =>  {
         const res = await $common.getAssets();
@@ -124,10 +124,10 @@ class TokenRedeem extends React.Component{
         // console.log($enterprise.getData())
         // this.getData();
         // this.loadList();
-        this.getAssets();
+        // this.getAssets();
         this.getBalance();
-        this.getCredit();
-        this.loadBankList();
+        // this.getCredit();
+        // this.loadBankList();
     }
     render(){
         const formItemLayout = {
@@ -165,9 +165,7 @@ class TokenRedeem extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="公司Token余额" >{this.state.balance}</Form.Item>
-                        <Form.Item label="公司Token额度">{this.state.credit}</Form.Item>
-                        <Form.Item label="公司资产（元）">{this.state.assets}</Form.Item>
+                        <Form.Item label="公司余额" >{this.state.balance}</Form.Item>
                         <Form.Item label="兑付银行">
                             <Select onChange={this.handleBankChange}>
                                 {

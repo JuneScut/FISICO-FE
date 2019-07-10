@@ -2,8 +2,10 @@ import React from 'react'
 import { Card, Form, Select, Table,  DatePicker } from 'antd';
 import "../../../common/style.scss"
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
-import $supply from '../../../console/supply';
-import moment from 'moment';
+// import $supply from '../../../console/supply';
+import $common from '../../../console/common';
+import { getAuth, getUser } from '../../../utils/authority';
+import Search from 'antd/lib/input/Search';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
@@ -14,11 +16,11 @@ class SupplyContract extends React.Component{
             list: [],
             enterpriseList: [],
             contractIds: [],
-            searchParms: {
+            searchParams: {
                 id: 0,
-                beginTime:moment().valueOf(),
-                endTime: moment().valueOf(),
-                enterpriseId: 0
+                beginTime:0,
+                endTime: 0,
+                to_id: 0
             },
             columns: [
                 {
@@ -33,8 +35,8 @@ class SupplyContract extends React.Component{
                   },
                   {
                     title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    dataIndex: 'time',
+                    key: 'createTime',
                     render: beginTime => (
                         <span>
                             { formatTime(beginTime) }
@@ -63,8 +65,8 @@ class SupplyContract extends React.Component{
                   },
                   {
                     title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: signTime => (
                         <span>
                             { formatTime(signTime) }
@@ -77,65 +79,63 @@ class SupplyContract extends React.Component{
                     key: 'status',
                     render: status => (
                         <span>
-                            {findValue($supply.status, status)}
+                            {findValue($common.status, status)}
                         </span>
                     )
                   },
             ]
         }
     }
-    async loadEnterprise() {
-        const res = await $supply.enterpriseList();
-        let list = res.data.result;
-        list.unshift({id: 0, name: '不限'});
-        this.setState({enterpriseList: list})
-        // console.log(this.state.enterpriseList)
-
+    loadEnterpriseList = async() => {
+        const res = await $common.enterpriseList();
+        this.setState({enterpriseList: res.data.result});
     }
     async loadList(extensions) {
         let params = {
-            supplyId: 1
+            from_id: getUser(getAuth).id
         }
-        
-        const res = await $supply.contractList(params);
-        let list = res.data.result;
-        let tempArr = [];
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-            let temp = {value:item.id, title:item.id}
-            tempArr.push(temp);
-        });
-        tempArr.unshift({value: 0, title: '不限'})
-        this.setState(() => ({
-            list: list,
-            contractIds: tempArr
-        }));
-        // console.log(this.state.list)
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item];
+            }
+        }
+        const res = await $common.getContractsList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item,idx)=>{
+                item.order = idx+1;
+                item.key = item.id;
+            })
+            this.setState({list})
+        }
     }
     rangeChange = async(range) => {
-        let beginTime = range[0].valueOf();
-        let endTime = range[1].valueOf();
-        let searchParms = Object.assign({}, this.state.searchParm);
-        searchParms.beginTime = beginTime;
-        searchParms.endTime = endTime;
-        await setStateAsync(this, {searchParms: searchParms});
+        if(range.length){
+            let searchParams = Object.assign({}, this.state.searchParams, {beginTime: range[0].valueOf(), endTime: range[1].valueOf()});
+            await setStateAsync(this, {searchParams});
+        }else{
+            let searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime: 0});
+            await setStateAsync(this, {searchParams});
+        }
         this.loadList();
     }
     handleContractIdChange = async(id) => {
+        // let id = event.currentTarget.value;
         let searchParams = Object.assign({}, this.state.searchParams, {id:id})
-        await setStateAsync(this, {searchParms: searchParams})
+        await setStateAsync(this, {searchParams})
+        console.log(this.state.searchParams)
         this.loadList();
-
     }
     handleSignatoryChange = async (sign) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {enterpriseId:sign})
-        await setStateAsync(this, {searchParms: searchParams})        
+        let searchParams = Object.assign({}, this.state.searchParams, {to_id:sign})
+        await setStateAsync(this, {searchParams: searchParams})  
+        console.log(this.state.searchParams)
+
         this.loadList();
     } 
     componentWillMount(){
         this.loadList();
-        this.loadEnterprise();
+        this.loadEnterpriseList();
     }
     render(){
         const formItemLayout = {
@@ -153,27 +153,14 @@ class SupplyContract extends React.Component{
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="合同编号">
-                            <Select
-                             showSearch
-                             optionFilterProp="children"
-                             filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                             }
-                             onChange={this.handleContractIdChange}
-                            >
-                                {
-                                    this.state.contractIds.map((contract) => (
-                                        <Option value={contract.value} key={contract.value}>{contract.title}</Option>
-                                    ))
-                                }
-                            </Select>
+                            <Search onSearch={this.handleContractIdChange} allowClear></Search>
                         </Form.Item>
                         <Form.Item label="链上签署时间">
                             <RangePicker onChange={this.rangeChange}/>
                             <br />
                         </Form.Item>
                         <Form.Item label="合约签署方">
-                            <Select onChange={this.handleSignatoryChange} >
+                            <Select onChange={this.handleSignatoryChange} allowClear>
                                 {
                                     this.state.enterpriseList.map((enter) => (
                                         <Option value={enter.id} key={enter.id}>{enter.name}</Option>

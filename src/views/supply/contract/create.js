@@ -1,11 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Button, Table, Upload, Icon, InputNumber, message } from 'antd';
+import { Card, Form, Select, Button, Table, Upload, Icon, InputNumber, message, Modal } from 'antd';
 // import '../style.scss';
 import "../../../common/style.scss"
-import { findValue, formatTime } from '../../../utils/tool.js';
+import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
+import $common from '../../../console/common';
+import { getAuth, getUser } from '../../../utils/authority';
 const { Option } = Select;
+const { confirm } = Modal;
 
 class CreateContract extends React.Component{
     constructor(props){
@@ -14,6 +17,8 @@ class CreateContract extends React.Component{
             list: [],
             enterpriseList: [],
             goodsList: [],
+            fileList: [],
+            supplyId: getUser(getAuth()).id,
             createInfo: {
                 fileList: [],
                 signtoryId: -1,
@@ -101,12 +106,8 @@ class CreateContract extends React.Component{
         // console.log(this.state.list)
     }
     async loadEnterprise() {
-        const res = await $supply.enterpriseList();
-        this.setState({enterpriseList: res.data.result})
-        if(this.state.enterpriseList.length){
-            let createInfo = Object.assign({}, this.state.createInfo, {signtoryId: this.state.enterpriseList[0].id})
-            this.setState({createInfo})
-        }
+        const res = await $common.enterpriseList();
+        this.setState({enterpriseList: res.data.result});
     }
     async loadGoodsList() {
         const res = await $supply.goodsList();
@@ -116,22 +117,43 @@ class CreateContract extends React.Component{
             this.setState({createInfo})
         }
     }
-    async createContract(params) {
-        let res =  await $supply.createContract(params);
-        return res;
-    }
+    // async createContract(params) {
+    //     let res =  await $supply.createContract(params);
+    //     return res;
+    // }
     handleCreate = () => {
-        // console.log('create')
         let {signtoryId, goodsId, goodsQuantity, price} = this.state.createInfo;
-        let textContract = this.state.createInfo.fileList[0];
+        var form = new FormData();
+        form.append('file', this.state.fileList[0]);
         let params = {
-            textContract, signtoryId, goodsQuantity, goodsId, price
+            from_id: this.state.supplyId,
+            to_id: signtoryId,
+            supply: goodsQuantity,
+            price: price,
+            goodsId: goodsId
         }
-        console.log(params)
+        for(let item in params){
+            form.append(item, params[item])
+            console.log(form.get(item))
+        }
         if(this.validate()){
-            // console.log(this.state.createInfo)
-            const res = this.createContract(params)
-            console.log(res);
+            confirm({
+                title: '发起合同',
+                content: '当前正在发起签署新合约，请注意，发起合约后不能撤回。请核对清楚信息后，再点击发起。',
+                okText: '确认发起',
+                cancelText: '取消',
+                async onOk() {
+                  let res = await $supply.createContract(form);
+                  if(res.data.success){
+                      message.success("合同发起成功！")
+                  }else{
+                      message.error("系统异常，请稍后重试")
+                  }
+                },
+                onCancel() {
+                  console.log('Cancel');
+                },
+            });
         }
         
     }
@@ -140,19 +162,29 @@ class CreateContract extends React.Component{
         this.loadEnterprise();
         this.loadGoodsList();
     }
-    handleUploadChange = info => {
-        const { status } = info.file;
-        // console.log(status)
-        // console.log(info.fileList)
-        // 限制只上传1个
-        let fileList = [...info.fileList];
-        fileList = fileList.slice(-1);
-        let createInfo = Object.assign({}, this.state.createInfo, {fileList:fileList})
-        this.setState({createInfo})
-        if(status === 'done'){
-            message.success('上传成功')
-        }
+    handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
     }
+    // handleUploadChange = async(info) => {
+    //     const { status } = info.file;
+    //     let fileList = [...info.fileList];
+    //     fileList = fileList.slice(-1);
+    //     await setStateAsync(this, {fileList});
+    //     if(status === 'done'){
+    //         message.success('上传成功')
+    //     }
+    // }
+    handleSignatoryChange = async (sign) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {signtoryId:sign})
+        await setStateAsync(this, {createInfo})  
+    } 
+    handleGoodsChange = async (id) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {goodsId:id})
+        await setStateAsync(this, {createInfo: createInfo})  
+    } 
     quantityChange = quantity => {
         let createInfo = Object.assign({}, this.state.createInfo, {goodsQuantity:quantity})
         this.setState({createInfo})
@@ -162,7 +194,7 @@ class CreateContract extends React.Component{
         this.setState({createInfo})
     }
     validate() {
-        if(this.state.createInfo.fileList.length===0){
+        if(this.state.fileList.length===0){
             message.warn('请上传文本合同')
             return false;
         }
@@ -203,21 +235,22 @@ class CreateContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
+            beforeUpload: this.handleBeforeUpload
         }
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="文本合同" >
-                            <Upload {...uploadProps} fileList={this.state.createInfo.fileList}>
+                            <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                                 <Button>
                                     <Icon type="upload" /> Upload
                                 </Button>
                             </Upload>
                         </Form.Item>
                         <Form.Item label="合约签署方">
-                            <Select value={this.state.createInfo.signtoryId} style={{'width': '230px'}}>
+                            <Select onChange={this.handleSignatoryChange}>
                                 {
                                     this.state.enterpriseList.map((enter) => (
                                         <Option value={enter.id} key={enter.id}>{enter.name}</Option>
@@ -226,7 +259,7 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="货物名称">
-                        <Select value={this.state.createInfo.goodsId} style={{'width': '230px'}}>
+                        <Select onChange={this.handleGoodsChange}>
                                 {
                                     this.state.goodsList.map((goods) => (
                                         <Option value={goods.id} key={goods.id}>{goods.name}</Option>

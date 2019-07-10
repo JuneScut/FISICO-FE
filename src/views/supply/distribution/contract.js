@@ -4,7 +4,7 @@ import {Card, Form, Select, Input, Button, Table, Modal, Row, Col, message, Uplo
 import "../../../common/style.scss"
 import $supply from '../../../console/supply';
 import $common from '../../../console/common';
-import { getId } from '../../../utils/authority'
+import { getId, getUser, getAuth, getUserName } from '../../../utils/authority'
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 const { confirm } = Modal;
 const { Search } = Input;
@@ -22,10 +22,10 @@ class DisContract extends React.Component{
         this.state = {
             list: [],
             searchParams: {
-                supplyId: getId(),
-                contractId: 0,
+                id: 0,
                 transContractId: 0
             },
+            to_id: getUser(getAuth()).id,
             visible: false,
             record: {},
             fileList: [],
@@ -38,56 +38,59 @@ class DisContract extends React.Component{
                 },
                 {
                     title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
+                },
+                {
+                    title: '物流合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
-                    title: '物流合同编号',
-                    dataIndex: 'transContractId',
-                    key: 'transContractId',
-                },
-                {
                     title: '物流公司',
-                    dataIndex: 'company',
-                    key: 'company',
+                    dataIndex: 'from_id',
+                    key: 'from_id',
+                    render: (from_id) => (
+                        <span>{ getUserName(from_id) }</span>
+                    )
                 },
                 {
                     title: '发起时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: (time) => (
                         <span>{formatTime(time)}</span>
                     )
                 },
-                {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: (time) => (
-                        <span>{formatTime(time)}</span>
-                    )
-                },
+                // {
+                //     title: '签署时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                //     render: (time) => (
+                //         <span>{formatTime(time)}</span>
+                //     )
+                // },
                 {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                 },
-                {
-                    title: '货物数量（件）',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
-                },
+                // {
+                //     title: '货物数量（件）',
+                //     dataIndex: 'quantity',
+                //     key: 'quantity',
+                // },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'transCost',
-                    key: 'transCost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
                 {
                     title: '合同状态',
-                    dataIndex: 'contractStatus',
-                    key: 'contractStatus',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (status) => (
-                        <span>{findValue($supply.status, status)}</span>
+                        <span>{findValue($common.status, status)}</span>
                     )
                 },
                 {
@@ -102,24 +105,30 @@ class DisContract extends React.Component{
         }
     }
     async loadList() {
-        let params = {};
+        let params = {
+            to_id: this.state.to_id,
+            status: 'CREATED'
+        }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
-                params[item] = this.state.searchParams[item];
+                params[item] = this.state.searchParams[item]
             }
         }
-        const res = await $common.logisticConsList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
+        const res =  await $common.logisticConsList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item, idx) => {
+                item.order = idx+1;
+                item.key = item.id;
+                item.gName = "goods";
+            });
+            this.setState(() => ({
+                list: list
+            }));
+        }
     }
     async loadCompanyList() {
-        const res = await $supply.transportationList();
+        const res = await $common.logenterpriseList();
         if(res.data.success){
             this.setState({companyList: res.data.result});
         }
@@ -130,20 +139,25 @@ class DisContract extends React.Component{
     }
     handleSign = async () => {
         this.setState({visible: false})
-        let params = {
-          transContractId: this.state.record.transContractId,
-          textContract: this.state.fileList[0],
-          supplyId: getId()
-        }
-        const res = await $common.checkContract(params);
+        let form = new FormData();
+        form.append('file', this.state.fileList[0]);
+
+        const res = await $common.checkLogisicContract(form);
+
+        const self = this;
         if(res.data.success){
           confirm({
             title: '确认签署', 
             content: '文本合同校验一致，请您确认是否签署',
             async onOk() {
-              const resp = await $supply.signTransContract(params);
+              let params = {
+                  id: self.state.record.id,
+                  sign: true
+              }
+              const resp = await $common.signLogisticContract(params);
               if(resp.data.success){
-                message.success("签署成功！")
+                message.success("签署成功！");
+                self.loadList();
               }
             },
             onCancel() {
@@ -167,6 +181,12 @@ class DisContract extends React.Component{
             message.success('上传成功')
         }
       }
+      handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
+      }
     // handleSign(record){
     //     let self = this;
     //     confirm({
@@ -186,7 +206,7 @@ class DisContract extends React.Component{
         this.loadList();
     }
     handleContractIdChange = async(id) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {contractId: id})
+        let searchParams = Object.assign({}, this.state.searchParams, {id: id})
         await setStateAsync(this, {searchParams})
         this.loadList();
     }
@@ -213,7 +233,7 @@ class DisContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
         }
         return(
             <Card>
@@ -221,13 +241,13 @@ class DisContract extends React.Component{
                 <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="物流合同编号">
                             <Search
-                                placeholder="请输入保险合同编号"
+                                placeholder="请输入物流合同编号"
                                 onSearch={this.handletransContractIdChange}
                                 style={{ width: 200 }}
                             />
                         </Form.Item>
                         <Form.Item label="物流公司">
-                            <Select defaultValue={1} style={{ width: 200 }}>
+                            <Select  style={{ width: 200 }}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
@@ -235,13 +255,13 @@ class DisContract extends React.Component{
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="合同编号">
+                        {/* <Form.Item label="合同编号">
                             <Search
                                 placeholder="请输入合同编号"
                                 onSearch={this.handleContractIdChange}
                                 style={{ width: 200 }}
                             />
-                        </Form.Item>
+                        </Form.Item> */}
                     </Form>
                 </header>
 
@@ -258,7 +278,7 @@ class DisContract extends React.Component{
                           文本合同
                         </Col>
                         <Col span={20}>
-                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                          <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                               <Button>
                                   <Icon type="upload" /> Upload
                               </Button>

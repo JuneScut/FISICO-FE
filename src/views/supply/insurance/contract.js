@@ -2,7 +2,7 @@
 import React from 'react'
 import {Card, Form, Select, Input, Button, Table, DatePicker, Modal, Row, Col, message, Upload, Icon} from 'antd';
 import "../../../common/style.scss"
-import { getId } from '../../../utils/authority';
+import { getId, getAuth, getUser, getUserName } from '../../../utils/authority';
 import $supply from '../../../console/supply';
 import $common from '../../../console/common';
 import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
@@ -22,9 +22,9 @@ class InsSupplierContract extends React.Component{
         this.state = {
             list: [],
             searchParams: {
-                supplyId: getId(),
-                contractId: 0,
-                insureContractId: 0
+                // cid: 0,
+                id: 0,
+                from_id: 0,
             },
             visible: false,
             fileList: [],
@@ -38,54 +38,54 @@ class InsSupplierContract extends React.Component{
                 },
                 {
                     title: '合同编号',
-                    dataIndex: 'id',
-                    key: 'id',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
                 },
                 {
                     title: '货物保险合同编号',
-                    dataIndex: 'insuranceContractId',
-                    key: 'insuranceContractId',
+                    dataIndex: 'id',
+                    key: 'id',
                 },
-                {
-                    title: '物流公司',
-                    dataIndex: 'transCompany',
-                    key: 'transCompany',
-                },
+                // {
+                //     title: '物流公司',
+                //     dataIndex: 'transCompany',
+                //     key: 'transCompany',
+                // },
                 {
                     title: '发起时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: (time) => (
                         <span>{formatTime(time)}</span>
                     )
                 },
-                {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: (time) => (
-                        <span>{formatTime(time)}</span>
-                    )
-                },
+                // {
+                //     title: '签署时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                //     render: (time) => (
+                //         <span>{formatTime(time)}</span>
+                //     )
+                // },
                 {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                 },
-                {
-                    title: '货物数量（件）',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
-                },
+                // {
+                //     title: '货物数量（件）',
+                //     dataIndex: 'quantity',
+                //     key: 'quantity',
+                // },
                 {
                     title: '保险费用（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
                 {
                     title: '保险合同状态',
-                    dataIndex: 'insuranceContractStatus',
-                    key: 'insuranceContractStatus',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (status) => (
                         <span>{findValue($supply.status, status)}</span>
                     )
@@ -102,28 +102,31 @@ class InsSupplierContract extends React.Component{
         }
     }
     async loadList() {
-        let params = {};
+        let params = {
+            to_id: getUser(getAuth()).id,
+            status: 'CREATED'
+        }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
                 params[item] = this.state.searchParams[item];
             }
         }
-        const res = await $supply.allInsueConsList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
+        const res = await $common.insureConsList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item,idx) =>{
+                item.order = idx+1;
+                item.key = idx;
+                item.gName = "goods"
+            })
+            this.setState({list: list})
+        }
     }
     async loadCompanyList() {
-        const res = await $supply.insureCompanyList();
+        const res = await $common.insenterprise();
         if(res.data.success){
             this.setState({companyList: res.data.result});
         }
-        
     }
     // handleSign = (record) => {
     //     console.log(record)
@@ -140,7 +143,12 @@ class InsSupplierContract extends React.Component{
     //     });
     // }
     handleInsureContractIdChange = async(id)=>{
-        let searchParams = Object.assign({}, this.state.searchParams, {insureContractId: id})
+        let searchParams = Object.assign({}, this.state.searchParams, {id: id})
+        await setStateAsync(this, {searchParams})
+        this.loadList();
+    }
+    handleCompanyChange = async(id) => {
+        let searchParams = Object.assign({}, this.state.searchParams, {from_id: id})
         await setStateAsync(this, {searchParams})
         this.loadList();
     }
@@ -159,20 +167,25 @@ class InsSupplierContract extends React.Component{
     }
     handleSign = async () => {
         this.setState({visible: false})
-        let params = {
-          insuranceContractId: this.state.record.insuranceContractId,
-          textContract: this.state.fileList[0],
-          supplyId: getId()
-        }
-        const res = await $common.checkContract(params);
+        let form = new FormData();
+        form.append('file', this.state.fileList[0]);
+
+        const res = await $common.checkInsuranceContract(form);
+        const self = this;
         if(res.data.success){
           confirm({
             title: '确认签署', 
             content: '文本合同校验一致，请您确认是否签署',
             async onOk() {
-              const resp = await $supply.signInsureContract(params);
+                let params = {
+                    id: self.state.record.id,
+                    sign: true
+                }
+              const resp = await $common.signInsuranceContract(params);
               if(resp.data.success){
                 message.success("签署成功！")
+                self.loadList();
+
               }
             },
             onCancel() {
@@ -186,15 +199,21 @@ class InsSupplierContract extends React.Component{
       handleCancel = ()=>{
         this.setState({visible: false})
       }
-      handleUploadChange = (info) => {
-        const { status } = info.file;
-        // 限制只上传1个
-        let fileList = [...info.fileList];
-        fileList = fileList.slice(-1);
-        this.setState({fileList})
-        if(status === 'done'){
-            message.success('上传成功')
-        }
+    //   handleUploadChange = (info) => {
+    //     const { status } = info.file;
+    //     // 限制只上传1个
+    //     let fileList = [...info.fileList];
+    //     fileList = fileList.slice(-1);
+    //     this.setState({fileList})
+    //     if(status === 'done'){
+    //         message.success('上传成功')
+    //     }
+    //   }
+      handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
       }
     render(){
         const formItemLayout = {
@@ -209,7 +228,7 @@ class InsSupplierContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
         }
         return(
             <Card>
@@ -219,11 +238,10 @@ class InsSupplierContract extends React.Component{
                             <Search
                                 placeholder="请输入保险合同编号"
                                 onSearch={this.handleInsureContractIdChange}
-                                style={{ width: 200 }}
                             />
                         </Form.Item>
                         <Form.Item label="保险公司">
-                            <Select defaultValue={1} style={{ width: 200 }}>
+                            <Select onChange={this.handleCompanyChange}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
@@ -231,13 +249,13 @@ class InsSupplierContract extends React.Component{
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="合同编号">
+                        {/* <Form.Item label="合同编号">
                             <Search
                                 placeholder="请输入合同编号"
                                 onSearch={this.handleContractIdChange}
                                 style={{ width: 200 }}
                             />
-                        </Form.Item>
+                        </Form.Item> */}
                     </Form>
                 </header>
 
@@ -254,7 +272,7 @@ class InsSupplierContract extends React.Component{
                           文本合同
                         </Col>
                         <Col span={20}>
-                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                          <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                               <Button>
                                   <Icon type="upload" /> Upload
                               </Button>

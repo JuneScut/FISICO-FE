@@ -1,10 +1,10 @@
 import React from 'react'
 import { Card, Form, Select, Table, Button, Input,DatePicker, Modal, Upload, Icon, Row, Col, message } from 'antd';
 import '../../../common/style.scss';
-import $enterprise from '../../../console/enterprise';
-import $commmon from '../../../console/common';
-import $supply from '../../../console/supply';
+import $common from '../../../console/common';
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
+import {  getUserName, getUser, getAuth } from '../../../utils/authority'
+
 const { Option } = Select;
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -18,14 +18,14 @@ class ReceiveContract extends React.Component{
             list: [],
             companyList: [],
             searchParams: {
-              contractId: 0,
+              id: 0,
               beginTime: 0,
               endTime: 0,
-              creator: 1
+              from_id: 0
             },
             visible: false,
             fileList: [],
-            contractId: 0,
+            id: 0,
             columns: [
               {
                   title: '序号',
@@ -33,19 +33,22 @@ class ReceiveContract extends React.Component{
                   key: 'order',
                 },
                 {
-                  title: '发起者',
-                  dataIndex: 'creator',
-                  key: 'creator',
-                },
-                {
                   title: '合同编号',
                   dataIndex: 'id',
                   key: 'id',
                 },
                 {
+                  title: '发起者',
+                  dataIndex: 'from_id',
+                  key: 'from_id',
+                  render: (from_id) => (
+                    <span>{ getUserName(from_id) }</span>
+                  )
+                },
+                {
                   title: '发起时间',
-                  dataIndex: 'beginTime',
-                  key: 'beginTime',
+                  dataIndex: 'time',
+                  key: 'time',
                   render: beginTime => (
                       <span>
                           { formatTime(beginTime) }
@@ -63,7 +66,7 @@ class ReceiveContract extends React.Component{
                   key: 'supply',
                 },
                 {
-                  title: '货物金额(元)',
+                  title: '货物金额',
                   dataIndex: 'price',
                   key: 'price',
                 },
@@ -71,24 +74,27 @@ class ReceiveContract extends React.Component{
                   title: '签署人',
                   dataIndex: 'signtory',
                   key: 'signtory',
-                },
-                {
-                  title: '签署时间',
-                  dataIndex: 'signTime',
-                  key: 'signTime',
-                  render: signTime => (
-                      <span>
-                          { formatTime(signTime) }
-                      </span>
+                  render: (from_id) => (
+                    <span>{ getUserName(from_id) }</span>
                   )
                 },
+                // {
+                //   title: '签署时间',
+                //   dataIndex: 'signTime',
+                //   key: 'signTime',
+                //   render: signTime => (
+                //       <span>
+                //           { formatTime(signTime) }
+                //       </span>
+                //   )
+                // },
                 {
                   title: '合同状态',
                   dataIndex: 'status',
                   key: 'status',
                   render: status => (
                       <span>
-                          {findValue($supply.status, status)}
+                          {findValue($common.status, status)}
                       </span>
                   )
                 },
@@ -104,28 +110,32 @@ class ReceiveContract extends React.Component{
         }
     }
     async loadList() {
-      let params = {}
-      for(let item in this.state.searchParams){
-        if(this.state.searchParams[item]){
-            params[item] = this.state.searchParams[item];
-        }
+      let params = {
+        to_id: getUser(getAuth()).id
       }
-      const res = await $enterprise.contractList(params);
-      let list = res.data.result;
-      list.forEach((item, idx) => {
-          item.order = idx+1;
-          item.key = item.id;
-      });
-      this.setState(() => ({
-          list: list
-      }));
+      for(let item in this.state.searchParams){
+          if(this.state.searchParams[item]){
+              params[item] = this.state.searchParams[item]
+          }
+      }
+      const res =  await $common.getContractsList(params);
+      if(res.data.success){
+          let list = res.data.result;
+          list.forEach((item, idx) => {
+              item.order = idx+1;
+              item.key = item.id;
+          });
+          this.setState(() => ({
+              list: list
+          }));
+      }
     }
     handleSign = (record) => {
       this.setState({visible: true})
-      this.setState({contractId: record.id})
+      this.setState({id: record.id})
     }
     handleContractIdChange = async(id) =>{
-      let searchParams = Object.assign({}, this.state.searchParams, {contractId: id})
+      let searchParams = Object.assign({}, this.state.searchParams, {id: id})
       await setStateAsync(this, {searchParams})
       this.loadList();
     }
@@ -135,7 +145,7 @@ class ReceiveContract extends React.Component{
       this.loadList();
     }
     handleCompanyChange = async(id) => {
-      let searchParams = Object.assign({}, this.state.searchParams, {creator: id})
+      let searchParams = Object.assign({}, this.state.searchParams, {from_id: id})
       await setStateAsync(this, {searchParams})
       this.loadList();
     }
@@ -144,26 +154,31 @@ class ReceiveContract extends React.Component{
       this.loadCompanyList();
     }
     async loadCompanyList() {
-      const res = await $commmon.supplyList();
+      const res = await $common.supplyList();
       if(res.data.success){
           this.setState({companyList: res.data.result});
       }
     }
     handleOk = async () => {
       this.setState({visible: false})
-      let params = {
-        contractId: this.state.contractId,
-        textContract: this.state.fileList[0]
-      }
-      const res = await $enterprise.checkContract(params);
+      let form = new FormData();
+      form.append('file', this.state.fileList[0]);
+      const res = await $common.checkContract(form);
+
+      const self = this;
       if(res.data.success){
         confirm({
           title: '确认签署',
           content: '文本合同校验一致，请您确认是否签署',
           async onOk() {
-            const resp = await $enterprise.signContract(params);
+            let params = {
+              id: self.state.id,
+              sign: true
+            }
+            const resp = await $common.signContract(params);
             if(resp.data.success){
               message.success("签署成功！")
+              self.loadList();
             }
           },
           onCancel() {
@@ -177,15 +192,21 @@ class ReceiveContract extends React.Component{
     handleCancel = ()=>{
       this.setState({visible: false})
     }
-    handleUploadChange = (info) => {
-      const { status } = info.file;
-      // 限制只上传1个
-      let fileList = [...info.fileList];
-      fileList = fileList.slice(-1);
-      this.setState({fileList})
-      if(status === 'done'){
-          message.success('上传成功')
-      }
+    // handleUploadChange = (info) => {
+    //   const { status } = info.file;
+    //   // 限制只上传1个
+    //   let fileList = [...info.fileList];
+    //   fileList = fileList.slice(-1);
+    //   this.setState({fileList})
+    //   if(status === 'done'){
+    //       message.success('上传成功')
+    //   }
+    // }
+    handleBeforeUpload = (file) => {
+      this.setState(state => ({
+          fileList: [file],
+      }));
+      return false;
     }
     render(){
         const formItemLayout = {
@@ -200,7 +221,7 @@ class ReceiveContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
         }
         return(
             <Card>
@@ -210,14 +231,13 @@ class ReceiveContract extends React.Component{
                           <Search
                                 placeholder="请输入合同编号"
                                 onSearch={this.handleContractIdChange}
-                                style={{ width: 200 }}
                             />
                         </Form.Item>
                         <Form.Item label="发起时间">
-                          <RangePicker onChange={this.rangeChange} style={{ width: 200 }}/>
+                          <RangePicker onChange={this.rangeChange} />
                         </Form.Item>
                         <Form.Item label="合约发起企业">
-                          <Select defaultValue={1} style={{ width: 200 }} onChange={this.handleCompanyChange}>
+                          <Select   onChange={this.handleCompanyChange}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
@@ -241,7 +261,7 @@ class ReceiveContract extends React.Component{
                           文本合同
                         </Col>
                         <Col span={20}>
-                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                          <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                               <Button>
                                   <Icon type="upload" /> Upload
                               </Button>

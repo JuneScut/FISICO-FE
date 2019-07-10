@@ -20,6 +20,14 @@ http.get = function(api, data) {
         return res;
     })
 }
+http.form = function(api, data){
+    let config = {
+        headers: {'Content-Type': 'multipart/form-data'}
+    }
+    return axios.post(api,data,config).then((res)=>{
+        return res;
+    })
+}
 http.mock = function(api, data){
     return new Promise((resolve)=>{
         let resp = {
