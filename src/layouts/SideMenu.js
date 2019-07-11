@@ -19,7 +19,7 @@ const menuData = [
         path: '/home',
         title: '首页',
         icon: 'iconhome',
-        authority: ['supplier', 'enterprise', 'bank', 'insuranceCompany', 'transportation'],
+        authority: ['supplier', 'enterprise', 'bank', 'insuranceCompany', 'transportation','retailer'],
         component: 'home/home'
     },{
         path: '/contract',
@@ -189,7 +189,7 @@ const menuData = [
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['enterprise', 'bank'],
+        authority: ['enterprise', 'bank','retailer'],
         children: [
             // {
             //     path: '/supply/token/index',
@@ -197,24 +197,24 @@ const menuData = [
             //     authority: ['supplier'],
             //     component: 'supply/token/index'
             // },
-            {
-                path: '/token/exchange',
-                title: 'token兑换',
-                authority: ['supplier'],
-                component: 'supply/token/exchange'
-            },
-            {
-                path: '/insurance/token/exchange',
-                title: 'token兑换',
-                authority: ['insuranceCompany'],
-                component: 'insurance/token/exchange'
-            },
-            {
-                path: '/transportation/token/exchange',
-                title: 'token兑换',
-                authority: ['transportation'],
-                component: 'transportation/token/exchange'
-            },
+            // {
+            //     path: '/token/exchange',
+            //     title: 'token兑换',
+            //     authority: ['supplier'],
+            //     component: 'supply/token/exchange'
+            // },
+            // {
+            //     path: '/insurance/token/exchange',
+            //     title: 'token兑换',
+            //     authority: ['insuranceCompany'],
+            //     component: 'insurance/token/exchange'
+            // },
+            // {
+            //     path: '/transportation/token/exchange',
+            //     title: 'token兑换',
+            //     authority: ['transportation'],
+            //     component: 'transportation/token/exchange'
+            // },
             // {
             //     path: '/enterprise/token/index',
             //     title: '转账记录',
@@ -245,6 +245,12 @@ const menuData = [
                 authority: ['bank'],
                 component: 'bank/token/receive'
             },
+            {
+                path: '/bank/token/pawn',
+                title: '签收抵押',
+                authority: ['bank'],
+                component: 'bank/token/pawn'
+            },
             // {
             //     path: '/bank/token/log',
             //     title: '历史记录',
@@ -256,6 +262,24 @@ const menuData = [
                 title: '发起贷款',
                 authority: ['bank'],
                 component: 'bank/token/loan'
+            },
+            {
+                path: '/retailer/token/create',
+                title: '发起抵押',
+                authority: ['retailer'],
+                component: 'retailer/token/create'
+            },
+            {
+                path: '/retailer/token/log',
+                title: '历史记录',
+                authority: ['retailer'],
+                component: 'retailer/token/log'
+            },
+            {
+                path: '/retailer/token/redeem',
+                title: '发起还款',
+                authority: ['retailer'],
+                component: 'retailer/token/redeem'
             },
             // {
             //     path: '/insurance/token/index',

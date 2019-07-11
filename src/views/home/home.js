@@ -2,6 +2,7 @@ import React from 'react'
 import styles from "./style.module.scss"
 // import BasicLayout from '../../layouts/BasicLayout'
 import $common from '../../console/common';
+import {getAuth} from '../../utils/authority'
 
 class Home extends React.Component{
     constructor(){
@@ -12,9 +13,33 @@ class Home extends React.Component{
         }
     }
     getBalance = async () =>  {
-        const res = await $common.enterpriseList();
-        this.setState({balance: res.data.result[0].money});
-        this.setState({supply: res.data.result[0].supply});
+        let res;
+        switch(getAuth()){
+            case "enterprise":
+                res = await $common.enterpriseList();
+                break;
+            case "supplier":
+                res = await $common.supplyList();
+                break;
+            case "bank":
+                res = await $common.bankList();
+                break;
+            case "insuranceCompany":
+                res = await $common.insenterpriseList();
+                break;
+            case "retailer":
+                res = await $common.retailerList();
+                break;
+            case "transportation":
+                res = await $common.logenterpriseList();
+                break;
+            default:
+                return null;
+        }
+        if(res){
+            this.setState({balance: res.data.result[0].money});
+            this.setState({supply: res.data.result[0].supply});
+        }
     }
     componentWillMount = () => {
         this.getBalance()

@@ -4,7 +4,7 @@ import "../../../common/style.scss"
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 // import $supply from '../../../console/supply';
 import $common from '../../../console/common';
-import { getAuth, getUser } from '../../../utils/authority';
+import { getAuth, getUser,getUserName } from '../../../utils/authority';
 import Search from 'antd/lib/input/Search';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -45,8 +45,8 @@ class SupplyContract extends React.Component{
                   },
                   {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                   },
                   {
                     title: '供货量(件)',
@@ -60,17 +60,10 @@ class SupplyContract extends React.Component{
                   },
                   {
                     title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
-                  },
-                  {
-                    title: '签署时间',
-                    dataIndex: 'time',
-                    key: 'time',
-                    render: signTime => (
-                        <span>
-                            { formatTime(signTime) }
-                        </span>
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                        <span>{getUserName(to_id)}</span>
                     )
                   },
                   {
@@ -105,6 +98,7 @@ class SupplyContract extends React.Component{
             list.forEach((item,idx)=>{
                 item.order = idx+1;
                 item.key = item.id;
+                item.gName = "goods"
             })
             this.setState({list})
         }
@@ -155,7 +149,7 @@ class SupplyContract extends React.Component{
                         <Form.Item label="合同编号">
                             <Search onSearch={this.handleContractIdChange} allowClear></Search>
                         </Form.Item>
-                        <Form.Item label="链上签署时间">
+                        <Form.Item label="链上发起时间">
                             <RangePicker onChange={this.rangeChange}/>
                             <br />
                         </Form.Item>

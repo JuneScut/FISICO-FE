@@ -1,15 +1,17 @@
-const authority = "transportation";
+const authority = "supplier";
 // enterprise 核心企业
 // supplier 上游供应商
 // bank 银行
 // insuranceCompany 保险公司
 // transportation 运输企业
+// retailer 下游分销商
 const roles = [
     { value: 'enterprise', title: '核心企业'},
     { value: 'supplier', title:'上游供应商'},
     { value: 'bank', title:'银行'},
     { value: 'insuranceCompany', title: '保险公司'},
     { value: 'transportation', title:'运输企业'},
+    { value: 'retailer', title:'下游分销商'},
 ];
 function getUser(role){
     switch(role){
@@ -21,6 +23,8 @@ function getUser(role){
             return {id:3,name:'银行'}
         case "insuranceCompany":
             return {id:4,name:'保险公司'}
+        case "retailer":
+            return {id:8,name:'下游分销商'}
         case "transportation":
             return {id:6,name:'物流公司'}
         default:
@@ -37,6 +41,8 @@ function getUserName(id){
             return '银行'
         case 4:
             return '保险公司'
+        case 8:
+            return '下游分销商'
         case 6:
             return '物流公司'
         default:

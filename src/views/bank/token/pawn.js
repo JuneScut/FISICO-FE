@@ -21,7 +21,7 @@ class ReceiveContract extends React.Component{
               id: 0,
               beginTime: 0,
               endTime: 0,
-              from_id: 0
+              from_id: 8
             },
             visible: false,
             fileList: [],
@@ -33,7 +33,7 @@ class ReceiveContract extends React.Component{
                   key: 'order',
                 },
                 {
-                  title: '还款单号',
+                  title: '抵押单号',
                   dataIndex: 'id',
                   key: 'id',
                 },
@@ -56,7 +56,7 @@ class ReceiveContract extends React.Component{
                   )
                 },
                 {
-                  title: '还款金额',
+                  title: '抵押金额',
                   dataIndex: 'price',
                   key: 'price',
                 },
@@ -90,7 +90,7 @@ class ReceiveContract extends React.Component{
               params[item] = this.state.searchParams[item]
           }
       }
-      const res =  await $common.transferList(params);
+      const res =  await $common.exchangeList(params);
       if(res.data.success){
           let list = res.data.result;
           list.forEach((item, idx) => {
@@ -131,18 +131,15 @@ class ReceiveContract extends React.Component{
       this.loadCompanyList();
     }
     async loadCompanyList() {
-      const res1 = await $common.enterpriseList();
-      const res2 = await $common.retailerList();
-
-      if(res1.data.success && res2.data.success){
-          let result = [...res1.data.result, ...res2.data.result]
-          this.setState({companyList:result});
+      const res = await $common.retailerList();
+      if(res.data.success){
+          this.setState({companyList: res.data.result});
       }
     }
     handleOk = async () => {
       let form = new FormData();
       form.append('file', this.state.fileList[0]);
-      const res = await $common.checkTransferContract(form);
+      const res = await $common.checkExchangeContract(form);
 
       const self = this;
       this.setState({visible: false})
@@ -155,7 +152,7 @@ class ReceiveContract extends React.Component{
               id: self.state.id,
               sign: true
             }
-            const resp = await $common.signTransferContract(params);
+            const resp = await $common.signExchangeContract(params);
             if(resp.data.success){
               message.success("签署成功！")
               self.loadList();
@@ -196,9 +193,9 @@ class ReceiveContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout}labelAlign="left">
-                        <Form.Item label="还款单号">
+                        <Form.Item label="抵押单号">
                           <Search
-                                placeholder="请输入还款单号"
+                                placeholder="请输入抵押单号"
                                 onSearch={this.handleContractIdChange}
                             />
                         </Form.Item>
@@ -220,7 +217,7 @@ class ReceiveContract extends React.Component{
                 <main> 
                     <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                     <Modal
-                      title="签署合约"
+                      title="签署抵押合约"
                       visible={this.state.visible}
                       onOk={this.handleOk}
                       onCancel={this.handleCancel}
