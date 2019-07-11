@@ -4,6 +4,14 @@ import SideMenuWithRouter from './SideMenu';
 import { menuData, renderRoutesMap } from './SideMenu';
 import HeaderContentWithRoute from './HeaderContent';
 import { HashRouter } from "react-router-dom";
+// import Loading from '../components/Loading';
+// import Loadable from 'react-loadable'; //实现按需加载
+
+// const Login = Loadable({
+//   loader: () => import('../views/login/login'),
+//   loading: Loading
+// });
+
 const { Header, Content, Footer, Sider } = Layout;
 
 class BasicLayout extends React.Component {
@@ -23,11 +31,15 @@ class BasicLayout extends React.Component {
     componentDidMount(){
         console.log(this.props)
         let { history:{replace} } = this.props;
-        replace('/#/home')
+        replace('/console/#/home')
     }
 
     render(){
         return (
+            <div>
+            {/* <HashRouter>
+                <Route key="login" path='/login' component={Login}></Route>
+            </HashRouter> */}
             <HashRouter>
                 <Layout style={{ minHeight: '100vh' }}>
                     <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} trigger={null}>
@@ -45,6 +57,7 @@ class BasicLayout extends React.Component {
                     </Layout>
                 </Layout>
             </HashRouter>
+            </div>
         )
     }
 }

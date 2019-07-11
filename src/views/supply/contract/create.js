@@ -47,7 +47,7 @@ class CreateContract extends React.Component{
                         </span>
                     )
                   },
-                  {
+                  { 
                     title: '货物名称',
                     dataIndex: 'goodsName',
                     key: 'goodsName',
@@ -202,10 +202,6 @@ class CreateContract extends React.Component{
             message.warn('请选择签署方')
             return false;
         }
-        if(!this.state.createInfo.goodsId){
-            message.warn('请选择商品')
-            return false;
-        }
         if(!this.state.createInfo.goodsQuantity){
             message.warn('请填写供货量')
             return false;
@@ -259,12 +255,8 @@ class CreateContract extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="货物名称">
-                        <Select onChange={this.handleGoodsChange}>
-                                {
-                                    this.state.goodsList.map((goods) => (
-                                        <Option value={goods.id} key={goods.id}>{goods.name}</Option>
-                                    ))
-                                }
+                        <Select onChange={this.handleGoodsChange} defaultValue="goods">
+                               <Option value="goods">goods</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="供货量">

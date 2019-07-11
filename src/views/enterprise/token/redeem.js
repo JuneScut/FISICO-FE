@@ -4,9 +4,10 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, Modal, message,
 import "../../../common/style.scss"
 import $common from '../../../console/common';
 import $enterprise from '../../../console/enterprise';
-import { getEnterId, getUser, getAuth } from '../../../utils/authority';
+import { getEnterId, getUser, getAuth, getUserName } from '../../../utils/authority';
+import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 const { Option } = Select;
-const { Column } = Table;
+
 
 class TokenRedeem extends React.Component{
     constructor(props){
@@ -21,7 +22,53 @@ class TokenRedeem extends React.Component{
                 money: 0,
                 to_id: 3
             },
-            fileList: []
+            fileList: [],
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                  },
+                  {
+                    title: '还款合同编号',
+                    dataIndex: 'id',
+                    key: 'id',
+                  },
+                  {
+                    title: '签署者',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                      <span>{ getUserName(to_id) }</span>
+                    )
+                  },
+                  {
+                    title: '发起时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: beginTime => (
+                        <span>
+                            { formatTime(beginTime) }
+                        </span>
+                    )
+                  },
+                  {
+                    title: '还款金额',
+                    dataIndex: 'price',
+                    key: 'price',
+                  },
+                  {
+                    title: '合同状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: status => (
+                        <span>
+                            {findValue($common.status, status)}
+                        </span>
+                    )
+                  },
+            ]
+            
         }
     }
     async getData() {
@@ -30,19 +77,19 @@ class TokenRedeem extends React.Component{
     }
     loadList =  async() => {
         let params = {
-            role: 'E',
-            id: getEnterId()
-        }
-        const res = await $common.tokenList(params);
-        if(res.data.success){
-            let list = res.data.result;
-            list.forEach((item, idx) => {
-                item.order = idx +  1;
-                item.key = idx;
-            })
-            this.setState({list: list})
-        }
-
+            from_id: getUser(getAuth()).id,
+          }
+          const res =  await $common.coreTransferList(params);
+          if(res.data.success){
+              let list = res.data.result;
+              list.forEach((item, idx) => {
+                  item.order = idx+1;
+                  item.key = item.id;
+              });
+              this.setState(() => ({
+                  list: list
+              }));
+          }
     }
     getBalance = async () =>  {
         const res = await $common.enterpriseList();
@@ -71,19 +118,23 @@ class TokenRedeem extends React.Component{
         this.setState({createInfo})
     }
     handleCreate = async() => {
-        let {money, to_id} = this.state.createInfo;
-        let from_id = getUser(getAuth()).id;
-        
-        let form  = new FormData();
-        form.append('file', this.state.fileList[0]);
-        form.append('from_id', from_id);
-        form.append('money', money);
-        form.append('to_id', to_id);
-
-        let res =await $common.createTransferContract(form);
-        if(res.data.success){
-            this.setState({visible: false})
-            message.success("还款请求已经发起");
+        if(this.validate()){
+            let {money, to_id} = this.state.createInfo;
+            let from_id = getUser(getAuth()).id;
+            
+            let form  = new FormData();
+            form.append('file', this.state.fileList[0]);
+            form.append('from_id', from_id);
+            form.append('money', money);
+            form.append('to_id', to_id);
+            form.append('is_rent', false);
+    
+            let res =await $common.createCoreTransferContract(form);
+            if(res.data.success){
+                this.setState({visible: false})
+                message.success("还款请求已经发起");
+                this.loadList()
+            }
         }
     }
     openModal = async() => {
@@ -96,10 +147,25 @@ class TokenRedeem extends React.Component{
     componentWillMount(){
         // console.log($enterprise.getData())
         // this.getData();
-        // this.loadList();
+        this.loadList();
         // this.getAssets();
         this.getBalance();
         this.loadBankList();
+    }
+    validate() {
+        if(this.state.fileList.length===0){
+            message.warn('请上传文本合同')
+            return false;
+        }
+        if(!this.state.createInfo.to_id){
+            message.warn('请选择签署方')
+            return false;
+        }       
+        if(!this.state.createInfo.money){
+            message.warn('请填写贷款金额')
+            return false;
+        }
+        return true;
     }
     handleBeforeUpload = (file) => {
         this.setState(state => ({
@@ -111,7 +177,7 @@ class TokenRedeem extends React.Component{
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: {span: 3},
+                sm: {span:2},
             },
             wrapperCol: {
                 xs: { span: 24 },
@@ -141,7 +207,6 @@ class TokenRedeem extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            // onChange: this.handleUploadChange
         }
         return(
             <Card>
@@ -174,9 +239,9 @@ class TokenRedeem extends React.Component{
                 </header>
 
                 <main>
-                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                     <Modal
-                        title="Basic Modal"
+                        title="发起还款"
                         visible={this.state.visible}
                         onOk={this.handleCreate}
                         onCancel={this.handleCancel}

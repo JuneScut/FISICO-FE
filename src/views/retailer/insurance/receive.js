@@ -21,7 +21,7 @@ class ReceiveContract extends React.Component{
               id: 0,
               beginTime: 0,
               endTime: 0,
-              from_id: 0
+              from_id: 4    
             },
             visible: false,
             fileList: [],
@@ -33,9 +33,14 @@ class ReceiveContract extends React.Component{
                   key: 'order',
                 },
                 {
-                  title: '合同编号',
+                  title: '保险合同编号',
                   dataIndex: 'id',
                   key: 'id',
+                },
+                {
+                    title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
                 },
                 {
                   title: '发起者',
@@ -56,28 +61,15 @@ class ReceiveContract extends React.Component{
                   )
                 },
                 {
-                  title: '贷款金额',
+                  title: '保险货物',
+                  dataIndex: 'gName',
+                  key: 'gName',
+                },
+                {
+                  title: '保险金额',
                   dataIndex: 'price',
                   key: 'price',
                 },
-                // {
-                //   title: '签署人',
-                //   dataIndex: 'signtory',
-                //   key: 'signtory',
-                //   render: (from_id) => (
-                //     <span>{ getUserName(from_id) }</span>
-                //   )
-                // },
-                // {
-                //   title: '签署时间',
-                //   dataIndex: 'signTime',
-                //   key: 'signTime',
-                //   render: signTime => (
-                //       <span>
-                //           { formatTime(signTime) }
-                //       </span>
-                //   )
-                // },
                 {
                   title: '合同状态',
                   dataIndex: 'status',
@@ -108,12 +100,13 @@ class ReceiveContract extends React.Component{
               params[item] = this.state.searchParams[item]
           }
       }
-      const res =  await $common.coreTransferList(params);
+      const res =  await $common.insureConsList(params);
       if(res.data.success){
           let list = res.data.result;
           list.forEach((item, idx) => {
               item.order = idx+1;
-              item.key = item.id;
+              item.key = item.id;;
+              item.gName="goods"
           });
           this.setState(() => ({
               list: list
@@ -149,7 +142,7 @@ class ReceiveContract extends React.Component{
       this.loadCompanyList();
     }
     async loadCompanyList() {
-      const res = await $common.bankList();
+      const res = await $common.insenterpriseList();
       if(res.data.success){
           this.setState({companyList: res.data.result});
       }
@@ -157,11 +150,9 @@ class ReceiveContract extends React.Component{
     handleOk = async () => {
       let form = new FormData();
       form.append('file', this.state.fileList[0]);
-      const res = await $common.checkCoreTransferContract(form);
-
-      const self = this;
+      const res = await $common.checkInsuranceContract(form);
       this.setState({visible: false})
-
+      const self = this;
       if(res.data.success){
         confirm({
           title: '确认签署',
@@ -171,10 +162,13 @@ class ReceiveContract extends React.Component{
               id: self.state.id,
               sign: true
             }
-            const resp = await $common.signCoreTransferContract(params);
+            const resp = await $common.signContract(params);
             if(resp.data.success){
               message.success("签署成功！")
               self.loadList();
+            }else{
+                message.error("签署失败！请检查账户余额是否充足")
+                self.loadList();
             }
           },
           onCancel() {
@@ -208,7 +202,7 @@ class ReceiveContract extends React.Component{
         const formItemLayout = {
             labelCol: {
               xs: { span: 24 },
-              sm: { span: 2,},
+              sm: { span: 3,},
             },
             wrapperCol: {
               xs: { span: 24 },
@@ -223,16 +217,16 @@ class ReceiveContract extends React.Component{
             <Card>
                 <header className="header">
                     <Form {...formItemLayout}labelAlign="left">
-                        <Form.Item label="合同编号">
+                        <Form.Item label="保险合同编号">
                           <Search
-                                placeholder="请输入合同编号"
+                                placeholder="请输入保险合同编号"
                                 onSearch={this.handleContractIdChange}
                             />
                         </Form.Item>
                         <Form.Item label="发起时间">
                           <RangePicker onChange={this.rangeChange} />
                         </Form.Item>
-                        <Form.Item label="发起银行">
+                        <Form.Item label="合约发起企业">
                           <Select   onChange={this.handleCompanyChange}>
                                 {
                                     this.state.companyList.map((company) => (

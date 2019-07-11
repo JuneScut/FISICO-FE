@@ -4,7 +4,8 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, Modal, message,
 import "../../../common/style.scss"
 import $common from '../../../console/common';
 import $enterprise from '../../../console/enterprise';
-import { getEnterId, getUser, getAuth } from '../../../utils/authority';
+import { getEnterId, getUser, getAuth, getUserName } from '../../../utils/authority';
+import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 const { Option } = Select;
 const { Column } = Table;
 
@@ -21,29 +22,79 @@ class TokenRedeem extends React.Component{
                 money: 0,
                 to_id: 3
             },
-            fileList: []
+            fileList: [],
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                  },
+                  {
+                    title: '还款单号',
+                    dataIndex: 'id',
+                    key: 'id',
+                  },
+                  {
+                    title: '签署者',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                      <span>{ getUserName(to_id) }</span>
+                    )
+                  },
+                  {
+                    title: '发起时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: beginTime => (
+                        <span>
+                            { formatTime(beginTime) }
+                        </span>
+                    )
+                  },
+                  {
+                    title: '还款金额',
+                    dataIndex: 'price',
+                    key: 'price',
+                  },
+                  {
+                    title: '合同状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: status => (
+                        <span>
+                            {findValue($common.status, status)}
+                        </span>
+                    )
+                  },
+            ]
         }
     }
     async getData() {
         // const res = await $enterprise.getData();
         // console.log(res);
     }
-    loadList =  async() => {
+    async loadList() {
         let params = {
-            role: 'E',
-            id: getEnterId()
+          from_id: getUser(getAuth()).id,
         }
-        const res = await $common.tokenList(params);
+        for(let item in this.state.searchParams){
+            if(this.state.searchParams[item]){
+                params[item] = this.state.searchParams[item]
+            }
+        }
+        const res =  await $common.partTransferList(params);
         if(res.data.success){
             let list = res.data.result;
             list.forEach((item, idx) => {
-                item.order = idx +  1;
-                item.key = idx;
-            })
-            this.setState({list: list})
+                item.order = idx+1;
+                item.key = item.id;
+            });
+            this.setState(() => ({
+                list: list
+            }));
         }
-
-    }
+      }
     getBalance = async () =>  {
         const res = await $common.retailerList();
         this.setState({balance: res.data.result[0].money});
@@ -81,12 +132,14 @@ class TokenRedeem extends React.Component{
         form.append('to_id', to_id);
         form.append('supply', 0);
         form.append('is_rent', false);
+        form.append('core_id', from_id);
 
 
-        let res =await $common.createTransferContract(form);
+        let res =await $common.createPartTransferContract(form);
         if(res.data.success){
             this.setState({visible: false})
             message.success("还款请求已经发起");
+            this.loadList();
         }
     }
     openModal = async() => {
@@ -99,7 +152,7 @@ class TokenRedeem extends React.Component{
     componentWillMount(){
         // console.log($enterprise.getData())
         // this.getData();
-        // this.loadList();
+        this.loadList();
         // this.getAssets();
         this.getBalance();
         this.loadBankList();
@@ -177,9 +230,9 @@ class TokenRedeem extends React.Component{
                 </header>
 
                 <main>
-                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                     <Modal
-                        title="Basic Modal"
+                        title="发起还款"
                         visible={this.state.visible}
                         onOk={this.handleCreate}
                         onCancel={this.handleCancel}

@@ -46,7 +46,7 @@ class Home extends React.Component{
     }
     render(){
         let supply;
-        if(this.state.supply){
+        if(this.state.supply>0){
             supply = <div>库存量：{this.state.supply}</div>
         }
         return(

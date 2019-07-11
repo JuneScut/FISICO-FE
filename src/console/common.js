@@ -90,6 +90,12 @@ common.insenterpriseList = function(params){
 }
 
 // 创建合同
+common.createContract = function(params){
+    return http.form('/contract/create', params)
+}
+common.createInsureContract = function(params){
+    return http.form('/insurance/create', params);
+}
 common.createLogisticContract = function(params){
     return http.form('/logistic/create', params);
 }
@@ -98,6 +104,12 @@ common.createTransferContract = function(params){
 }
 common.createExchangeContrct = function(params){
     return http.form('/exchange/create', params);
+}
+common.createCoreTransferContract = function(params){
+    return http.form('/coretransfer/create', params)
+}
+common.createPartTransferContract = function(params){
+    return http.form('/parttransfer/create', params)
 }
 
 // 获取合同列表
@@ -115,6 +127,12 @@ common.transferList = function(params){
 }
 common.exchangeList = function(params){
     return http.get('/exchange/list', params);
+}
+common.coreTransferList = function(params){
+    return http.get('/coretransfer/list', params);
+}
+common.partTransferList = function(params){
+    return http.get('/parttransfer/list', params);
 }
 
 
@@ -134,6 +152,12 @@ common.checkTransferContract = function(params){
 common.checkExchangeContract = function(params){
     return http.form("/exchange/check", params);
 }
+common.checkCoreTransferContract = function(params){
+    return http.form('/coretransfer/check', params);
+}
+common.checkPartTransferContract = function(params){
+    return http.form('/parttransfer/check', params);
+}
 
 // 签署合同
 common.signContract = function(params){
@@ -150,6 +174,12 @@ common.signTransferContract = function(params){
 }
 common.signExchangeContract = function(params){
     return http.get('/exchange/sign', params);
+}
+common.signCoreTransferContract = function(params){
+    return http.get('/coretransfer/sign', params);
+}
+common.signPartTransferContract = function(params){
+    return http.get('/parttransfer/sign', params);
 }
 
 common.goodsList = function(){

@@ -1,4 +1,4 @@
-const authority = "supplier";
+// let authority = "retailer";
 // enterprise 核心企业
 // supplier 上游供应商
 // bank 银行
@@ -31,6 +31,10 @@ function getUser(role){
             return {}
     }
 }
+// function setAuth(auth){
+//     authority = auth;
+//     console.log(getAuth())
+// }
 function getUserName(id){
     switch(id){
         case 1:
@@ -55,7 +59,8 @@ function enums(list, value){
     return null;
 }
 function getAuth(){
-    return authority;
+    // return authority;
+    return window.localStorage.getItem('role')
 }
 
 function hasAuth(authList){
@@ -88,5 +93,6 @@ export {
     getInsuranceId,
     getBankId,
     getUser,
-    getUserName
+    getUserName,
+    // setAuth
 }

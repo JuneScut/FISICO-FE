@@ -21,7 +21,7 @@ class ReceiveContract extends React.Component{
               id: 0,
               beginTime: 0,
               endTime: 0,
-              from_id: 0
+              from_id: 1
             },
             visible: false,
             fileList: [],
@@ -90,7 +90,12 @@ class ReceiveContract extends React.Component{
               params[item] = this.state.searchParams[item]
           }
       }
-      const res =  await $common.transferList(params);
+      let res = {};
+      if(this.state.searchParams.from_id===1){
+        res =  await $common.coreTransferList(params);
+      }else {
+        res = await $common.partTransferList(params)
+      } 
       if(res.data.success){
           let list = res.data.result;
           list.forEach((item, idx) => {
@@ -142,7 +147,7 @@ class ReceiveContract extends React.Component{
     handleOk = async () => {
       let form = new FormData();
       form.append('file', this.state.fileList[0]);
-      const res = await $common.checkTransferContract(form);
+      const res = await $common.checkCoreTransferContract(form);
 
       const self = this;
       this.setState({visible: false})
@@ -150,12 +155,17 @@ class ReceiveContract extends React.Component{
         confirm({
           title: '确认签署',
           content: '文本合同校验一致，请您确认是否签署',
-          async onOk() {
+          onOk: async() => {
             let params = {
               id: self.state.id,
               sign: true
             }
-            const resp = await $common.signTransferContract(params);
+            let resp = {};
+            if(this.state.searchParams.from_id===1){
+              resp = await $common.signCoreTransferContract(params);
+            }else{
+              resp = await $common.signPartTransferContract(params);
+            }
             if(resp.data.success){
               message.success("签署成功！")
               self.loadList();
@@ -206,7 +216,7 @@ class ReceiveContract extends React.Component{
                           <RangePicker onChange={this.rangeChange} />
                         </Form.Item>
                         <Form.Item label="发起企业">
-                          <Select   onChange={this.handleCompanyChange}>
+                          <Select   onChange={this.handleCompanyChange} defaultValue={1}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>

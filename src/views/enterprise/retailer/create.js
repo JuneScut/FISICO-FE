@@ -6,7 +6,7 @@ import "../../../common/style.scss"
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
 import $common from '../../../console/common';
-import { getAuth, getUser } from '../../../utils/authority';
+import { getAuth, getUser, getUserName } from '../../../utils/authority';
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -15,7 +15,7 @@ class CreateContract extends React.Component{
         super(props);
         this.state = {
             list: [],
-            enterpriseList: [],
+            retailerList: [],
             goodsList: [],
             fileList: [],
             supplyId: getUser(getAuth()).id,
@@ -39,8 +39,8 @@ class CreateContract extends React.Component{
                   },
                   {
                     title: '发起时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: beginTime => (
                         <span>
                             { formatTime(beginTime) }
@@ -49,8 +49,8 @@ class CreateContract extends React.Component{
                   },
                   {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                   },
                   {
                     title: '供货量(件)',
@@ -58,7 +58,7 @@ class CreateContract extends React.Component{
                     key: 'supply',
                   },
                   {
-                    title: '货物金额(元)',
+                    title: '货物金额',
                     dataIndex: 'price',
                     key: 'price',
                   },
@@ -66,16 +66,9 @@ class CreateContract extends React.Component{
                     title: '签署人',
                     dataIndex: 'signtory',
                     key: 'signtory',
-                  },
-                  {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: signTime => (
-                        <span>
-                            { formatTime(signTime) }
-                        </span>
-                    )
+                    render: (from_id) => (
+                        <span>{ getUserName(from_id) }</span>
+                      )
                   },
                   {
                     title: '合同状态',
@@ -92,22 +85,24 @@ class CreateContract extends React.Component{
     }
     async loadList() {
         let params = {
-            supplyId: 1
+            from_id: 1,
+            to_id: 8
         }
-        const res = await $supply.contractList(params);
+        const res = await $common.getContractsList(params);
         let list = res.data.result;
         list.forEach((item, idx) => {
             item.order = idx+1;
             item.key = item.id;
+            item.gName = "goods";
         });
         this.setState(() => ({
             list: list
         }));
         // console.log(this.state.list)
     }
-    async loadEnterprise() {
-        const res = await $common.enterpriseList();
-        this.setState({enterpriseList: res.data.result});
+    async loadRetailerList() {
+        const res = await $common.retailerList();
+        this.setState({retailerList: res.data.result});
     }
     async loadGoodsList() {
         const res = await $supply.goodsList();
@@ -134,7 +129,6 @@ class CreateContract extends React.Component{
         }
         for(let item in params){
             form.append(item, params[item])
-            console.log(form.get(item))
         }
         if(this.validate()){
             confirm({
@@ -142,10 +136,11 @@ class CreateContract extends React.Component{
                 content: '当前正在发起签署新合约，请注意，发起合约后不能撤回。请核对清楚信息后，再点击发起。',
                 okText: '确认发起',
                 cancelText: '取消',
-                async onOk() {
-                  let res = await $supply.createContract(form);
+                onOk : async () => {
+                  let res = await $common.createContract(form);
                   if(res.data.success){
                       message.success("合同发起成功！")
+                      this.loadList();
                   }else{
                       message.error("系统异常，请稍后重试")
                   }
@@ -159,7 +154,7 @@ class CreateContract extends React.Component{
     }
     componentWillMount(){
         this.loadList();
-        this.loadEnterprise();
+        this.loadRetailerList();
         this.loadGoodsList();
     }
     handleBeforeUpload = (file) => {
@@ -168,15 +163,6 @@ class CreateContract extends React.Component{
         }));
         return false;
     }
-    // handleUploadChange = async(info) => {
-    //     const { status } = info.file;
-    //     let fileList = [...info.fileList];
-    //     fileList = fileList.slice(-1);
-    //     await setStateAsync(this, {fileList});
-    //     if(status === 'done'){
-    //         message.success('上传成功')
-    //     }
-    // }
     handleSignatoryChange = async (sign) => {
         let createInfo = Object.assign({}, this.state.createInfo, {signtoryId:sign})
         await setStateAsync(this, {createInfo})  
@@ -201,11 +187,7 @@ class CreateContract extends React.Component{
         if(!this.state.createInfo.signtoryId){
             message.warn('请选择签署方')
             return false;
-        }
-        if(!this.state.createInfo.goodsId){
-            message.warn('请选择商品')
-            return false;
-        }
+        }       
         if(!this.state.createInfo.goodsQuantity){
             message.warn('请填写供货量')
             return false;
@@ -249,29 +231,25 @@ class CreateContract extends React.Component{
                                 </Button>
                             </Upload>
                         </Form.Item>
-                        <Form.Item label="合约签署方">
+                        <Form.Item label="分销商">
                             <Select onChange={this.handleSignatoryChange}>
                                 {
-                                    this.state.enterpriseList.map((enter) => (
+                                    this.state.retailerList.map((enter) => (
                                         <Option value={enter.id} key={enter.id}>{enter.name}</Option>
                                     ))
                                 }
                             </Select>
                         </Form.Item>
                         <Form.Item label="货物名称">
-                        <Select onChange={this.handleGoodsChange}>
-                                {
-                                    this.state.goodsList.map((goods) => (
-                                        <Option value={goods.id} key={goods.id}>{goods.name}</Option>
-                                    ))
-                                }
+                            <Select onChange={this.handleGoodsChange} defaultValue="goods">
+                                    <Option value="goods">goods</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="供货量">
-                            <InputNumber style={{'width': '230px'}} min={1} onChange={this.quantityChange}/>
+                            <InputNumber  min={1} onChange={this.quantityChange}/>
                         </Form.Item>
                         <Form.Item label="金额">
-                            <InputNumber style={{'width': '230px'}} min={1} onChange={this.priceChange}/>
+                            <InputNumber  min={1} onChange={this.priceChange}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
                             <Button type="primary" onClick={this.handleCreate}>发起合同</Button>
@@ -280,7 +258,7 @@ class CreateContract extends React.Component{
                 </header>
 
                 <main>
-                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
             </Card>
         )

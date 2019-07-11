@@ -4,7 +4,8 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, me
 import '../../../common/style.scss';
 import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
-import { getAuth, getUser } from '../../../utils/authority';
+import { getAuth, getUser, getUserName } from '../../../utils/authority';
+import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 import { getTransId } from '../../../utils/authority';
 const { Option } = Select;
 const { confirm } = Modal;
@@ -21,36 +22,99 @@ class Loan extends React.Component{
             },
             fileList: [],
             companyList: [],
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                  },
+                  {
+                    title: '贷款合同编号',
+                    dataIndex: 'id',
+                    key: 'id',
+                  },
+                  {
+                    title: '签署者',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                      <span>{ getUserName(to_id) }</span>
+                    )
+                  },
+                  {
+                    title: '发起时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: beginTime => (
+                        <span>
+                            { formatTime(beginTime) }
+                        </span>
+                    )
+                  },
+                  {
+                    title: '贷款金额',
+                    dataIndex: 'price',
+                    key: 'price',
+                  },
+                  {
+                    title: '合同状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: status => (
+                        <span>
+                            {findValue($common.status, status)}
+                        </span>
+                    )
+                  },
+            ]
         }
     }
+    async loadList() {
+        let params = {
+          from_id: getUser(getAuth()).id,
+        }
+        const res =  await $common.coreTransferList(params);
+        if(res.data.success){
+            let list = res.data.result;
+            list.forEach((item, idx) => {
+                item.order = idx+1;
+                item.key = item.id;
+            });
+            this.setState(() => ({
+                list: list
+            }));
+        }
+      }
     loadCompanyList = async()=>{
         const res = await $common.enterpriseList();
         this.setState({companyList: res.data.result})
     }
     handleCreate = async()=>{
-        confirm({
-            title: '发起合同',
-            content: '当前正在发起签署新合约，请注意，发起合约后不能撤回。请核对清楚信息后，再点击发起。',
-            okText: '确认发起',
-            cancelText: "取消",
-            onOk : async() => {
-                let { to_id, money, supply} = this.state.createInfo;
-                let form = new FormData();
-                form.append('file', this.state.fileList[0]);
-                form.append('from_id', getUser(getAuth()).id);
-                form.append('to_id', to_id);
-                form.append('money', money);
-                form.append('supply', supply);
-                
-                let res = await $common.createTransferContract(form);;
-                if(res.data.success){
-                    message.success("创建成功！")
-                }
-            },
-            onCancel() {
-              console.log('Cancel');
-            },
-          });
+        if(this.validate()){
+            confirm({
+                title: '发起合同',
+                content: '当前正在发起签署新合约，请注意，发起合约后不能撤回。请核对清楚信息后，再点击发起。',
+                okText: '确认发起',
+                cancelText: "取消",
+                onOk : async() => {
+                    let { to_id, money, supply} = this.state.createInfo;
+                    let form = new FormData();
+                    form.append('file', this.state.fileList[0]);
+                    form.append('from_id', getUser(getAuth()).id);
+                    form.append('to_id', to_id);
+                    form.append('money', money);
+                    form.append('is_rent', true);
+                    let res = await $common.createCoreTransferContract(form);;
+                    if(res.data.success){
+                        message.success("创建成功！")
+                        this.loadList();
+                    }
+                },
+                onCancel() {
+                  console.log('Cancel');
+                },
+              });
+        }
     }
     handleIdChange = (e) => {
         // console.log(e.currentTarget.value)
@@ -67,8 +131,23 @@ class Loan extends React.Component{
         this.setState({createInfo})
     }
     componentWillMount(){
-        // this.loadList();
+        this.loadList();
         this.loadCompanyList();
+    }
+    validate() {
+        if(this.state.fileList.length===0){
+            message.warn('请上传文本合同')
+            return false;
+        }
+        if(!this.state.createInfo.to_id){
+            message.warn('请选择签署方')
+            return false;
+        }       
+        if(!this.state.createInfo.money){
+            message.warn('请填写贷款金额')
+            return false;
+        }
+        return true;
     }
     // handleUploadChange = info => {
     //     const { status } = info.file;
@@ -139,7 +218,7 @@ class Loan extends React.Component{
                 </header>
 
                 <main>
-                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
             </Card>
         )

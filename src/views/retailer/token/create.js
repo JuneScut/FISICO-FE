@@ -6,7 +6,7 @@ import "../../../common/style.scss"
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
 import $supply from '../../../console/supply';
 import $common from '../../../console/common';
-import { getAuth, getUser } from '../../../utils/authority';
+import { getAuth, getUser, getUserName } from '../../../utils/authority';
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -23,23 +23,85 @@ class CreateContract extends React.Component{
                 signtoryId: -1,
                 goodsQuantity: null,
                 price: null
-            }
+            },
+            columns: [
+                {
+                    title: '序号',
+                    dataIndex: 'order',
+                    key: 'order',
+                  },
+                  {
+                    title: '抵押单号',
+                    dataIndex: 'id',
+                    key: 'id',
+                  },
+                  {
+                    title: '签署者',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                      <span>{ getUserName(to_id) }</span>
+                    )
+                  },
+                  {
+                    title: '发起时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: beginTime => (
+                        <span>
+                            { formatTime(beginTime) }
+                        </span>
+                    )
+                  },
+                  {
+                    title: '货物名称',
+                    dataIndex: 'gName',
+                    key: 'gName',
+                  },
+                  {
+                    title: '抵押数量',
+                    dataIndex: 'supply',
+                    key: 'supply',
+                  },
+                  {
+                    title: '抵押金额',
+                    dataIndex: 'price',
+                    key: 'price',
+                  },
+                  {
+                    title: '合同状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: status => (
+                        <span>
+                            {findValue($common.status, status)}
+                        </span>
+                    )
+                  },
+            ]
         }
     }
     async loadList() {
         let params = {
-            supplyId: 1
-        }
-        const res = await $supply.contractList(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = item.id;
-        });
-        this.setState(() => ({
-            list: list
-        }));
-        // console.log(this.state.list)
+            from_id: getUser(getAuth()).id,
+          }
+          for(let item in this.state.searchParams){
+              if(this.state.searchParams[item]){
+                  params[item] = this.state.searchParams[item]
+              }
+          }
+          const res =  await $common.exchangeList(params);
+          if(res.data.success){
+              let list = res.data.result;
+              list.forEach((item, idx) => {
+                  item.order = idx+1;
+                  item.key = item.id;
+                  item.gName = "goods"
+              });
+              this.setState(() => ({
+                  list: list
+              }));
+          }
     }
     async loadBankList() {
         const res = await $common.bankList();
@@ -71,7 +133,7 @@ class CreateContract extends React.Component{
                 okText: '确认发起',
                 cancelText: '取消',
                 async onOk() {
-                  let res = await $supply.createContract(form);
+                  let res = await $common.createExchangeContrct(form);
                   if(res.data.success){
                       message.success("合同发起成功！")
                   }else{
@@ -191,7 +253,7 @@ class CreateContract extends React.Component{
                 </header>
 
                 <main>
-                    {/* <Table dataSource={this.state.list} columns={this.state.columns} bordered/>; */}
+                    <Table dataSource={this.state.list} columns={this.state.columns} bordered/>;
                 </main>
             </Card>
         )
