@@ -17,7 +17,7 @@ class HeaderContent extends React.Component{
     logout = () => {
         // console.log(this.props.history.push("/login"))
         console.log(window.location)
-        window.location = window.location.origin+'/login'
+        window.location = window.location.origin
     }
     render(){
         // console.log('header', this.props.location)   
