@@ -140,9 +140,14 @@ class ReceiveContract extends React.Component{
       this.loadList();
     }
     rangeChange = async(time) => {
-      let searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime: time[1].valueOf()})
-      await setStateAsync(this, {searchParams})
-      this.loadList();
+      let searchParams = {};
+        if(time.length){
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
+        }else{
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime:0 })
+        }
+        await setStateAsync(this, {searchParams})
+        this.loadList()
     }
     handleCompanyChange = async(id) => {
       let searchParams = Object.assign({}, this.state.searchParams, {from_id: id})

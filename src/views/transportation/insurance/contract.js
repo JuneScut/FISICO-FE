@@ -5,7 +5,7 @@ import '../../../common/style.scss';
 import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
 import { getTransId } from '../../../utils/authority';
-import { formatTime, findValue } from '../../../utils/tool.js';
+import { formatTime, findValue, setStateAsync } from '../../../utils/tool.js';
 import { getAuth, getUser, getUserName } from '../../../utils/authority';
 
 const { Option } = Select;
@@ -134,9 +134,15 @@ class InsuranceContract extends React.Component{
         let searchParams = Object.assign({}, this.state.searchParams, {from_id:id})
         this.setState({searchParams})
     }
-    handleRangeChange = (time) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {beginTime:time[0].valueOf(),endTime:time[1].valueOf()})
-        this.setState({searchParams})
+    handleRangeChange = async(time) => {
+        let searchParams = {};
+        if(time.length){
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
+        }else{
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime:0 })
+        }
+        await setStateAsync(this, {searchParams})
+        this.loadList()
     }
     handleTypeChange = (type) => {
         let searchParams = Object.assign({}, this.state.searchParams, {type: type})
