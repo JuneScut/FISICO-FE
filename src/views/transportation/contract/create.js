@@ -4,6 +4,7 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber, me
 import '../../../common/style.scss';
 import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
+import { getAuth, getUser } from '../../../utils/authority';
 import { getTransId } from '../../../utils/authority';
 const { Option } = Select;
 const { confirm } = Modal;
@@ -92,8 +93,19 @@ class CreateTransContract extends React.Component{
             okText: '确认发起',
             cancelText: "取消",
             onOk : async() => {
-                let params = this.state.createInfo;
-                let res = await $transportation.createContract(params);;
+                let { supplyId,contractId,value} = this.state.createInfo;
+                let params = {
+                    from_id: getUser(getAuth()).id,
+                    to_id: supplyId,
+                    contract_id: contractId,
+                    price: value
+                }
+                let form = new FormData();
+                form.append('file', this.state.fileList[0]);
+                for(let item in params){
+                    form.append(item, params[item])
+                }
+                let res = await $common.createLogisticContract(form);;
                 if(res.data.success){
                     message.success("创建成功！")
                 }
@@ -121,17 +133,23 @@ class CreateTransContract extends React.Component{
         // this.loadList();
         this.loadCompanyList();
     }
-    handleUploadChange = info => {
-        const { status } = info.file;
-        // 限制只上传1个
-        let fileList = [...info.fileList];
-        fileList = fileList.slice(-1);
-        this.setState({fileList: fileList})
-        if(status === 'done'){
-            let createInfo = Object.assign({}, this.state.createInfo, {file:fileList[0]})
-            this.setState({createInfo})
-            message.success('上传成功')
-        }
+    // handleUploadChange = info => {
+    //     const { status } = info.file;
+    //     // 限制只上传1个
+    //     let fileList = [...info.fileList];
+    //     fileList = fileList.slice(-1);
+    //     this.setState({fileList: fileList})
+    //     if(status === 'done'){
+    //         let createInfo = Object.assign({}, this.state.createInfo, {file:fileList[0]})
+    //         this.setState({createInfo})
+    //         message.success('上传成功')
+    //     }
+    // }
+    handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
     }
     render(){
         const formItemLayout = {
@@ -152,21 +170,21 @@ class CreateTransContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
         }
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="文本合同" >
-                            <Upload {...uploadProps} fileList={this.state.fileList}>
+                            <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                                 <Button>
                                     <Icon type="upload" /> Upload
                                 </Button>
                             </Upload>
                         </Form.Item>
                         <Form.Item label="合约签署方">
-                            <Select onChnage={this.handleSupplyChange} style={{'width': '230px'}} >
+                            <Select onChange={this.handleSupplyChange} style={{'width': '230px'}} >
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
@@ -177,7 +195,7 @@ class CreateTransContract extends React.Component{
                         <Form.Item label="合同编号">
                             <Input style={{'width': '230px'}}  onChange={this.handleIdChange}/>                                                        
                         </Form.Item>
-                        <Form.Item label="保险金额">
+                        <Form.Item label="物流费用">
                             <InputNumber style={{'width': '230px'}} min={1} onChange={this.handleValueChange}/>                            
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>

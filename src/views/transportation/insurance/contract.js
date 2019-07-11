@@ -6,6 +6,8 @@ import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
 import { getTransId } from '../../../utils/authority';
 import { formatTime, findValue } from '../../../utils/tool.js';
+import { getAuth, getUser, getUserName } from '../../../utils/authority';
+
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -21,11 +23,9 @@ class InsuranceContract extends React.Component{
             list: [],
             companyList: [],
             searchParams: {
-                supplyId: 0,
-                insuranceContractId: 0,
-                beginTime: 0,
-                endTime: 0,
-                type: "ALL"
+                id: 0,
+                contract_id: 0,
+                from_id: 0
             },
             visible: false,
             columns: [
@@ -36,54 +36,49 @@ class InsuranceContract extends React.Component{
                 },
                 {
                     title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
+                },
+                {
+                    title: '物流保险合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
-                    title: '物流保险合同编号',
-                    dataIndex: 'insuranceContractId',
-                    key: 'insuranceContractId',
-                },
-                {
-                    title: '物流公司',
-                    dataIndex: 'transCompany',
-                    key: 'transCompany',
-                },
-                {
                     title: '发起时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: (time) => (
                         <span>{ formatTime(time) }</span>
                     )
                 },
-                {
-                    title: '签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: (time) => (
-                        <span>{ formatTime(time) }</span>
-                    )
-                },
+                // {
+                //     title: '签署时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                //     render: (time) => (
+                //         <span>{ formatTime(time) }</span>
+                //     )
+                // },
                 {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                 },
                 {
                     title: '货物数量',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
+                    dataIndex: 'supply',
+                    key: 'supply',
                 },
                 {
                     title: '保险金额（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
                 {
                     title: '保险合同状态',
-                    dataIndex: 'insuranceContractStatus',
-                    key: 'insuranceContractStatus',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (status) => (
                         <span>{findValue($common.status, status)}</span>
                     )
@@ -101,7 +96,8 @@ class InsuranceContract extends React.Component{
     }
     loadList = async() => {
         let params = {
-            transId: getTransId()
+            to_id: getUser(getAuth()).id,
+            status: 'CREATED'
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
@@ -113,23 +109,29 @@ class InsuranceContract extends React.Component{
         list.forEach((item, idx) => {
             item.order = idx+1;
             item.key = item.id;
+            item.gName = "goods"
         });
         this.setState(() => ({
             list: list
         }));
-        console.log(this.state.list)
     }
     loadCompanyList = async()=>{
-        const res = await $common.insuranceList();
+        const res = await $common.insenterpriseList();
         this.setState({companyList: res.data.result})
+    }
+    handleInsConsIdChange = (e)=>{
+        let id = e.currentTarget.value;
+        let searchParams = Object.assign({}, this.state.searchParams, {id:id})
+        this.setState({searchParams})
     }
     handleIdChange = (e)=>{
         let id = e.currentTarget.value;
-        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {contract_id:id})
         this.setState({searchParams})
     }
-    handleSupplyChange = (id) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+    handleInsChange = (id) => {
+        console.log(id)
+        let searchParams = Object.assign({}, this.state.searchParams, {from_id:id})
         this.setState({searchParams})
     }
     handleRangeChange = (time) => {
@@ -152,23 +154,31 @@ class InsuranceContract extends React.Component{
       }
       handleSign = (record) => {
         this.setState({visible: true})
-        this.setState({contractId: record.insuranceContractId})
+        this.setState({contractId: record.id})
       }
       handleOk = async () => {
+        let form = new FormData();
+        form.append('file', this.state.fileList[0]);
+        const res = await $common.checkInsuranceContract(form);
         this.setState({visible: false})
-        let params = {
-          insuranceContractId: this.state.contractId,
-          textContract: this.state.fileList[0]
-        }
-        const res = await $common.checkContract(params);
+
+        let self = this;
         if(res.data.success){
           confirm({
             title: '确认签署',
             content: '文本合同校验一致，请您确认是否签署',
             async onOk() {
-              const resp = await $transportation.signInsContract(params);
+              let params = {
+                id: self.state.contractId,
+                sign: true
+              }
+              const resp = await $common.signInsuranceContract(params);
               if(resp.data.success){
                 message.success("签署成功！")
+                self.loadList();
+              }else{
+                message.error("签署失败，请校验");
+                self.loadList();
               }
             },
             onCancel() {
@@ -185,6 +195,12 @@ class InsuranceContract extends React.Component{
     componentWillMount(){
         this.loadList();
         this.loadCompanyList();
+    }
+    handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
     }
     render(){
         const formItemLayout = {
@@ -205,7 +221,7 @@ class InsuranceContract extends React.Component{
         };
         const uploadProps = {
             multiple: false,
-            onChange: this.handleUploadChange
+            // onChange: this.handleUploadChange
         }
         return(
             <Card>
@@ -218,7 +234,7 @@ class InsuranceContract extends React.Component{
                             <Input onChange={this.handleIdChange}/>                                                        
                         </Form.Item>
                         <Form.Item label="保险公司">
-                            <Select onChnage={this.handleInsChange}>
+                            <Select onChange={this.handleInsChange}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
@@ -243,7 +259,7 @@ class InsuranceContract extends React.Component{
                           文本合同
                         </Col>
                         <Col span={20}>
-                          <Upload {...uploadProps} fileList={this.state.fileList}>
+                          <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
                               <Button>
                                   <Icon type="upload" /> Upload
                               </Button>

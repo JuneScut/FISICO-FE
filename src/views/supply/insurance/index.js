@@ -156,7 +156,7 @@ class InsSupplier extends React.Component{
         if(time.length){
             searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
         }else{
-            let searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime:0 })
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime:0 })
         }
         await setStateAsync(this, {searchParams})
         this.loadList()

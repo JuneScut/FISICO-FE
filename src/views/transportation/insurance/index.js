@@ -4,7 +4,7 @@ import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,Dat
 import '../../../common/style.scss';
 import $insurance from '../../../console/insurance';
 import $common from '../../../console/common';
-import { getTransId } from '../../../utils/authority';
+import {  getUser, getAuth, getUserName } from '../../../utils/authority';
 import { formatTime, findValue } from '../../../utils/tool.js';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -21,11 +21,10 @@ class InsuranceContract extends React.Component{
             list: [],
             companyList: [],
             searchParams: {
-                supplyId: 0,
-                insuranceContractId: 0,
+                id: 0,
                 beginTime: 0,
                 endTime: 0,
-                type: "ALL"
+                from_id: 0
             },
             columns: [
                 {
@@ -35,72 +34,76 @@ class InsuranceContract extends React.Component{
                 },
                 {
                     title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
+                },
+                {
+                    title: '保险合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
-                    title: '保险合同编号',
-                    dataIndex: 'insuranceContractId',
-                    key: 'insuranceContractId',
-                },
-                {
                     title: '保险公司',
-                    dataIndex: 'insuranceCompany',
-                    key: 'insuranceCompany',
+                    dataIndex: 'from_id',
+                    key: 'from_id',
+                    render: (from_id) => (
+                        <span>{ getUserName(from_id) }</span>
+                    )
                 },
                 {
                     title: '货物名称',
-                    dataIndex: 'goodsName',
-                    key: 'goodsName',
+                    dataIndex: 'gName',
+                    key: 'gName',
                 },
                 {
                     title: '货物数量',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
+                    dataIndex: 'supply',
+                    key: 'supply',
                 },
                 {
                     title: '保险金额（元）',
-                    dataIndex: 'cost',
-                    key: 'cost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
-                {
-                    title: '发货时间',
-                    dataIndex: 'deliveryTime',
-                    key: 'deliveryTime',
-                    render: (time) => (
-                        <span>{ formatTime(time) }</span>
-                    )
-                },
-                {
-                    title: '物流状态',
-                    dataIndex: 'transStatus',
-                    key: 'transStatus',
-                    render: (status) => (
-                        <span>{findValue($common.logisticStatus, status)}</span>
-                    )
-                },
-                {
-                    title: '保险情况',
-                    dataIndex: 'insuranceStatus',
-                    key: 'insuranceStatus',
-                    render: (status) => (
-                        <span>{findValue($common.insuranceStatus, status)}</span>
-                    )
-                },
-                {
-                    title: '货物签收时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                    render: (time) => (
-                        <span>{ formatTime(time) }</span>
-                    )
-                },
+                // {
+                //     title: '发货时间',
+                //     dataIndex: 'deliveryTime',
+                //     key: 'deliveryTime',
+                //     render: (time) => (
+                //         <span>{ formatTime(time) }</span>
+                //     )
+                // },
+                // {
+                //     title: '物流状态',
+                //     dataIndex: 'status',
+                //     key: 'status',
+                //     render: (status) => (
+                //         <span>{findValue($common.logisticStatus, status)}</span>
+                //     )
+                // },
+                // {
+                //     title: '保险情况',
+                //     dataIndex: 'insuranceStatus',
+                //     key: 'insuranceStatus',
+                //     render: (status) => (
+                //         <span>{findValue($common.insuranceStatus, status)}</span>
+                //     )
+                // },
+                // {
+                //     title: '货物签收时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                //     render: (time) => (
+                //         <span>{ formatTime(time) }</span>
+                //     )
+                // },
             ]
         }
     }
     loadList = async() => {
         let params = {
-            transId: getTransId()
+            to_id: getUser(getAuth()).id,
+            status: 'SIGNED'
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
@@ -112,27 +115,32 @@ class InsuranceContract extends React.Component{
         list.forEach((item, idx) => {
             item.order = idx+1;
             item.key = item.id;
+            item.gName = "goods";
         });
         this.setState(() => ({
             list: list
         }));
-        console.log(this.state.list)
     }
     loadCompanyList = async()=>{
-        const res = await $common.supplyList();
+        const res = await $common.insenterpriseList();
         this.setState({companyList: res.data.result})
     }
     handleIdChange = (e)=>{
         let id = e.currentTarget.value;
-        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {id:id})
         this.setState({searchParams})
     }
     handleSupplyChange = (id) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {from_id:id})
         this.setState({searchParams})
     }
     handleRangeChange = (time) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {beginTime:time[0].valueOf(),endTime:time[1].valueOf()})
+        let searchParams = {};
+        if(time.length){
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: time[0].valueOf(), endTime:time[1].valueOf() })
+        }else{
+            searchParams = Object.assign({}, this.state.searchParams, {beginTime: 0, endTime:0 })
+        }
         this.setState({searchParams})
     }
     handleTypeChange = (type) => {
@@ -171,20 +179,13 @@ class InsuranceContract extends React.Component{
                             <RangePicker onChange={this.handleRangeChange}/>                            
                             <br />
                         </Form.Item>
-                        <Form.Item label="合约签署方">
+                        <Form.Item label="合约发起方">
                             <Select onChnage={this.handleSupplyChange}>
                                 {
                                     this.state.companyList.map((company) => (
                                         <Option value={company.id} key={company.id}>{company.name}</Option>
                                     ))
                                 }
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="保险类型">
-                            <Select onChange={this.handleTypeChange} defaultValue="ALL">
-                                <Option value="ALL">不限</Option>
-                                <Option value="GOODS">货物保险</Option>
-                                <Option value="TRANS">运输保险</Option>
                             </Select>
                         </Form.Item>
                     </Form>

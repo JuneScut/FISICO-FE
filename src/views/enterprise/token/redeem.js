@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, Modal, message } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, Modal, message, InputNumber } from 'antd';
 import "../../../common/style.scss"
 import $common from '../../../console/common';
 import $enterprise from '../../../console/enterprise';
-import { getEnterId } from '../../../utils/authority';
+import { getEnterId, getUser, getAuth } from '../../../utils/authority';
 const { Option } = Select;
 const { Column } = Table;
 
@@ -12,51 +12,16 @@ class TokenRedeem extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            list: [],
             balance: 0,
-            assets: 0,
-            credit: 0,
             bankList: [],
             visible: false,
             record: {},
             bankName: '',
             createInfo: {
-                enterpriseId:  getEnterId(),
-                bankId: 0,
-                value: 0
+                money: 0,
+                to_id: 3
             },
-            columns: [
-                {
-                    title: '序号',
-                    dataIndex: 'order',
-                    key: 'order',
-                },
-                {
-                    title: '还款金额（元）',
-                    dataIndex: 'repayAmount',
-                    key: 'repayAmount',
-                },
-                {
-                    title: '兑付银行',
-                    dataIndex: 'bank',
-                    key: 'bank',
-                },
-                {
-                    title: '发起还款时间',
-                    dataIndex: 'repayBegin',
-                    key: 'repayBegin',
-                },
-                {
-                    title: '状态',
-                    dataIndex: 'repaystatus',
-                    key: 'repaystatus',
-                },
-                {
-                    title: '银行操作时间',
-                    dataIndex: 'BankOperateTime',
-                    key: 'BankOperateTime',
-                },
-            ]
+            fileList: []
         }
     }
     async getData() {
@@ -96,21 +61,29 @@ class TokenRedeem extends React.Component{
         this.setState({bankList: res.data.result});
     }
     handleBankChange = (id) => {
-        let createInfo = Object.assign({}, this.state.createInfo, {bankId:id})
+        let createInfo = Object.assign({}, this.state.createInfo, {to_id:id})
         this.setState({createInfo})
         let item = this.state.bankList.find((item) => item.id===id);
         this.setState({bankName: item.name});
     }
-    handleValueChange = (event) => {
-        let createInfo = Object.assign({}, this.state.createInfo, {value:event.currentTarget.value})
+    handleValueChange = (money) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {money})
         this.setState({createInfo})
     }
     handleCreate = async() => {
-        let params = this.state.createInfo;
-        let res =await $enterprise.redeemToken(params);
+        let {money, to_id} = this.state.createInfo;
+        let from_id = getUser(getAuth()).id;
+        
+        let form  = new FormData();
+        form.append('file', this.state.fileList[0]);
+        form.append('from_id', from_id);
+        form.append('money', money);
+        form.append('to_id', to_id);
+
+        let res =await $common.createTransferContract(form);
         if(res.data.success){
             this.setState({visible: false})
-            message.success("成功发起赎回！");
+            message.success("还款请求已经发起");
         }
     }
     openModal = async() => {
@@ -126,8 +99,13 @@ class TokenRedeem extends React.Component{
         // this.loadList();
         // this.getAssets();
         this.getBalance();
-        // this.getCredit();
-        // this.loadBankList();
+        this.loadBankList();
+    }
+    handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
     }
     render(){
         const formItemLayout = {
@@ -161,12 +139,23 @@ class TokenRedeem extends React.Component{
                 }
             }
         };
+        const uploadProps = {
+            multiple: false,
+            // onChange: this.handleUploadChange
+        }
         return(
             <Card>
                 <header className="header">
                     <Form {...formItemLayout} labelAlign="left">
                         <Form.Item label="公司余额" >{this.state.balance}</Form.Item>
-                        <Form.Item label="兑付银行">
+                        <Form.Item label="文本合同" >
+                            <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
+                                <Button>
+                                    <Icon type="upload" /> Upload
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item label="银行">
                             <Select onChange={this.handleBankChange}>
                                 {
                                     this.state.bankList.map((bank) => (
@@ -176,10 +165,10 @@ class TokenRedeem extends React.Component{
                             </Select>
                         </Form.Item>
                         <Form.Item label="还款金额">
-                            <Input  onChange={this.handleValueChange}/>
+                            <InputNumber  onChange={this.handleValueChange}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
-                            <Button type="primary" onClick={this.openModal}>发起兑付</Button>
+                            <Button type="primary" onClick={this.openModal}>发起还款</Button>
                         </Form.Item>
                     </Form>
                 </header>
@@ -191,14 +180,13 @@ class TokenRedeem extends React.Component{
                         visible={this.state.visible}
                         onOk={this.handleCreate}
                         onCancel={this.handleCancel}
-                        okText="确定赎回"
+                        okText="确定还款"
                         cancelText="取消"
                         >
                             <Form {...modalFormItemLayout} labelAlign="left">
-                                <Form.Item label="兑付银行">{this.state.bankName}</Form.Item>
-                                <Form.Item label="还款金额">{this.state.createInfo.value}</Form.Item>
+                                <Form.Item label="银行">{this.state.bankName}</Form.Item>
+                                <Form.Item label="还款金额">{this.state.createInfo.money}</Form.Item>
                             </Form>
-                            <p>当前正在发起赎回操作，请注意，发起赎回后不能撤回。请核对清楚信息后，再点击确认。</p>
                     </Modal>
                 </main>
             </Card>

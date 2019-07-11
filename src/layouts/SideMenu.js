@@ -113,7 +113,7 @@ const menuData = [
         path: '/distribution',
         title: '物流管理',
         icon: 'iconcar',
-        authority: ['supplier','transportation'],
+        authority: ['supplier'],
         children: [
             {
                 path: '/supply/distribution/index',
@@ -178,18 +178,18 @@ const menuData = [
             }
         ]
     },
-    {
-        path: '/insuranceMrk',
-        title: '保险标管理',
-        icon: 'icontoken',
-        authority: ['insuranceCompany'],
-        component: 'insurance/subject'
-    },
+    // {
+    //     path: '/insuranceMrk',
+    //     title: '保险标管理',
+    //     icon: 'icontoken',
+    //     authority: ['insuranceCompany'],
+    //     component: 'insurance/subject'
+    // },
     {
         path: '/token',
         title: 'Token管理',
         icon: 'icontoken',
-        authority: ['enterprise', 'bank','insuranceCompany', 'transportation'],
+        authority: ['enterprise', 'bank'],
         children: [
             // {
             //     path: '/supply/token/index',
@@ -197,47 +197,65 @@ const menuData = [
             //     authority: ['supplier'],
             //     component: 'supply/token/index'
             // },
-            // {
-            //     path: '/token/exchange',
-            //     title: 'token兑换',
-            //     authority: ['supplier'],
-            //     component: 'supply/token/exchange'
-            // },
-            // {
-            //     path: '/insurance/token/exchange',
-            //     title: 'token兑换',
-            //     authority: ['insuranceCompany'],
-            //     component: 'insurance/token/exchange'
-            // },
-            // {
-            //     path: '/transportation/token/exchange',
-            //     title: 'token兑换',
-            //     authority: ['transportation'],
-            //     component: 'transportation/token/exchange'
-            // },
             {
-                path: '/enterprise/token/index',
-                title: '转账记录',
-                authority: ['enterprise'],
-                component: 'enterprise/token/index'
+                path: '/token/exchange',
+                title: 'token兑换',
+                authority: ['supplier'],
+                component: 'supply/token/exchange'
             },
             {
+                path: '/insurance/token/exchange',
+                title: 'token兑换',
+                authority: ['insuranceCompany'],
+                component: 'insurance/token/exchange'
+            },
+            {
+                path: '/transportation/token/exchange',
+                title: 'token兑换',
+                authority: ['transportation'],
+                component: 'transportation/token/exchange'
+            },
+            // {
+            //     path: '/enterprise/token/index',
+            //     title: '转账记录',
+            //     authority: ['enterprise'],
+            //     component: 'enterprise/token/index'
+            // },
+            {
                 path: '/enterprise/token/redeem',
-                title: '发起转账',
+                title: '发起还款',
                 authority: ['enterprise'],
                 component: 'enterprise/token/redeem'
             },
             {
-                path: '/bank/token/index',
-                title: 'token管理',
-                authority: ['bank'],
-                component: 'bank/token/operate'
+                path: '/enterprise/token/receive',
+                title: '接受贷款',
+                authority: ['enterprise'],
+                component: 'enterprise/token/receive'
             },
+            // {
+            //     path: '/bank/token/index',
+            //     title: '签收兑付',
+            //     authority: ['bank'],
+            //     component: 'bank/token/exchange'
+            // },
             {
-                path: '/bank/token/log',
-                title: '历史记录',
+                path: '/bank/token/receive',
+                title: '签收还款',
                 authority: ['bank'],
-                component: 'bank/token/log'
+                component: 'bank/token/receive'
+            },
+            // {
+            //     path: '/bank/token/log',
+            //     title: '历史记录',
+            //     authority: ['bank'],
+            //     component: 'bank/token/log'
+            // },
+            {
+                path: '/bank/token/loan',
+                title: '发起贷款',
+                authority: ['bank'],
+                component: 'bank/token/loan'
             },
             // {
             //     path: '/insurance/token/index',

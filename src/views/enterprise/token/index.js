@@ -6,6 +6,7 @@ import { getEnterId } from '../../../utils/authority';
 import $enterprise from '../../../console/enterprise';
 import $common from '../../../console/common';
 import { findValue, formatTime, setStateAsync } from '../../../utils/tool.js';
+import {  getUserName, getUser, getAuth } from '../../../utils/authority'
 
 const { Option } = Select;
 
@@ -75,22 +76,23 @@ class TokenEnter extends React.Component{
     }
     loadList =  async() => {
         let params = {
-            role: 'E',
-            id: getEnterId()
+            from_id: getUser(getAuth()).id
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
-                params[item] = this.state.searchParams[item];
+                params[item] = this.state.searchParams[item]
             }
-          }
-        const res = await $common.tokenList(params);
+        }
+        const res =  await $common.transferList(params);
         if(res.data.success){
             let list = res.data.result;
             list.forEach((item, idx) => {
-                item.order = idx +  1;
-                item.key = idx;
-            })
-            this.setState({list: list})
+                item.order = idx+1;
+                item.key = item.id;
+            });
+            this.setState(() => ({
+                list: list
+            }));
         }
 
     }

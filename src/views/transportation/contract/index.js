@@ -6,6 +6,7 @@ import { getTransId } from '../../../utils/authority';
 import $transportation from '../../../console/transportation';
 import $common from '../../../console/common';
 import { formatTime, findValue } from '../../../utils/tool.js';
+import { getAuth, getUser, getUserName } from '../../../utils/authority';
 
 
 const { Option } = Select;
@@ -22,10 +23,10 @@ class TransContract extends React.Component{
             list: [],
             companyList: [],
             searchParams: {
-                transContractId: 0,
+                id: 0,
                 beginTime: 0,
                 endTime: 0,
-                supplyId: 0
+                to_id: 0
             },
             columns: [
                 {
@@ -35,41 +36,45 @@ class TransContract extends React.Component{
                 },
                 {
                     title: '物流合同编号',
-                    dataIndex: 'transContractId',
-                    key: 'transContractId',
-                },
-                {
-                    title: '合同编号',
                     dataIndex: 'id',
                     key: 'id',
                 },
                 {
+                    title: '合同编号',
+                    dataIndex: 'contract_id',
+                    key: 'contract_id',
+                },
+                {
                     title: '发起时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'time',
+                    key: 'time',
                     render: (time) => (
                         <span>{ formatTime(time) }</span>
                     )
                 },
                 {
                     title: '物流费用（元）',
-                    dataIndex: 'transCost',
-                    key: 'transCost',
+                    dataIndex: 'price',
+                    key: 'price',
                 },
                 {
                     title: '签署人',
-                    dataIndex: 'signtory',
-                    key: 'signtory',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: (to_id) => (
+                        <span>{getUserName(to_id)}</span>
+                    )
+
                 },
+                // {
+                //     title: '物流合同签署时间',
+                //     dataIndex: 'signTime',
+                //     key: 'signTime',
+                // },
                 {
-                    title: '物流合同签署时间',
-                    dataIndex: 'signTime',
-                    key: 'signTime',
-                },
-                {
-                    title: '物流合同状态',
-                    dataIndex: 'contractStatus',
-                    key: 'contractStatus',
+                    title: '物流合同状态',  
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (status) => (
                         <span>{findValue($common.status, status)}</span>
                     )
@@ -79,7 +84,7 @@ class TransContract extends React.Component{
     }
     loadList = async() => {
         let params = {
-            transId: getTransId()
+            from_id: getUser(getAuth).id            
         }
         for(let item in this.state.searchParams){
             if(this.state.searchParams[item]){
@@ -99,11 +104,11 @@ class TransContract extends React.Component{
     }
     handleIdChange = (e)=>{
         let id = e.currentTarget.value;
-        let searchParams = Object.assign({}, this.state.searchParams, {transContractId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {id:id})
         this.setState({searchParams})
     }
     handleSupplyChange = (id) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {to_id:id})
         this.setState({searchParams})
     }
     handleRangeChange = (time) => {

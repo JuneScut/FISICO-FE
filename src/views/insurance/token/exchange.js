@@ -1,215 +1,228 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
-import {Card, Form, Select, Button, Table, Row, Col, InputNumber, message, Modal} from 'antd';
-import { formatTime, findValue } from '../../../utils/tool.js';
-// import $supply from '../../../console/supply';
-import $common from '../../../console/common';
-
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, Modal, message, InputNumber } from 'antd';
 import "../../../common/style.scss"
-import { getInsuranceId } from '../../../utils/authority'
+import $common from '../../../console/common';
+import $enterprise from '../../../console/enterprise';
+import { getEnterId, getUser, getAuth, getUserName } from '../../../utils/authority';
+import { formatTime,findValue } from '../../../utils/tool';
 
 const { Option } = Select;
-
+const { Column } = Table;
 
 class Token extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            list: [],
             balance: 0,
-            assets: 0,
-            visible: false,
-            createInfo: {
-                role: 'I',
-                id: getInsuranceId(),
-                bankId: 0,
-                token: 0
-            },
             bankList: [],
+            visible: false,
+            record: {},
+            bankName: '银行',
+            createInfo: {
+                money: 0,
+                to_id: 3
+            },
+            fileList: [],
             columns: [
                 {
                     title: '序号',
                     dataIndex: 'order',
                     key: 'order',
+                  },
+                  {
+                    title: '兑换单号',
+                    dataIndex: 'id',
+                    key: 'id',
                 },
-                {
-                    title: '兑付Token',
-                    dataIndex: 'amount',
-                    key: 'amount',
-                },
-                {
-                    title: '兑付银行',
-                    dataIndex: 'bankName',
-                    key: 'bankName',
-                },
-                {
-                    title: '发起兑付时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
-                    render: (time) => (
-                        <span>{ formatTime(time) }</span>
+                  {
+                    title: '发起时间',
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: beginTime => (
+                        <span>
+                            { formatTime(beginTime) }
+                        </span>
                     )
-                }, 
-                {
-                    title: '兑付状态',
+                  },
+                  {
+                    title: '兑换金额',
+                    dataIndex: 'price',
+                    key: 'price',
+                  },
+                  {
+                    title: '签署银行',
+                    dataIndex: 'to_id',
+                    key: 'to_id',
+                    render: to_id => (
+                        <span>
+                            { getUserName(to_id) }
+                        </span>
+                    )
+                  },
+                  {
+                    title: '合同状态',
                     dataIndex: 'status',
                     key: 'status',
-                    render: (status) => (
-                        <span>{ findValue($common.tokenRecordStatus, status) }</span>
+                    render: status => (
+                        <span>
+                            {findValue($common.status, status)}
+                        </span>
                     )
-                },
-                {
-                    title: '银行操作时间',
-                    dataIndex: 'bankTime',
-                    key: 'bankTime',
-                    render: (time) => {
-                        if(time) return <span>{ formatTime(time) }</span>
-                        else return <span>----</span>
-                    }
-                },
+                  },
             ]
         }
     }
-    async getBalance() {
+    loadList =  async() => {
         let params = {
-            role: 'insuranceCompany'
+            from_id: getUser(getAuth()).id,
+            to_id: 3
         }
-        const res = await $common.getBalance(params);
+        const res = await $common.transferList(params);
         if(res.data.success){
-            this.setState({balance: res.data.result});
+            let list = res.data.result;
+            list.forEach((item, idx) => {
+                item.order = idx +  1;
+                item.key = idx;
+            })
+            this.setState({list: list})
         }
+
     }
-    async getAssets() {
-        let params = {
-            role: 'insuranceCompany'
-        }
-        const res = await $common.getAssets(params);
-        if(res.data.success){
-            this.setState({assets: res.data.result});
-        }
-    }
-    async loadList() {
-        let params = {
-            role: 'I',
-            id: getInsuranceId()
-        }
-        const res = await $common.tokenRecord(params);
-        let list = res.data.result;
-        list.forEach((item, idx) => {
-            item.order = idx+1;
-            item.key = idx;
-        })
-        if(res.data.success){
-            this.setState({list: res.data.result})
-        }
-        // console.log(res)
+    getBalance = async () =>  {
+        const res = await $common.insenterpriseList();
+        this.setState({balance: res.data.result[0].money});
     }
     loadBankList = async () => {
-        let res = await $common.bankList();
+        const res = await $common.bankList();
+        this.setState({bankList: res.data.result});
+    }
+    handleBankChange = (id) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {to_id:id})
+        this.setState({createInfo})
+        let item = this.state.bankList.find((item) => item.id===id);
+        this.setState({bankName: item.name});
+    }
+    handleValueChange = (money) => {
+        let createInfo = Object.assign({}, this.state.createInfo, {money})
+        this.setState({createInfo})
+    }
+    handleCreate = async() => {
+        let {money, to_id} = this.state.createInfo;
+        let from_id = getUser(getAuth()).id;
+        
+        let form  = new FormData();
+        form.append('file', this.state.fileList[0]);
+        form.append('from_id', from_id);
+        form.append('money', money);
+        form.append('to_id', to_id);
+
+        let res =await $common.createTransferContract(form);
         if(res.data.success){
-            this.setState({bankList: res.data.result})
-            if(res.data.result.length){
-                let createInfo = Object.assign({}, this.state.createInfo, {bankId: res.data.result[0].id})
-                this.setState({createInfo})
-            }
+            this.setState({visible: false})
+            this.loadList();
+            message.success("兑换请求已经发起");
         }
     }
-    handleToken = (value) => {
-        let createInfo = Object.assign({}, this.state.createInfo, {token: value});
-        this.setState({createInfo})
-    }
-    handleBankChange = (value) => {
-        let createInfo = Object.assign({}, this.state.createInfo, {bankId: value});
-        this.setState({createInfo})
-    }
-    createExchange = async() => {
+    openModal = () => {
         if(this.validate()){
-            let res = await $common.createTokenExchange(this.state.createInfo);
-            if(res.data.success){
-                this.handleCancel();
-                message.success("您已成功发起token兑换,请等待银行审批");
-                this.getAssets();
-                this.getBalance();
-                this.loadList();
-            }
+            this.setState({visible: true})
         }
-    }
-    openModal = ()=> {
-        this.setState({visible: true})
     }
     handleCancel = () => {
         this.setState({visible: false})
     }
-    validate = () => {
-        if(!this.state.createInfo.bankId){
-            message.error('必须选择兑换公司');
+    componentWillMount(){
+        // console.log($enterprise.getData())
+        // this.getData();
+        // this.getAssets();
+        this.loadList();
+        this.getBalance();
+        this.loadBankList();
+    }
+    handleBeforeUpload = (file) => {
+        this.setState(state => ({
+            fileList: [file],
+        }));
+        return false;
+    }
+    validate() {
+        if(this.state.fileList.length===0){
+            message.warn('请上传文本合同')
             return false;
         }
-        if(!this.state.createInfo.token){
-            message.error('必须填写兑换额度');
+        if(!this.state.createInfo.to_id){
+            message.warn('请选择兑换银行')
+            return false;
+        }
+        if(!this.state.createInfo.money){
+            message.warn('请填写兑换金额')
             return false;
         }
         return true;
-    }
-    componentWillMount(){
-        // console.log($enterprise.getData())
-        this.getBalance();
-        this.getAssets();
-        this.loadBankList();
-        this.loadList();
-    }
-    findBankName = (id) => {
-        let item = this.state.bankList.find((item) => item.id===id);
-        if(item) return item.name;
     }
     render(){
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: {span: 2},
+                sm: {span: 3},
             },
             wrapperCol: {
                 xs: { span: 24 },
                 sm: { span: 6 },
             }
-        }
-        const buttonItemLayout = {
-            wrapperCol: {
-                xs: {span: 24},
-                sm: {span: 6}
-            }
         };
         const modalFormItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 6},
+                sm: {span: 4},
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 18 },
+                sm: { span: 8 },
             }
-        }; 
+        };
+        const buttonItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0
+                },
+                sm: {
+                    span: 6,
+                }
+            }
+        };
+        const uploadProps = {
+            multiple: false,
+            // onChange: this.handleUploadChange
+        }
         return(
             <Card>
                 <header className="header">
-                    <Row style={{'marginBottom': '20px', 'fontSize': '18px'}}>
-                        <Col span={6}>公司Token余额：{this.state.balance}</Col>
-                        <Col span={6}>公司资产（元）：{this.state.assets}</Col>
-                    </Row>
                     <Form {...formItemLayout} labelAlign="left">
-                        <Form.Item label="兑付银行" required={true}>
-                            <Select value={this.state.createInfo.bankId} onSelect={this.handleBankChange} style={{'width': '200px'}}>
+                        <Form.Item label="公司余额" >{this.state.balance}</Form.Item>
+                        <Form.Item label="文本合同" >
+                            <Upload {...uploadProps} fileList={this.state.fileList} beforeUpload={this.handleBeforeUpload}>
+                                <Button>
+                                    <Icon type="upload" /> Upload
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item label="银行">
+                            <Select onChange={this.handleBankChange} defaultValue={3}>
                                 {
-                                    this.state.bankList.map(bank => (
+                                    this.state.bankList.map((bank) => (
                                         <Option value={bank.id} key={bank.id}>{bank.name}</Option>
                                     ))
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="兑付Token额度" required={true}>
-                            <InputNumber min={0} onChange={this.handleToken} style={{'width': '200px'}}/>
+                        <Form.Item label="兑换金额">
+                            <InputNumber  onChange={this.handleValueChange}/>
                         </Form.Item>
                         <Form.Item {...buttonItemLayout}>
-                            <Button type="primary" onClick={this.openModal}>发起兑付</Button>
+                            <Button type="primary" onClick={this.openModal}>发起兑换</Button>
                         </Form.Item>
                     </Form>
                 </header>
@@ -219,21 +232,21 @@ class Token extends React.Component{
                     <Modal
                         title="发起兑换"
                         visible={this.state.visible}
-                        onOk={this.createExchange}
+                        onOk={this.handleCreate}
                         onCancel={this.handleCancel}
-                        okText="确认兑换"
-                        cancelText="取消" 
+                        okText="确定兑换"
+                        cancelText="取消"
                         >
-                         <Form {...modalFormItemLayout} labelAlign="left">
-                            <Form.Item label="兑付银行">{this.findBankName(this.state.createInfo.bankId)}</Form.Item>
-                            <Form.Item label="兑付Token额度">{this.state.createInfo.token}</Form.Item>
-                        </Form>
-                        <p style={{'fontWeight': 'bold'}}>当前正在发起Token兑换，请注意，发起兑换后不能撤回。请核对清楚信息后，再点击兑换</p>
+                            <Form {...modalFormItemLayout} labelAlign="left">
+                                <Form.Item label="银行">{this.state.bankName}</Form.Item>
+                                <Form.Item label="兑换金额">{this.state.createInfo.money}</Form.Item>
+                            </Form>
                     </Modal>
                 </main>
             </Card>
         )
     }
 }
+
 
 export default Token;

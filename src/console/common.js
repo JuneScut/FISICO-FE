@@ -1,6 +1,6 @@
 import http from './api';
 
-let common = {};
+let common = {}; 
 
 common.logisticStatus = [
     { key: 'INTRANSIT', value:'运输中'},
@@ -75,28 +75,13 @@ common.insenterpriseList = function(params){
     return http.get('/insenterprise/list', params);
 }
 
-
-
-common.tokenRecord = function(params){
-    return http.get("/token/record", params);
+// 创建合同
+common.createLogisticContract = function(params){
+    return http.form('/logistic/create', params);
 }
-common.getBalance = function(params){
-    return http.get('/balance/query', params);    
+common.createTransferContract = function(params){
+    return http.form('/transfer/create', params);
 }
-
-common.getAssets = function(params){
-    return http.get('/assets/query', params);
-}
-common.getCredit = function(params){
-    return http.get('/credit/query', params);
-}
-common.tokenList = function(params){
-    return http.get('/token/list', params);
-}
-common.createTokenExchange = function(params){
-    return http.post('/token/exchange/create', params);
-}
-
 
 // 获取合同列表
 common.getContractsList = function(params){
@@ -107,6 +92,9 @@ common.logisticConsList = function(params){
 }
 common.insureConsList = function(params){
     return http.get('/insurance/list',params);
+}
+common.transferList = function(params){
+    return http.get('/transfer/list', params);
 }
 
 
@@ -120,6 +108,9 @@ common.checkInsuranceContract = function(params){
 common.checkContract = function(params){
     return http.form("/contract/check", params);
 }
+common.checkTransferContract = function(params){
+    return http.form("/transfer/check", params);
+}
 
 // 签署合同
 common.signContract = function(params){
@@ -131,4 +122,28 @@ common.signLogisticContract = function(params){
 common.signInsuranceContract = function(params){
     return http.get("/insurance/sign", params);
 }
+common.signTransferContract = function(params){
+    return http.get('/transfer/sign', params);
+}
 export default common;
+
+
+// common.tokenRecord = function(params){
+//     return http.get("/token/record", params);
+// }
+// common.getBalance = function(params){
+//     return http.get('/balance/query', params);    
+// }
+
+// common.getAssets = function(params){
+//     return http.get('/assets/query', params);
+// }
+// common.getCredit = function(params){
+//     return http.get('/credit/query', params);
+// }
+// common.tokenList = function(params){
+//     return http.get('/token/list', params);
+// }
+// common.createTokenExchange = function(params){
+//     return http.post('/token/exchange/create', params);
+// }

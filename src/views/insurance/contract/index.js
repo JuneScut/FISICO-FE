@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker } from 'antd';
+import { Card, Form, Select, Input, Button, Table, Upload, Icon, InputNumber,DatePicker,Tooltip } from 'antd';
 import '../../../common/style.scss';
 import $insurance from '../../../console/insurance';
 import $common from '../../../console/common';
@@ -21,12 +21,12 @@ class InsuranceContract extends React.Component{
             list: [],
             companyList: [],
             searchParams: {
-                supplyId: 0,
-                insuranceContractId: 0,
+                id: 0,
                 beginTime: 0,
                 endTime: 0,
-                type: "ALL"
+                to_id: 0
             },
+            type: 'ALL',
             columns: [
                 {
                     title: '序号',
@@ -88,6 +88,16 @@ class InsuranceContract extends React.Component{
                         <span>{findValue($common.status, status)}</span>
                     )
                 },
+                {
+                    title: '货物消息',
+                    dataIndex: 'cargoInfo',
+                    key: 'cargoInfo',
+                    render: (text, record) => (
+                        <Tooltip placement="right" title={`商品名称：${record.gName}     货物数量：${record.supply}     货物金额：${record.contract_price}`}>
+                            <Button href="detail">详情</Button>
+                        </Tooltip>
+                    )
+                }
             ]
         }
     }
@@ -112,16 +122,14 @@ class InsuranceContract extends React.Component{
         }
     }
     loadCompanyList = async()=>{
-        const res = await $common.supplyList();
-        this.setState({companyList: res.data.result})
+        const res1 = await $common.supplyList();
+        const res2 = await $common.logenterpriseList();
+        const res = [...res1.data.result, ...res2.data.result];
+        this.setState({companyList: res})
     }
     handleIdChange = (e)=>{
         let id = e.currentTarget.value;
-        let searchParams = Object.assign({}, this.state.searchParams, {insuranceContractId:id})
-        this.setState({searchParams})
-    }
-    handleSupplyChange = (id) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {supplyId:id})
+        let searchParams = Object.assign({}, this.state.searchParams, {id:id})
         this.setState({searchParams})
     }
     handleRangeChange = (time) => {
@@ -129,8 +137,17 @@ class InsuranceContract extends React.Component{
         this.setState({searchParams})
     }
     handleTypeChange = (type) => {
-        let searchParams = Object.assign({}, this.state.searchParams, {type: type})
-        this.setState({searchParams})
+        this.setState({type: type});
+        if(type==='ALL'){
+            let searchParams = Object.assign({}, this.state.searchParams, {to_id: 0})
+            this.setState({searchParams})
+        }else if(type==='GOODS'){
+            let searchParams = Object.assign({}, this.state.searchParams, {to_id: 2})
+            this.setState({searchParams})
+        }else{
+            let searchParams = Object.assign({}, this.state.searchParams, {to_id: 6})
+            this.setState({searchParams})
+        }
     }
     componentWillMount(){
         this.loadList();
